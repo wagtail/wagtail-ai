@@ -1,10 +1,39 @@
 # Wagtail AI
 
-Get a hand writing your content with AI super powers!
+Get help with your content using AI superpowers.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI version](https://badge.fury.io/py/wagtail-ai.svg)](https://badge.fury.io/py/wagtail-ai)
-[![AI CI](https://github.com/tomusher/wagtail-ai/actions/workflows/test.yml/badge.svg)](https://github.com/tomusher/wagtail-ai/actions/workflows/test.yml)
+[![ai CI](https://github.com/tomusher/wagtail-ai/actions/workflows/test.yml/badge.svg)](https://github.com/tomusher/wagtail-ai/actions/workflows/test.yml)
+
+Wagtail AI integrates Wagtail with OpenAI's APIs (think ChatGPT) to help you write and correct your content.
+
+Right now, it can:
+
+* Finish what you've started - write some text and tell Wagtail AI to finish it off for you
+* Correct your spelling/grammar
+
+## Requirements & Costs
+
+You'll need a paid OpenAI account and an API key. There'll also be some cost involved. For the API used here, OpenAI charges $0.002 for 1,000 tokens (roughly 4 characters). Every token sent to the API, and every token we get baack counts, so you can expect using 'correction' on 1,000 word paragraph to cost roughly:
+
+* (1,000 * 4) + (35 * 4) (for the initial prompt) tokens sent to the API
+* + 4,000 tokens received from the API
+* = 8,140 tokens = $0.016
+
+## The Future
+
+Wagtail AI is very new. Here's some things we'd like to do:
+
+* [ ] Streaming support - the API supports server-sent events, we could do the same
+* [ ] A nice UI - it's a bit rough right now
+* [ ] Reduce bundle size
+* [ ] Internationalisation on text and support for different language prompts
+* [ ] Find a better way to hook in to Draftail to do things like show progress bars/spinners.
+* [ ] Add more AI behaviours and features - content recommendations, content based Q&A tools, better ways to direct the prompt.
+* [ ] Tests!
+
+If you're interested in working on these things, please do!
 
 ## Links
 
@@ -14,16 +43,11 @@ Get a hand writing your content with AI super powers!
 - [Discussions](https://github.com/tomusher/wagtail-ai/discussions)
 - [Security](https://github.com/tomusher/wagtail-ai/security)
 
-## Supported versions
-
-- Python ...
-- Django ...
-- Wagtail ...
-
 ## Installation
 
 - `python -m pip install wagtail-ai`
-- ...
+- Add `wagtail_ai` to your `INSTALLED_APPS`
+- Add an `OPENAI_API_KEY = {api_key}` to your settings key, replacing `{api_key}` with your OpenAI API key.
 
 ## Contributing
 
