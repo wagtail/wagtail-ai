@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - 'stable/**'
+      - 'fix-actions'
 
   pull_request:
 
