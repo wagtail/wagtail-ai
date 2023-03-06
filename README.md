@@ -19,11 +19,11 @@ https://user-images.githubusercontent.com/27112/223072938-8cb5ccff-4835-489a-8be
 
 ## Requirements & Costs
 
-You'll need a paid OpenAI account and an API key. There'll also be some cost involved. For the API used here, OpenAI charges $0.002 for 1,000 tokens (roughly 4 characters). Every token sent to the API, and every token we get baack counts, so you can expect using 'correction' on 1,000 word paragraph to cost roughly:
+You'll need a paid OpenAI account and an API key. There'll also be some cost involved. For the API used here, OpenAI charges $0.002 for 1,000 tokens (a word is about 1.3 tokens). Every token sent to the API, and every token we get back counts, so you can expect using 'correction' on 1,000 word paragraph to cost roughly:
 
-* (1,000 * 4) + (35 * 4) (for the initial prompt) tokens sent to the API
-* +4,000 tokens received from the API
-* = 8,140 tokens = $0.016
+* (1,000 * 1.3) + (35 * 1.3) (for the initial prompt) tokens sent to the API
+* + (1,000 * 1.3) tokens received from the API
+* = 2,645 tokens = $0.0053
 
 ## The Future
 
