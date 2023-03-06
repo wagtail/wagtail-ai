@@ -55,7 +55,7 @@ If you're interested in working on these things, please do!
 
 - `python -m pip install wagtail-ai`
 - Add `wagtail_ai` to your `INSTALLED_APPS`
-- Add an `OPENAI_API_KEY = {api_key}` to your settings key, replacing `{api_key}` with your OpenAI API key.
+- Add an `OPENAI_API_KEY = "{api_key}"` to your Django settings file, replacing `{api_key}` with your OpenAI API key.
 
 ## Contributing
 
