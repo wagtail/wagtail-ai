@@ -1,6 +1,6 @@
 {
   "name": "wagtail-ai",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Get a hand writing your content with AI super powers!",
   "main": "wagtail_ai/static_src/main.tsx",
   "scripts": {

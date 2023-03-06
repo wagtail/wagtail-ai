@@ -47,6 +47,9 @@ Home = "https://github.com/tomusher/wagtail-ai"
 name = "wagtail_ai"
 
 [tool.flit.sdist]
+include = [
+    "wagtail_ai/static"
+]
 exclude = [
     "wagtail_ai/static_src",
     "wagtail_ai/test",
