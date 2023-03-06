@@ -1,0 +1,35 @@
+.Draftail-AI-Sparklebox {
+  position: absolute;
+  opacity: 1;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.Draftail-AI-ButtonDropdown {
+  position: absolute;
+  border: 1px solid var(--w-color-grey-200);
+  border-radius: 0.3125rem;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  z-index: 200;
+}
+
+.Draftail-AI-ButtonDropdown > button {
+  background-color: transparent;
+  padding: 8px;
+  text-align: left;
+}
+
+.Draftail-AI-ButtonDropdown > button span {
+  font-weight: bold;
+  display: block;
+}
+
+.Draftail-AI-ButtonDropdown > button:hover {
+  background-color: var(--w-color-grey-200);
+}

@@ -1,0 +1,59 @@
+ci:
+  autofix_prs: false
+
+default_language_version:
+  python: python3
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-toml
+      - id: check-yaml
+        args: ['--unsafe']
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/psf/black
+    rev: 22.12.0
+    hooks:
+      - id: black
+        language_version: python3
+        args: ['--target-version', 'py37']
+  - repo: https://github.com/pycqa/isort
+    # isort config is in setup.cfg
+    rev: 5.12.0
+    hooks:
+      - id: isort
+  - repo: https://github.com/pycqa/flake8
+    # flake8 config is in setup.cfg
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        additional_dependencies:
+          - flake8-bugbear
+          - flake8-comprehensions
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    # prettier config is in prettier.config.js
+    rev: 'v2.7.1'
+    hooks:
+      - id: prettier
+        types_or: [css, scss, javascript, ts, tsx, json, yaml]
+  - repo: https://github.com/awebdeveloper/pre-commit-stylelint
+    # stylelint config is in .stylelintrc.js
+    rev: 8f63da497580898a7e0ceef6bf9e72cc0af07828
+    hooks:
+      - id: stylelint
+        files: \.(scss)$
+        additional_dependencies:
+          - 'stylelint@14.16.1'
+          - '@wagtail/stylelint-config-wagtail@0.6.0'
+  - repo: https://github.com/asottile/blacken-docs
+    rev: v1.12.1
+    hooks:
+      - id: blacken-docs
+        additional_dependencies: [black==22.12.0]

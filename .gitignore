@@ -1,0 +1,17 @@
+__pycache__/
+*.py[co]
+/build
+/dist
+/wagtail_ai.egg-info
+/.coverage
+/htmlcov
+/.tox
+/venv
+/.vscode
+/site
+/test_wagtail_ai.db
+/node_modules
+/test-static
+/test-media
+/wagtail_ai/static
+/.devenv

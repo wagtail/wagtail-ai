@@ -1,0 +1,35 @@
+name: Nightly Wagtail Test
+
+on:
+  schedule:
+    - cron: '0 1 * * *'
+    # At 01:00, daily
+  workflow_dispatch:
+
+jobs:
+  nightly-wagtail-test:
+    runs-on: ubuntu-latest
+    env:
+      WEBHOOK_EXISTS: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - run: git clone https://github.com/wagtail/wagtail.git
+
+      - run: python -m pip install flit
+      - run: flit install --deps production --extras testing
+      - run: python -m pip install ./wagtail
+
+      - run: python testmanage.py test
+
+      - name: Report failure
+        run: |
+          python -m pip install requests
+          python ./.github/scripts/report_nightly_build_failure.py
+        if: ${{ failure() && env.WEBHOOK_EXISTS == 'true' }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
