@@ -15,3 +15,6 @@ __pycache__/
 /test-media
 /wagtail_ai/static
 /.devenv
+.devenv.flake.nix
+devenv.lock
+devenv.nix
