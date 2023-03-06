@@ -18,7 +18,7 @@ Right now, it can:
 You'll need a paid OpenAI account and an API key. There'll also be some cost involved. For the API used here, OpenAI charges $0.002 for 1,000 tokens (roughly 4 characters). Every token sent to the API, and every token we get baack counts, so you can expect using 'correction' on 1,000 word paragraph to cost roughly:
 
 * (1,000 * 4) + (35 * 4) (for the initial prompt) tokens sent to the API
-* + 4,000 tokens received from the API
+* +4,000 tokens received from the API
 * = 8,140 tokens = $0.016
 
 ## The Future
@@ -42,6 +42,10 @@ If you're interested in working on these things, please do!
 - [Contributing](https://github.com/tomusher/wagtail-ai/blob/main/CHANGELOG.md)
 - [Discussions](https://github.com/tomusher/wagtail-ai/discussions)
 - [Security](https://github.com/tomusher/wagtail-ai/security)
+
+## Supported Versions
+
+* Wagtail 4.0, 4.1 and 4.2
 
 ## Installation
 
