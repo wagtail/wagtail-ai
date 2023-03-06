@@ -1,3 +1,5 @@
+![wagtail-ai](https://user-images.githubusercontent.com/27112/223072917-8354f8f2-b687-44dd-9db7-33f2cc340233.png)
+
 # Wagtail AI
 
 Get help with your content using AI superpowers.
@@ -12,6 +14,8 @@ Right now, it can:
 
 * Finish what you've started - write some text and tell Wagtail AI to finish it off for you
 * Correct your spelling/grammar
+
+https://user-images.githubusercontent.com/27112/223072938-8cb5ccff-4835-489a-8be4-cca85001885e.mp4
 
 ## Requirements & Costs
 
