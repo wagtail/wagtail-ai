@@ -50,11 +50,13 @@ const getAllSelection = (content: ContentState): SelectionState => {
 const processAICompletion = async (
   editorState: EditorState,
 ): Promise<EditorState> => {
-  const newEditorState = RichUtils.insertSoftNewline(editorState);
+  const newEditorState = RichUtils.insertSoftNewline(
+    EditorState.moveSelectionToEnd(editorState),
+  );
   const content = newEditorState.getCurrentContent();
   const plainText = content.getPlainText();
   const completion = await fetchAIResponse(plainText, 'completion');
-  const nextState = Modifier.insertText(
+  const nextState = Modifier.replaceText(
     content,
     EditorState.moveSelectionToEnd(newEditorState).getSelection(),
     completion,

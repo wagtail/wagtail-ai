@@ -20,5 +20,4 @@ class OpenAIClient:
                 "messages": [{"role": "user", "content": prompt}],
             },
         )
-        print(res)
         return res["choices"][0]["message"]["content"]
