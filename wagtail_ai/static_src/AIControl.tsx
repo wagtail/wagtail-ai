@@ -9,6 +9,7 @@ import {
 import { ControlComponentProps, ToolbarButton, Icon } from 'draftail';
 import Sparkle from 'react-sparkle';
 import { createPortal } from 'react-dom';
+import { Prompt } from './custom';
 
 function WandIcon() {
   // Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc.
@@ -26,13 +27,11 @@ function WandIcon() {
   );
 }
 
-type AIAction = 'completion' | 'correction';
-
 const fetchAIResponse = async (
   text: string,
-  action: AIAction,
+  prompt: Prompt,
 ): Promise<string> => {
-  const res = await fetch(`/admin/ai/process?text=${text}&action=${action}`);
+  const res = await fetch(`/admin/ai/process?text=${text}&prompt=${prompt.id}`);
   const json = await res.json();
   return json.message;
 };
@@ -47,15 +46,16 @@ const getAllSelection = (content: ContentState): SelectionState => {
   });
 };
 
-const processAICompletion = async (
+const processAIAppend = async (
   editorState: EditorState,
+  prompt: Prompt,
 ): Promise<EditorState> => {
   const newEditorState = RichUtils.insertSoftNewline(
     EditorState.moveSelectionToEnd(editorState),
   );
   const content = newEditorState.getCurrentContent();
   const plainText = content.getPlainText();
-  const completion = await fetchAIResponse(plainText, 'completion');
+  const completion = await fetchAIResponse(plainText, prompt);
   const nextState = Modifier.replaceText(
     content,
     EditorState.moveSelectionToEnd(newEditorState).getSelection(),
@@ -69,12 +69,13 @@ const processAICompletion = async (
   return newState;
 };
 
-const processAICorrection = async (
+const processAIReplace = async (
   editorState: EditorState,
+  prompt: Prompt,
 ): Promise<EditorState> => {
   const content = editorState.getCurrentContent();
   const plainText = content.getPlainText();
-  const completion = await fetchAIResponse(plainText, 'correction');
+  const completion = await fetchAIResponse(plainText, prompt);
   const nextState = Modifier.replaceText(
     content,
     getAllSelection(content),
@@ -88,16 +89,14 @@ const processAICorrection = async (
   return newState;
 };
 
-function ToolbarDropdown({ onAction }: { onAction: (action: string) => void }) {
+function ToolbarDropdown({ onAction }: { onAction: (prompt: Prompt) => void }) {
   return (
     <div className="Draftail-AI-ButtonDropdown">
-      <button type="button" onMouseDown={() => onAction('completion')}>
-        <span>AI Completion</span> Start writing and let AI finish for you.
-      </button>
-      <button type="button" onMouseDown={() => onAction('correction')}>
-        <span>AI Correction</span> Let AI correct your spelling, grammar and
-        punctuation.
-      </button>
+      {window.WAGTAIL_AI_PROMPTS.map((prompt) => (
+        <button type="button" onMouseDown={() => onAction(prompt)}>
+          <span>{prompt.label}</span> {prompt.description}
+        </button>
+      ))}
     </div>
   );
 }
@@ -115,13 +114,13 @@ function AIControl({ getEditorState, onChange }: ControlComponentProps) {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const handleAction = async (action: AIAction) => {
+  const handleAction = async (prompt: Prompt) => {
     setIsDropdownOpen(false);
     setIsLoading(true);
-    if (action === 'completion') {
-      onChange(await processAICompletion(editorState));
+    if (prompt.method === 'append') {
+      onChange(await processAIAppend(editorState, prompt));
     } else {
-      onChange(await processAICorrection(editorState));
+      onChange(await processAIReplace(editorState, prompt));
     }
     setIsLoading(false);
   };

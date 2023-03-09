@@ -1,6 +1,14 @@
 /* eslint-disable no-unused-vars */
 export {};
 
+export type Prompt = {
+  id: string;
+  label: string;
+  description: string;
+  prompt: string;
+  method: string;
+};
+
 // Allows SVG files to be imported and used in TypeScript
 declare module '*.svg' {
   const content: any;
@@ -26,6 +34,10 @@ declare global {
       /* eslint-disable-next-line camelcase */
       display_name: string;
     }[];
+  }
+
+  interface Window {
+    WAGTAIL_AI_PROMPTS: [Prompt];
   }
 
   const wagtailConfig: WagtailConfig;

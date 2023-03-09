@@ -1,25 +1,22 @@
-import inspect
 import os
+
+import tiktoken
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.http import JsonResponse
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from .openai import OpenAIClient
+from .settings import Prompt, get_prompt_by_id
 
 
-COMPLETION_PROMPT = inspect.cleandoc(
-    """You are assisting a user in writing content for their website.
-    The user has provided some initial text (following the colon).
-    Assist the user in writing the remaining content:"""
-)
+DEFAULT_MODEL = "gpt-3.5-turbo"
+DEFAULT_MAX_TOKENS = 4096
 
-CORRECTION_PROMPT = inspect.cleandoc(
-    """You are assisting a user in writing content for their website.
-    The user has provided some text (following the colon).
-    Return the provided text but with corrected grammar, spelling and punctuation.
-    Do not add additional punctuation, quotation marks or change any words:"""
-)
+
+class AIHandlerException(Exception):
+    pass
 
 
 def build_openai_client() -> OpenAIClient:
@@ -32,13 +29,57 @@ def build_openai_client() -> OpenAIClient:
         )
 
 
-def ai_process(request):
-    text = request.GET.get("text")
-    action = request.GET.get("action", "completion")
-    prompt = COMPLETION_PROMPT if action == "completion" else CORRECTION_PROMPT
-    full_prompt = "\n".join([prompt, text])
+def _splitter_length(string):
+    encoding = tiktoken.encoding_for_model(DEFAULT_MODEL)
+    return len(encoding.encode(string))
+
+
+def _replace_handler(prompt: Prompt, text: str):
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=DEFAULT_MAX_TOKENS, length_function=_splitter_length
+    )
+    texts = splitter.split_text(text)
+
+    for split in texts:
+        full_prompt = "\n".join([prompt.prompt, split])
+        client = build_openai_client()
+        message = client.chat(full_prompt)
+        # Remove extra blank lines returned by the API
+        message = os.linesep.join([s for s in message.splitlines() if s])
+        text = text.replace(split, message)
+
+    return text
+
+
+def _append_handler(prompt: Prompt, text: str):
+    tokens = _splitter_length(text)
+    if tokens > DEFAULT_MAX_TOKENS:
+        raise AIHandlerException("Cannot run completion on text this long")
+
+    full_prompt = "\n".join([prompt.prompt, text])
     client = build_openai_client()
     message = client.chat(full_prompt)
     # Remove extra blank lines returned by the API
     message = os.linesep.join([s for s in message.splitlines() if s])
-    return JsonResponse({"message": message})
+
+
+def process(request):
+    text = request.GET.get("text")
+    prompt_idx = request.GET.get("prompt")
+    prompt = get_prompt_by_id(int(prompt_idx))
+
+    if not prompt:
+        return JsonResponse({"error": "Invalid prompt provided"}, status=400)
+
+    handlers = {
+        Prompt.Method.REPLACE: _replace_handler,
+        Prompt.Method.APPEND: _append_handler,
+    }
+
+    handler = handlers[prompt.method]
+    try:
+        response = handler(prompt, text)
+    except AIHandlerException as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse({"message": response})

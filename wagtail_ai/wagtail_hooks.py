@@ -1,10 +1,14 @@
+import json
+
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
 
 from django.urls import include, path
+from django.utils.safestring import mark_safe
 from django.views.i18n import JavaScriptCatalog
 from wagtail import hooks
 
-from .views import ai_process
+from .settings import get_prompts
+from .views import process
 
 
 @hooks.register("register_admin_urls")
@@ -17,7 +21,7 @@ def register_admin_urls():
         ),
         path(
             "process/",
-            ai_process,
+            process,
             name="process",
         ),
     ]
@@ -47,4 +51,17 @@ def register_ai_feature(features):
         ControlFeature(
             js=["wagtail_ai/wagtail-ai.js"], css={"all": ["wagtail_ai/main.css"]}
         ),
+    )
+
+
+@hooks.register("insert_editor_js")
+def ai_editor_js():
+    prompt_json = json.dumps([prompt.as_dict() for prompt in get_prompts()])
+
+    return mark_safe(
+        f"""
+        <script>
+            window.WAGTAIL_AI_PROMPTS = {prompt_json};
+        </script>
+        """
     )
