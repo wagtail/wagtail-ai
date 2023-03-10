@@ -31,7 +31,13 @@ const fetchAIResponse = async (
   text: string,
   prompt: Prompt,
 ): Promise<string> => {
-  const res = await fetch(`/admin/ai/process?text=${text}&prompt=${prompt.id}`);
+  const formData = new FormData();
+  formData.append('text', text);
+  formData.append('prompt', prompt.id);
+  const res = await fetch('/admin/ai/process/', {
+    method: 'POST',
+    body: formData,
+  });
   const json = await res.json();
   return json.message;
 };
@@ -46,20 +52,18 @@ const getAllSelection = (content: ContentState): SelectionState => {
   });
 };
 
-const processAIAppend = async (
+const handleAppend = (
   editorState: EditorState,
-  prompt: Prompt,
-): Promise<EditorState> => {
+  response: string,
+): EditorState => {
   const newEditorState = RichUtils.insertSoftNewline(
     EditorState.moveSelectionToEnd(editorState),
   );
   const content = newEditorState.getCurrentContent();
-  const plainText = content.getPlainText();
-  const completion = await fetchAIResponse(plainText, prompt);
   const nextState = Modifier.replaceText(
     content,
     EditorState.moveSelectionToEnd(newEditorState).getSelection(),
-    completion,
+    response,
   );
   const newState = EditorState.push(
     newEditorState,
@@ -69,17 +73,15 @@ const processAIAppend = async (
   return newState;
 };
 
-const processAIReplace = async (
+const handleReplace = (
   editorState: EditorState,
-  prompt: Prompt,
-): Promise<EditorState> => {
+  response: string,
+): EditorState => {
   const content = editorState.getCurrentContent();
-  const plainText = content.getPlainText();
-  const completion = await fetchAIResponse(plainText, prompt);
   const nextState = Modifier.replaceText(
     content,
     getAllSelection(content),
-    completion,
+    response,
   );
   const newState = EditorState.push(
     editorState,
@@ -87,6 +89,20 @@ const processAIReplace = async (
     'insert-characters',
   );
   return newState;
+};
+
+const processAction = async (
+  editorState: EditorState,
+  prompt: Prompt,
+  editorStateHandler: (
+    editorState: EditorState,
+    response: string,
+  ) => EditorState,
+): Promise<EditorState> => {
+  const content = editorState.getCurrentContent();
+  const plainText = content.getPlainText();
+  const response = await fetchAIResponse(plainText, prompt);
+  return editorStateHandler(editorState, response);
 };
 
 function ToolbarDropdown({ onAction }: { onAction: (prompt: Prompt) => void }) {
@@ -118,9 +134,9 @@ function AIControl({ getEditorState, onChange }: ControlComponentProps) {
     setIsDropdownOpen(false);
     setIsLoading(true);
     if (prompt.method === 'append') {
-      onChange(await processAIAppend(editorState, prompt));
+      onChange(await processAction(editorState, prompt, handleAppend));
     } else {
-      onChange(await processAIReplace(editorState, prompt));
+      onChange(await processAction(editorState, prompt, handleReplace));
     }
     setIsLoading(false);
   };

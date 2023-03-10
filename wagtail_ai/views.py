@@ -5,6 +5,7 @@ import tiktoken
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from .openai import OpenAIClient
@@ -64,10 +65,13 @@ def _append_handler(prompt: Prompt, text: str):
     # Remove extra blank lines returned by the API
     message = os.linesep.join([s for s in message.splitlines() if s])
 
+    return message
 
+
+@csrf_exempt
 def process(request):
-    text = request.GET.get("text")
-    prompt_idx = request.GET.get("prompt")
+    text = request.POST.get("text")
+    prompt_idx = request.POST.get("prompt")
     prompt = get_prompt_by_id(int(prompt_idx))
 
     if not prompt:
