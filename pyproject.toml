@@ -31,13 +31,17 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-    "Django>=3.0,<4.2",
-    "Wagtail>=4.0,<5.0"
+    "Django>=3.0",
+    "Wagtail>=4.0",
+    "langchain>=0.0.106",
+    "tiktoken>=0.3.0"
 ]
 [project.optional-dependencies]
 testing = [
     "dj-database-url==1.2.0",
-    "pre-commit>=2.21.0,<3.0"
+    "pre-commit>=2.21.0",
+    "pytest>=7.2.2",
+    "pytest-django>=4.5.2"
 ]
 
 [project.urls]
@@ -45,6 +49,10 @@ Home = "https://github.com/tomusher/wagtail-ai"
 
 [tool.flit.module]
 name = "wagtail_ai"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "testapp.settings"
+pythonpath = ["./", "./tests"]
 
 [tool.flit.sdist]
 include = [
@@ -54,6 +62,7 @@ exclude = [
     "wagtail_ai/static_src",
     "wagtail_ai/test",
     "wagtail_ai/static/wagtail_ai/js/.gitignore",
+    "tests",
     "testmanage.py",
     ".*",
     "*.js",
