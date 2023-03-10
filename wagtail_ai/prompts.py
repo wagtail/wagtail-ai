@@ -5,6 +5,7 @@ from enum import Enum
 from typing import Optional, Union
 
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 
 
 @dataclass
@@ -55,12 +56,19 @@ DEFAULT_PROMPTS = [
 
 
 def get_prompts():
-    return [
-        Prompt(**prompt, id=idx)
-        for idx, prompt in enumerate(
-            getattr(settings, "WAGTAIL_AI_PROMPTS", []) or DEFAULT_PROMPTS
+    try:
+        return [
+            Prompt(**prompt, id=idx)
+            for idx, prompt in enumerate(
+                getattr(settings, "WAGTAIL_AI_PROMPTS", []) or DEFAULT_PROMPTS
+            )
+        ]
+    except TypeError:
+        raise ImproperlyConfigured(
+            """WAGTAIL_AI_PROMPTS must be a list of dictionaries, where each dictionary
+            has a 'label', 'description', 'prompt' and 'method' key.
+            The 'method' must be one of 'append' or 'replace'."""
         )
-    ]
 
 
 def get_prompt_by_id(id: int) -> Optional[Prompt]:

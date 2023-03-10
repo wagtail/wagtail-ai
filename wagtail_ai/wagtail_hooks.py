@@ -7,7 +7,7 @@ from django.utils.safestring import mark_safe
 from django.views.i18n import JavaScriptCatalog
 from wagtail import hooks
 
-from .settings import get_prompts
+from .prompts import get_prompts
 from .views import process
 
 

@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from .openai import OpenAIClient
-from .settings import Prompt, get_prompt_by_id
+from .prompts import Prompt, get_prompt_by_id
 
 
 DEFAULT_MODEL = "gpt-3.5-turbo"
@@ -30,6 +30,8 @@ def build_openai_client() -> OpenAIClient:
 
 
 def _splitter_length(string):
+    """Return the number of tokens in a string, used by the Langchain
+    splitter so we split based on tokens rather than characters."""
     encoding = tiktoken.encoding_for_model(DEFAULT_MODEL)
     return len(encoding.encode(string))
 
