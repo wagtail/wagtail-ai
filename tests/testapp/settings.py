@@ -160,3 +160,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "test-media")
 # Wagtail settings
 
 WAGTAIL_SITE_NAME = "Wagtail AI test site"
+
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
