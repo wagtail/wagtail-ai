@@ -58,11 +58,6 @@ If you're interested in working on these things, please do!
 - Add `wagtail_ai` to your `INSTALLED_APPS`
 - Add an `OPENAI_API_KEY = "{api_key}"` to your Django settings file, replacing `{api_key}` with your OpenAI API key.
 
-> **Note**
-> This package currently has a dependency on [tiktoken](https://github.com/openai/tiktoken) which includes some Rust components.
->
-> While pre-built wheels are available for most platforms, there are currently no wheels for the `aarch64` architecture (which you'll likely see if running Docker on an ARM Mac). To install this dependency in `aarch64` environments you will need a Rust compiler.
-
 ## Configuration
 
 ### Adding Your Own Prompts
