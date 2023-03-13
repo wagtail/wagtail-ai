@@ -45,6 +45,8 @@ module.exports = {
     'react': 'React',
     'react-dom': 'ReactDOM',
     'gettext': 'gettext',
+    'draftail': 'Draftail',
+    'draft-js': 'DraftJS',
   },
   output: {
     path: path.resolve(__dirname, 'wagtail_ai/static/wagtail_ai'),
