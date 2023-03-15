@@ -74,6 +74,14 @@ def process(request):
     prompt_idx = request.POST.get("prompt")
     prompt = get_prompt_by_id(int(prompt_idx))
 
+    if not text:
+        return JsonResponse(
+            {
+                "error": "No text provided - please enter some text before using AI features"
+            },
+            status=400,
+        )
+
     if not prompt:
         return JsonResponse({"error": "Invalid prompt provided"}, status=400)
 
