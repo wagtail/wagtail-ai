@@ -1,3 +1,5 @@
+from typing import List
+
 import requests
 
 
@@ -21,3 +23,13 @@ class OpenAIClient:
             },
         )
         return res["choices"][0]["message"]["content"]
+
+    def get_embedding(self, input: str) -> List[float]:
+        res = self.do_request(
+            "embeddings",
+            {
+                "model": "text-embedding-ada-002",
+                "input": input,
+            },
+        )
+        return res["data"][0]["embedding"]

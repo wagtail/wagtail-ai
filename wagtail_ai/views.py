@@ -2,13 +2,11 @@ import os
 
 import tiktoken
 
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-from .openai import OpenAIClient
+from .backends import get_backend
 from .prompts import Prompt, get_prompt_by_id
 
 
@@ -18,16 +16,6 @@ DEFAULT_MAX_TOKENS = 4096
 
 class AIHandlerException(Exception):
     pass
-
-
-def build_openai_client() -> OpenAIClient:
-    try:
-        api_key = settings.OPENAI_API_KEY
-        return OpenAIClient(api_key=api_key)
-    except AttributeError:
-        raise ImproperlyConfigured(
-            "The OPENAI_API_KEY setting must be configured to use Wagtail AI"
-        )
 
 
 def _splitter_length(string):
@@ -45,8 +33,8 @@ def _replace_handler(prompt: Prompt, text: str):
 
     for split in texts:
         full_prompt = "\n".join([prompt.prompt, split])
-        client = build_openai_client()
-        message = client.chat(full_prompt)
+        backend = get_backend()
+        message = backend.prompt(full_prompt)
         # Remove extra blank lines returned by the API
         message = os.linesep.join([s for s in message.splitlines() if s])
         text = text.replace(split, message)
@@ -60,8 +48,8 @@ def _append_handler(prompt: Prompt, text: str):
         raise AIHandlerException("Cannot run completion on text this long")
 
     full_prompt = "\n".join([prompt.prompt, text])
-    client = build_openai_client()
-    message = client.chat(full_prompt)
+    backend = get_backend()
+    message = backend.prompt(full_prompt)
     # Remove extra blank lines returned by the API
     message = os.linesep.join([s for s in message.splitlines() if s])
 
