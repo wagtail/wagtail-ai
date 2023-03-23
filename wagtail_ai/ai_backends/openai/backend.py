@@ -6,6 +6,10 @@ from django.core.exceptions import ImproperlyConfigured
 from .openai import OpenAIClient
 
 
+# Fixed for now until we support other models
+EMBEDDING_DIMENSIONS = 1536
+
+
 class OpenAIBackend:
     def __init__(self):
         try:
@@ -21,3 +25,7 @@ class OpenAIBackend:
 
     def get_embedding(self, input: str) -> List[float]:
         return self.client.get_embedding(input)
+
+    @property
+    def embedding_dimensions(self) -> int:
+        return EMBEDDING_DIMENSIONS

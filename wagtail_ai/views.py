@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-from .backends import get_backend
+from .ai_backends import get_ai_backend
 from .prompts import Prompt, get_prompt_by_id
 
 
@@ -33,7 +33,7 @@ def _replace_handler(prompt: Prompt, text: str):
 
     for split in texts:
         full_prompt = "\n".join([prompt.prompt, split])
-        backend = get_backend()
+        backend = get_ai_backend()
         message = backend.prompt(full_prompt)
         # Remove extra blank lines returned by the API
         message = os.linesep.join([s for s in message.splitlines() if s])
@@ -48,7 +48,7 @@ def _append_handler(prompt: Prompt, text: str):
         raise AIHandlerException("Cannot run completion on text this long")
 
     full_prompt = "\n".join([prompt.prompt, text])
-    backend = get_backend()
+    backend = get_ai_backend()
     message = backend.prompt(full_prompt)
     # Remove extra blank lines returned by the API
     message = os.linesep.join([s for s in message.splitlines() if s])

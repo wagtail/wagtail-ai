@@ -26,7 +26,7 @@ SECRET_KEY = "c6u0-9c!7nilj_ysatsda0(f@e_2mws2f!6m0n^o*4#*q#kzp)"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "testserver"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -160,3 +160,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "test-media")
 WAGTAIL_SITE_NAME = "Wagtail AI test site"
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+WAGTAIL_AI_VECTOR_BACKENDS = {
+    "default": {
+        "BACKEND": "wagtail_ai.vector_backends.qdrant.QdrantBackend",
+        "API_KEY": os.environ.get("QDRANT_API_KEY"),
+        "HOST": os.environ.get("QDRANT_HOST"),
+    }
+}

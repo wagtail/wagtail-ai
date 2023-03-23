@@ -1,101 +1,72 @@
-from typing import List
+from typing import Iterable, List
 
-from django.apps import apps
-from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from django.core import checks
 from django.db import models, transaction
 from django.db.models import Subquery
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from wagtail.search.index import BaseField
 
-from .backends import get_backend
+from .ai_backends import get_ai_backend
 from .models import Embedding
 
 
 EMBEDDING_LENGTH_CHARS = 1000
 
 
-class EmbeddingIndexed(models.Model):
-    embedding_fields = []
-    embeddings = GenericRelation(
-        Embedding, content_type_field="base_content_type", for_concrete_model=False
-    )
+class EmbeddingService:
+    def _get_split_content(self, instance: models.Model) -> List[str]:
+        values = []
+        for field in instance._meta.model.get_embedding_fields():
+            value = field.get_value(instance)
+            if isinstance(value, str):
+                values.append(value)
+            else:
+                values.append("\n".join(value))
 
-    class Meta:
-        abstract = True
+        text = "\n".join(values)
+        splitter = RecursiveCharacterTextSplitter(chunk_size=EMBEDDING_LENGTH_CHARS)
+        return splitter.split_text(text)
 
-    @classmethod
-    def get_embedding_fields(cls) -> List["EmbeddingField"]:
-        embedding_fields = {}
-        for field in cls.embedding_fields:
-            embedding_fields[(type(field), field.field_name)] = field
+    def _existing_embeddings_match(
+        self, embeddings: Iterable[Embedding], splits: List[str]
+    ) -> bool:
+        if not embeddings:
+            return False
 
-        return list(embedding_fields.values())
+        for embedding in embeddings:
+            if embedding.content in splits:
+                splits.remove(embedding.content)
 
-    @classmethod
-    def check(cls, **kwargs):
-        """Extend model checks to include validation of embedding_fields in the
-        same way that Wagtail's Indexed class does it."""
-        errors = super().check(**kwargs)
-        errors.extend(cls._check_embedding_fields(**kwargs))
-        return errors
+        if not splits:
+            return True
 
-    @classmethod
-    def _check_embedding_fields(cls, **kwargs):
-        errors = []
-        for field in cls.get_embedding_fields():
-            message = "{model}.embedding_fields contains non-existent field '{name}'"
-            if not cls._has_field(field.field_name):
-                errors.append(
-                    checks.Warning(
-                        message.format(model=cls.__name__, name=field.field_name),
-                        obj=cls,
-                        id="wagtailai.WA001",
-                    )
-                )
-        return errors
+        return False
 
+    @transaction.atomic
+    def embeddings_for_instance(
+        self,
+        instance: models.Model,
+    ) -> Iterable[Embedding]:
+        splits = self._get_split_content(instance)
+        embeddings = Embedding.get_for_instance(instance)
 
-def get_indexed_models():
-    return [
-        model
-        for model in apps.get_models()
-        if issubclass(model, EmbeddingIndexed)
-        and not model._meta.abstract
-        and model.embedding_fields
-    ]
+        # If the existing embeddings all match on content, we return them
+        # without generating new ones
+        if self._existing_embeddings_match(embeddings, splits):
+            return embeddings
 
+        # Otherwise we delete all the existing embeddings and get new ones
+        Embedding.get_for_instance(instance).delete()
 
-class EmbeddingField(BaseField):
-    pass
+        backend = get_ai_backend()
+        generated_embeddings = []
+        for split in splits:
+            embedding = Embedding.from_instance(instance)
+            embedding.vector = str(backend.get_embedding(split))
+            embedding.content = split
+            embedding.save()
+            generated_embeddings.append(embedding)
 
-
-@transaction.atomic
-def generate_embeddings_for_instance(instance: models.Model) -> List[Embedding]:
-    Embedding.get_for_instance(instance).delete()
-    values = []
-    for field in instance._meta.model.get_embedding_fields():
-        value = field.get_value(instance)
-        if isinstance(value, str):
-            values.append(value)
-        else:
-            values.append("\n".join(value))
-
-    text = "\n".join(values)
-    splitter = RecursiveCharacterTextSplitter(chunk_size=EMBEDDING_LENGTH_CHARS)
-    split_text = splitter.split_text(text)
-
-    backend = get_backend()
-    generated_embeddings = []
-    for split in split_text:
-        embedding = Embedding.build_from_instance(instance)
-        embedding.vector = str(backend.get_embedding(split))
-        embedding.content = split
-        embedding.save()
-        generated_embeddings.append(embedding)
-
-    return generated_embeddings
+        return generated_embeddings
 
 
 def get_embeddings_for_queryset(queryset):

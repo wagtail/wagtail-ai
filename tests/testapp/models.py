@@ -2,10 +2,10 @@ from wagtail.admin.panels import FieldPanel
 from wagtail.fields import RichTextField
 from wagtail.models import Page
 
-from wagtail_ai.embedding import EmbeddingField, EmbeddingIndexed
+from wagtail_ai.index import EmbeddingField, VectorIndexed
 
 
-class ExamplePage(EmbeddingIndexed, Page):
+class ExamplePage(VectorIndexed, Page):
     body = RichTextField()
 
     content_panels = Page.content_panels + [
@@ -15,7 +15,7 @@ class ExamplePage(EmbeddingIndexed, Page):
     embedding_fields = [EmbeddingField("title"), EmbeddingField("body")]
 
 
-class DifferentPage(EmbeddingIndexed, Page):
+class DifferentPage(VectorIndexed, Page):
     body = RichTextField()
 
     content_panels = Page.content_panels + [

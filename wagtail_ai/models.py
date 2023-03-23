@@ -16,7 +16,7 @@ class Embedding(models.Model):
     content_object = GenericForeignKey(
         "content_type", "object_id", for_concrete_model=False
     )
-    vector = models.TextField()
+    vector = models.JSONField()
     content = models.TextField()
 
     @classmethod
@@ -32,7 +32,7 @@ class Embedding(models.Model):
             )
 
     @classmethod
-    def build_from_instance(cls, instance: models.Model) -> "Embedding":
+    def from_instance(cls, instance: models.Model) -> "Embedding":
         content_type = ContentType.objects.get_for_model(instance)
         return Embedding(
             content_type=content_type,

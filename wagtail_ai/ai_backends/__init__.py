@@ -12,12 +12,16 @@ class Backend(Protocol):
     def get_embedding(self, input: str) -> List[float]:
         ...
 
+    @property
+    def embedding_dimensions(self) -> int:
+        ...
 
-def get_backend(alias="default") -> Backend:
+
+def get_ai_backend(alias="default") -> Backend:
     try:
         specified_backend = settings.WAGTAIL_AI_BACKENDS[alias]["BACKEND"]
     except AttributeError:
-        specified_backend = "wagtail_ai.backends.openai.OpenAIBackend"
+        specified_backend = "wagtail_ai.ai_backends.openai.OpenAIBackend"
     except KeyError:
         raise ImproperlyConfigured(
             "The WAGTAIL_AI_BACKENDS setting must be a dictionary of alias-config pairs."

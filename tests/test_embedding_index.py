@@ -9,7 +9,7 @@ from wagtail.models import Page
 from wagtail_ai.embedding import (
     Embedding,
     EmbeddingField,
-    generate_embeddings_for_instance,
+    EmbeddingService,
     get_embeddings_for_queryset,
     get_indexed_models,
 )
@@ -65,27 +65,39 @@ def test_get_indexed_models():
 
 
 @pytest.mark.django_db
-def test_generate_embedding_for_instance():
+def test_embeddings_for_instance():
     instance = ExamplePageFactory.create()
-    generate_embeddings_for_instance(instance)
+    embedding_service = EmbeddingService()
+    embedding_service.embeddings_for_instance(instance)
     assert Embedding.objects.filter(object_id=instance.pk).count() > 0
 
 
 @pytest.mark.django_db
-def test_regenerate_embedding_for_instance_deletes_old_embeddings():
+def test_embedding_for_same_instance_reuses_old_embeddings():
     instance = ExamplePageFactory.create()
-    generate_embeddings_for_instance(instance)
-    first_embedding_pk = Embedding.objects.filter(object_id=instance.pk).first().pk
-    generate_embeddings_for_instance(instance)
+    embedding_service = EmbeddingService()
+    embeddings1 = embedding_service.embeddings_for_instance(instance)
+    embeddings2 = embedding_service.embeddings_for_instance(instance)
 
-    with pytest.raises(Embedding.DoesNotExist):
-        Embedding.objects.get(pk=first_embedding_pk)
+    assert list(embeddings1) == list(embeddings2)
+
+
+@pytest.mark.django_db
+def test_embedding_for_changed_instance_generates_new_embeddings():
+    instance = ExamplePageFactory.create()
+    embedding_service = EmbeddingService()
+    embeddings1 = embedding_service.embeddings_for_instance(instance)
+    instance.body = "New content"
+    embeddings2 = embedding_service.embeddings_for_instance(instance)
+
+    assert list(embeddings1) != list(embeddings2)
 
 
 @pytest.mark.django_db
 def test_get_embeddings_for_queryset():
     instance = ExamplePageFactory.create()
-    embeddings = generate_embeddings_for_instance(instance)
+    embedding_service = EmbeddingService()
+    embeddings = embedding_service.embeddings_for_instance(instance)
     qs = ExamplePage.objects.all()
     assert list(get_embeddings_for_queryset(qs)) == embeddings
 
@@ -94,8 +106,9 @@ def test_get_embeddings_for_queryset():
 def test_get_embeddings_for_queryset_only_returns_embeddings_for_given_model():
     instance = ExamplePageFactory.create()
     instance2 = DifferentPageFactory.create()
-    embeddings = generate_embeddings_for_instance(instance)
-    generate_embeddings_for_instance(instance2)
+    embedding_service = EmbeddingService()
+    embeddings = embedding_service.embeddings_for_instance(instance)
+    embedding_service.embeddings_for_instance(instance2)
     qs = ExamplePage.objects.all()
     assert list(get_embeddings_for_queryset(qs)) == list(embeddings)
 
@@ -104,7 +117,8 @@ def test_get_embeddings_for_queryset_only_returns_embeddings_for_given_model():
 def test_get_embeddings_for_queryset_on_parent_returns_embeddings_for_children():
     instance = ExamplePageFactory.create()
     instance2 = DifferentPageFactory.create()
-    generate_embeddings_for_instance(instance)
-    generate_embeddings_for_instance(instance2)
+    embedding_service = EmbeddingService()
+    embedding_service.embeddings_for_instance(instance)
+    embedding_service.embeddings_for_instance(instance2)
     qs = Page.objects.all()
     assert list(get_embeddings_for_queryset(qs)) == list(Embedding.objects.all())
