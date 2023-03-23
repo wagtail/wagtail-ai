@@ -45,6 +45,10 @@ testing = [
     "wagtail-factories>=4.0.0",
     "factory-boy>=3.2.1"
 ]
+docs = [
+    "mkdocs>=1.4.2",
+    "mkdocs-material>=9.1.3"
+]
 
 [project.urls]
 Home = "https://github.com/tomusher/wagtail-ai"
