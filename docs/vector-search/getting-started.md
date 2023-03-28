@@ -1,21 +1,21 @@
 # Getting Started
 
-Wagtail AI's vector search feature combines integrations with AI 'embedding' APIs and vector database to give you the tools to perform advanced AI-powered querying across your content.
+Wagtail AI's vector search feature combines integrations with AI 'embedding' APIs and vector databases to give you the tools to perform advanced AI-powered querying across your content.
 
 To do this;
 
 * You set up the models/pages you want to be searchable
-* Wagtail AI splits the content of those pages up in to chunks and fetches embeddings from your configured AI backend.
+* Wagtail AI splits the content of those pages into chunks and fetches embeddings from your configured AI backend.
 * It then stores all those embeddings in your configured vector database.
 * When querying, your query is converted to an embedding and, using the vector database, is compared to the embeddings for all your existing content.
 
 ## What's an Embedding?
 An embedding is a big list (vector) of floating point numbers that represent your content in some way. Models like OpenAI's `ada-002` can take content and turn it in to a list of numbers such that content that is similar will have a similar list of numbers.
 
-This way, when you provide a query, we can use the same model to get an embedding of that query and do some math (cosine similarity) to see what content in your vector database is similar to that query.
+This way, when you provide a query, we can use the same model to get an embedding of that query and do some maths (cosine similarity) to see what content in your vector database is similar to your query.
 
 ## Indexing Your Models/Pages
-To index your models, subclass Wagtail AI's `VectorIndexed` model, specifying the fields you want to be used as part of your embedding:
+To index your models, subclass Wagtail AI's `VectorIndexed` model, specifying the fields to be used as part of your embedding:
 
 ```python
 from django.db import models
