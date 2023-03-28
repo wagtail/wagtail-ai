@@ -20,8 +20,10 @@ class OpenAIBackend:
                 "The OPENAI_API_KEY setting must be configured to use Wagtail AI"
             )
 
-    def prompt(self, prompt: str) -> str:
-        return self.client.chat(prompt)
+    def prompt(self, *, system_messages: List[str], user_messages: List[str]) -> str:
+        return self.client.chat(
+            system_messages=system_messages, user_messages=user_messages
+        )
 
     def get_embedding(self, input: str) -> List[float]:
         return self.client.get_embedding(input)

@@ -1,4 +1,4 @@
-from typing import List, Protocol
+from typing import List, Optional, Protocol
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -6,7 +6,9 @@ from django.utils.module_loading import import_string
 
 
 class Backend(Protocol):
-    def prompt(self, prompt: str) -> str:
+    def prompt(
+        self, *, system_messages: Optional[List[str]] = None, user_messages: List[str]
+    ) -> str:
         ...
 
     def get_embedding(self, input: str) -> List[float]:

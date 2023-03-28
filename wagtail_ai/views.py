@@ -34,7 +34,7 @@ def _replace_handler(prompt: Prompt, text: str):
     for split in texts:
         full_prompt = "\n".join([prompt.prompt, split])
         backend = get_ai_backend()
-        message = backend.prompt(full_prompt)
+        message = backend.prompt(user_messages=[full_prompt])
         # Remove extra blank lines returned by the API
         message = os.linesep.join([s for s in message.splitlines() if s])
         text = text.replace(split, message)
@@ -49,7 +49,7 @@ def _append_handler(prompt: Prompt, text: str):
 
     full_prompt = "\n".join([prompt.prompt, text])
     backend = get_ai_backend()
-    message = backend.prompt(full_prompt)
+    message = backend.prompt(user_messages=[full_prompt])
     # Remove extra blank lines returned by the API
     message = os.linesep.join([s for s in message.splitlines() if s])
 

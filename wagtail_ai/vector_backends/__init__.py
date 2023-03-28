@@ -1,15 +1,16 @@
 from dataclasses import dataclass
-from typing import Generic, List, Type, TypeVar
+from typing import TYPE_CHECKING, Generic, List, Type, TypeVar
 
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils.module_loading import import_string
 
 from wagtail_ai.ai_backends import get_ai_backend
-from wagtail_ai.embedding import EmbeddingService
-from wagtail_ai.index import VectorIndex, get_vector_indexes
+
+
+if TYPE_CHECKING:
+    from wagtail_ai.index import VectorIndex
 
 
 ConfigClass = TypeVar("ConfigClass")
@@ -47,22 +48,25 @@ class Backend(Generic[ConfigClass]):
             )
         return super().__init_subclass__(**kwargs)
 
-    def _get_instance_embeddings(self, instance: models.Model):
-        service = EmbeddingService()
-        return service.embeddings_for_instance(instance)
+    def _get_indexes(self) -> List["VectorIndex"]:
+        from wagtail_ai.index import get_vector_indexes
 
-    def _get_instance_metadata(self, instance: models.Model):
-        content_type = ContentType.objects.get_for_model(instance)
-        return {"content_type": content_type.pk, "object_id": instance.pk}
-
-    def _get_indexes(self) -> List[Type[VectorIndex]]:
         return get_vector_indexes()
 
-    def search(self, query, queryset):
+    def search(self, index_class, query_embedding, *, limit: int = 5) -> List[dict]:
+        raise NotImplementedError
+
+    def _build_index(self, index: "VectorIndex"):
         raise NotImplementedError
 
     def rebuild_indexes(self):
-        raise NotImplementedError
+        for index in self._get_indexes():
+            try:
+                index._pre_build_index()
+            except AttributeError:
+                # It's not a problem if the index doesn't specify a `pre_build_index` hook
+                pass
+            self._build_index(index)
 
 
 def get_vector_backend_config():
@@ -71,9 +75,7 @@ def get_vector_backend_config():
     except AttributeError:
         vector_backends = {
             "default": {
-                "BACKEND": "wagtail_ai.vector_backends.qdrant.QdrantBackend",
-                "API_KEY": "",
-                "HOST": "",
+                "BACKEND": "wagtail_ai.vector_backends.numpy.NumpyBackend",
             }
         }
 
@@ -95,6 +97,7 @@ def get_vector_backend(alias="default") -> Backend:
             f"Couldn't import backend {config['BACKEND']}: {e}"
         )
 
-    config.pop("BACKEND")
+    params = config.copy()
+    params.pop("BACKEND")
 
-    return imported(config)
+    return imported(params)

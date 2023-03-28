@@ -12,6 +12,7 @@ class ExamplePageFactory(wagtail_factories.PageFactory):
     class Meta:
         model = ExamplePage
 
+    title = factory.Faker("sentence")
     body = factory.LazyFunction(lambda: "\n".join(fake.paragraphs()))
 
 

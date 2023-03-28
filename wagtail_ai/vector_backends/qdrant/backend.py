@@ -1,8 +1,13 @@
-from dataclasses import dataclass
-from typing import Optional, Type
+from dataclasses import asdict, dataclass
+from typing import TYPE_CHECKING, List, Optional
 
-from wagtail_ai.vector_backends import Backend, VectorIndex
-from wagtail_ai.vector_backends.qdrant.client import QdrantClient
+from wagtail_ai.vector_backends import Backend
+
+from .client import QdrantClient
+
+
+if TYPE_CHECKING:
+    from wagtail_ai.index import VectorIndex
 
 
 @dataclass
@@ -18,29 +23,30 @@ class QdrantBackend(Backend[BackendConfig]):
         super().__init__(config)
         self.client = QdrantClient(host=self.config.HOST, api_key=self.config.API_KEY)
 
-    def _build_index(self, index_class: Type[VectorIndex]):
-        index = index_class()
-        index_name = index_class.__name__
+    def _build_index(self, index: "VectorIndex"):
+        index_name = index.get_name()
         self.client.delete_collection(name=index_name)
         self.client.create_collection(
             name=index_name,
             vector_size=self.ai_backend.embedding_dimensions,
         )
 
-        for entry in index.get_entries():
+        for document in index.get_documents():
             self.client.add_point(
                 collection_name=index_name,
-                id=entry["id"],
-                vector=entry["vector"],
-                payload=entry["metadata"],
+                id=document.id,
+                vector=document.vector,
+                payload=asdict(document.metadata),
             )
 
     def rebuild_indexes(self):
-        for index_class in self._get_indexes():
-            self._build_index(index_class)
+        for index in self._get_indexes():
+            self._build_index(index)
 
-    def search(self, index_class, query):
-        query_embedding = self.ai_backend.get_embedding(query)
-        return self.client.search(
-            collection_name=index_class.__name__, vector=query_embedding
+    def search(
+        self, index: "VectorIndex", query_embedding, *, limit: int = 5
+    ) -> List[dict]:
+        similar_documents = self.client.search(
+            collection_name=index.get_name(), vector=query_embedding, limit=limit
         )
+        return [doc["payload"] for doc in similar_documents]

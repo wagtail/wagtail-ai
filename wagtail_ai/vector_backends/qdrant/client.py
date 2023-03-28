@@ -13,9 +13,8 @@ class QdrantClient:
         if self.api_key:
             headers = {"api-key": self.api_key}
 
-        return requests.request(
-            method, f"{self.host}{path}", headers=headers, json=json
-        ).json()
+        res = requests.request(method, f"{self.host}{path}", headers=headers, json=json)
+        return res.json()
 
     def create_collection(self, *, name: str, vector_size: int):
         self.do_request(
@@ -33,12 +32,20 @@ class QdrantClient:
         self.do_request(
             f"/collections/{collection_name}/points",
             "PUT",
-            {"id": id, "payload": payload, "vector": vector},
+            {"points": [{"id": id, "payload": payload, "vector": vector}]},
         )
 
-    def search(self, *, collection_name: str, vector: list[float], filter: dict = None):
-        return self.do_request(
+    def search(
+        self,
+        *,
+        collection_name: str,
+        vector: list[float],
+        limit: int = 5,
+        filter: Optional[dict] = None,
+    ):
+        res = self.do_request(
             f"/collections/{collection_name}/points/search",
             "POST",
-            {"vector": vector, "filter": filter},
-        )["result"]
+            {"vector": vector, "filter": filter, "limit": limit, "with_payload": True},
+        )
+        return res["result"]

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import requests
 
@@ -14,12 +14,19 @@ class OpenAIClient:
         headers = {"Authorization": f"Bearer {self.api_key}"}
         return requests.post(f"{BASE_URL}{path}", headers=headers, json=json).json()
 
-    def chat(self, prompt: str) -> str:
+    def chat(
+        self, *, system_messages: Optional[List[str]] = None, user_messages: List[str]
+    ) -> str:
+        system_messages = system_messages if system_messages else []
+        all_messages = [
+            {"role": "system", "content": message} for message in system_messages
+        ] + [{"role": "user", "content": prompt} for prompt in user_messages]
+
         res = self.do_request(
             "chat/completions",
             {
                 "model": "gpt-3.5-turbo",
-                "messages": [{"role": "user", "content": prompt}],
+                "messages": all_messages,
             },
         )
         return res["choices"][0]["message"]["content"]
