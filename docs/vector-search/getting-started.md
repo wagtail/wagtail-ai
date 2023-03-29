@@ -1,13 +1,13 @@
 # Getting Started
 
-Wagtail AI's vector search feature combines integrations with AI 'embedding' APIs and vector databases to give you the tools to perform advanced AI-powered querying across your content.
+Wagtail AI's vector search feature combines integrations with AI 'embedding' APIs and vector databases to provide tools to perform advanced AI-powered querying across content.
 
 To do this;
 
-* You set up the models/pages you want to be searchable
-* Wagtail AI splits the content of those pages into chunks and fetches embeddings from your configured AI backend.
-* It then stores all those embeddings in your configured vector database.
-* When querying, your query is converted to an embedding and, using the vector database, is compared to the embeddings for all your existing content.
+* You set up models/pages to be searchable.
+* Wagtail AI splits the content of those pages into chunks and fetches embeddings from the configured AI backend.
+* It then stores all those embeddings in the configured vector database.
+* When querying, the query is converted to an embedding and, using the vector database, is compared to the embeddings for all your existing content.
 
 ## What's an Embedding?
 An embedding is a big list (vector) of floating point numbers that represent your content in some way. Models like OpenAI's `ada-002` can take content and turn it in to a list of numbers such that content that is similar will have a similar list of numbers.
@@ -29,41 +29,70 @@ class MyPage(VectorIndexed, Page):
     embedding_fields = [EmbeddingField("title"), EmbeddingField("body")]
 ```
 
-An index will be generated for your model which can be accessed using the `vector_index()` classmethod, e.g.:
+A `ModelVectorIndex` will be generated for your model which can be accessed using the `get_vector_index()` classmethod, e.g.:
+
+```python
+index = MyPage.get_vector_index()
+```
+
+## Updating indexes
+
+To update all indexes, run the `update_vector_indexes` management command:
 
 ```
-index = MyPage.vector_index()
+python manage.py update_vector_indexes
 ```
 
-This index can be used to query the database:
+To skip the prompt, use the `--noinput` flag.
 
-```
+## Natural language question/answers
+
+The `query` method can be used to ask natural language questions:
+
+```python
 index.query("What is the airspeed velocity of an unladen swallow?")
 
-{
-    "response": "What do you mean? An African or a European swallow?",
-    "sources": [MyPage(1)]
-}
+QueryResponse(
+    response="What do you mean? An African or a European swallow?", sources=[MyPage(1)]
+)
 ```
 
-or to retrieve similar content:
+Behind the scenes, this:
 
+1. Converts the query in to an embedding
+2. Uses the vector backend to find content in the same index that is similar
+3. Merges all the matched content in to a single 'context' string
+4. Passes the 'context' string along with the original query to the AI backend.
+
+It returns a `QueryResponse` containing the `response` from the AI backend, and `sources`,
+a list of objects that were used as context.
+
+## Getting similar content
+
+The `similar` index method can be used to find model instances that are similar to another instance:
+
+```python
+index.similar(my_model_instance)
+
+[MyPage(1), MyPage(2)]
 ```
-page = MyPage.objects.create()
-index.similar(page)
 
-[MyPage(2), MyPage(3)]
+The passed model instance doesn't have to be in the same index, but it must be a subclass of `VectorIndexed`.
+
+This works by:
+
+1. Generating (or retrieving existing) embeddings for the instance
+2. Using the vector database to find matching embeddings
+3. Returning the original model instances that were used to generate these matching embeddings
+
+## Searching content
+
+The `search` index method can be used to use natural language to search content in the index.
+
+```python
+index.search("Bring me a shrubbery")
+
+[MyPage(1), MyPage(2)]
 ```
 
-
-## Indexing across models
-If you want to be able to query across multiple models, or on a subset of models, they need to be in a vector index together.
-
-To do this, you can define and register your own `ModelVectorIndex`:
-
-```
-from wagtail_ai.index import ModelVectorIndex
-
-class MyModelVectorIndex(ModelVectorIndex):
-    querysets = [MyModel.objects.all(), MyOtherModel.objects.filter(name__startswith="AI: ")]
-```
+This is similar to querying content, but it only returns content matches without a natural language response.
