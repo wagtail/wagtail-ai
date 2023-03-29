@@ -1,6 +1,6 @@
+from dataclasses import dataclass
 from typing import List
 
-from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 from .openai import OpenAIClient
@@ -10,14 +10,21 @@ from .openai import OpenAIClient
 EMBEDDING_DIMENSIONS = 1536
 
 
+@dataclass
+class BackendConfig:
+    API_KEY: str = ""
+
+
 class OpenAIBackend:
-    def __init__(self):
+    config_class: BackendConfig
+
+    def __init__(self, config: BackendConfig):
         try:
-            api_key = settings.OPENAI_API_KEY
+            api_key = config.API_KEY
             self.client = OpenAIClient(api_key=api_key)
         except AttributeError:
             raise ImproperlyConfigured(
-                "The OPENAI_API_KEY setting must be configured to use Wagtail AI"
+                "The API_KEY setting must be configured to use OpenAI"
             )
 
     def prompt(self, *, system_messages: List[str], user_messages: List[str]) -> str:

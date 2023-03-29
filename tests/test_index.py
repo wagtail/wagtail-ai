@@ -79,7 +79,7 @@ def test_get_split_content_doesnt_split_when_smaller_than_target_length():
 
 @pytest.mark.django_db
 def test_get_split_content_splits_longer_content():
-    content_length = 380
+    content_length = 340
     split_length = 200
     body = fake.text(max_nb_chars=content_length)[:content_length]
     instance = ExamplePageFactory.create(title="a", body=body)

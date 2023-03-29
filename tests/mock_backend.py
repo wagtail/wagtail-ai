@@ -2,6 +2,9 @@ from typing import List
 
 
 class MockBackend:
+    def __init__(self, config):
+        pass
+
     def prompt(self, prompt: str) -> str:
         return "AI! Don't talk to me about AI!"
 
