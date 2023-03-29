@@ -52,47 +52,6 @@ If you're interested in working on these things, please do!
 
 * Wagtail 4.0, 4.1 and 4.2
 
-## Installation
-
-- `python -m pip install wagtail-ai`
-- Add `wagtail_ai` to your `INSTALLED_APPS`
-- Add an `OPENAI_API_KEY = "{api_key}"` to your Django settings file, replacing `{api_key}` with your OpenAI API key.
-
-## Configuration
-
-### Adding Your Own Prompts
-
-To add custom prompts, add the `WAGTAIL_AI_PROMPTS` setting to your settings file. This is a list of all the prompts to enable, where each prompt is a dictionary in the form:
-
-```python
-{
-    "label": "Short Label",
-    "description": "More complete description",
-    "prompt": "The prompt to be sent before your text to the OpenAI API",
-    "method": "replace/append",
-}
-```
-
-where `method` is either:
-
-* `replace` if the AI response should replace the text
-* `append` if the response should be appended to the end of the existing text
-
-e.g. to extend the default prompts with your own, add:
-
-```python
-import wagtail_ai
-
-WAGTAIL_AI_PROMPTS = wagtail_ai.DEFAULT_PROMPTS + [
-    {
-        "label": "Simplify",
-        "description": "Rewrite your text in a simpler form",
-        "prompt": "Rewrite the following text to make it simper and more succinct",
-        "method": "replace",
-    }
-]
-```
-
 ## Contributing
 
 ### Install
