@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Iterable, List, NamedTuple, Type
+from typing import Any, Iterable, List, Type
 
 from django.apps import apps
 from django.contrib.contenttypes.fields import GenericRelation
@@ -133,9 +133,14 @@ def get_indexed_models():
     ]
 
 
-# Type for a response to the VectorIndex `query` method which includes the response string
-# and a list of sources that were used to generate the response
-QueryResponse = NamedTuple("QueryResponse", [("response", str), ("sources", List[Any])])
+@dataclass
+class QueryResponse:
+    """Represents a response to the VectorIndex `query` method,
+    including a response string and a list of sources that were used to generate the response
+    """
+
+    response: str
+    sources: List[Any]
 
 
 @dataclass
@@ -220,13 +225,17 @@ class ModelVectorIndex(VectorIndex):
         response = self.ai_backend.prompt(
             system_messages=[], user_messages=user_messages
         )
-        return QueryResponse(response, sources)
+        return QueryResponse(response=response, sources=sources)
 
     def similar(self, instance: "VectorIndexed") -> List[models.Model]:
-        query_embedding = self.embedding_service.embeddings_for_instance(instance)
-        similar_documents = self.vector_backend.search(self, query_embedding)
+        instance_embeddings = self.embedding_service.embeddings_for_instance(instance)
+        similar_documents = []
+        for embedding in instance_embeddings:
+            similar_documents += self.vector_backend.search(self, embedding)
+
         return [
-            self._get_instance_from_backend_metadata(doc) for doc in similar_documents
+            self._get_instance_from_backend_metadata(doc)
+            for doc in set(similar_documents)
         ]
 
     def search(self, query: str, *, limit: int = 5) -> List[models.Model]:
