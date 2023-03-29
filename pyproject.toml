@@ -15,7 +15,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -34,7 +33,7 @@ dependencies = [
     "Django>=3.0",
     "Wagtail>=4.0",
     "langchain>=0.0.106",
-    "tiktoken>=0.3.0"
+    "tiktoken>=0.3.3"
 ]
 [project.optional-dependencies]
 numpy = [
