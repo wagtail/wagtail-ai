@@ -1,0 +1,4 @@
+nav:
+  - installation.md
+  - editor-integration.md
+  - vector-search
