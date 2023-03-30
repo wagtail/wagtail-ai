@@ -16,11 +16,12 @@ class BackendConfig:
 
 
 class OpenAIBackend:
-    config_class: BackendConfig
+    config_class = BackendConfig
 
-    def __init__(self, config: BackendConfig):
+    def __init__(self, config: dict):
         try:
-            api_key = config.API_KEY
+            self.config = self.config_class(**config)
+            api_key = self.config.API_KEY
             self.client = OpenAIClient(api_key=api_key)
         except AttributeError:
             raise ImproperlyConfigured(
