@@ -127,9 +127,7 @@ def get_indexed_models():
     return [
         model
         for model in apps.get_models()
-        if issubclass(model, VectorIndexed)
-        and not model._meta.abstract
-        and model.embedding_fields
+        if issubclass(model, VectorIndexed) and not model._meta.abstract
     ]
 
 
@@ -207,11 +205,11 @@ class ModelVectorIndex(VectorIndex):
                     )
 
     def _get_instance_from_backend_metadata(self, metadata: dict) -> models.Model:
-        ct = ContentType.objects.get_for_id(metadata["content_type"])
+        ct = ContentType.objects.get_for_id(metadata["content_type_id"])
         return ct.get_object_for_this_type(pk=metadata["object_id"])
 
     def query(self, query) -> QueryResponse:
-        query_embedding = self.embedding_service.embedding_for_string(query)
+        query_embedding = self.embedding_service.embeddings_for_strings([query])[0]
         similar_documents = self.vector_backend.search(self, query_embedding)
         sources = [
             self._get_instance_from_backend_metadata(doc) for doc in similar_documents
@@ -239,7 +237,7 @@ class ModelVectorIndex(VectorIndex):
         ]
 
     def search(self, query: str, *, limit: int = 5) -> List[models.Model]:
-        query_embedding = self.embedding_service.embedding_for_string(query)
+        query_embedding = self.embedding_service.embeddings_for_strings([query])[0]
         similar_documents = self.vector_backend.search(
             self, query_embedding, limit=limit
         )

@@ -29,8 +29,8 @@ class ModelEmbeddingService:
 
         return False
 
-    def embedding_for_string(self, string: str) -> List[float]:
-        return self.ai_backend.get_embedding(string)
+    def embeddings_for_strings(self, strings: List[str]) -> List[List[float]]:
+        return self.ai_backend.get_embeddings(strings)
 
     @transaction.atomic
     def embeddings_for_instance(
@@ -48,10 +48,11 @@ class ModelEmbeddingService:
         # Otherwise we delete all the existing embeddings and get new ones
         embeddings.delete()
 
+        embedding_vectors = self.embeddings_for_strings(splits)
         generated_embeddings = []
-        for split in splits:
+        for idx, split in enumerate(splits):
             embedding = Embedding.from_instance(instance)
-            embedding.vector = self.embedding_for_string(split)
+            embedding.vector = embedding_vectors[idx]
             embedding.content = split
             embedding.save()
             generated_embeddings.append(embedding)

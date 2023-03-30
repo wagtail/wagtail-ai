@@ -31,12 +31,15 @@ class OpenAIClient:
         )
         return res["choices"][0]["message"]["content"]
 
-    def get_embedding(self, input: str) -> List[float]:
+    def get_embeddings(self, inputs: List[str]) -> List[List[float]]:
+        if not inputs:
+            return []
+
         res = self.do_request(
             "embeddings",
             {
                 "model": "text-embedding-ada-002",
-                "input": input,
+                "input": inputs,
             },
         )
-        return res["data"][0]["embedding"]
+        return [output["embedding"] for output in res["data"]]

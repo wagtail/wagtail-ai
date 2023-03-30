@@ -22,7 +22,7 @@ class Backend(Protocol[ConfigClass]):
     ) -> str:
         ...
 
-    def get_embedding(self, input: str) -> List[float]:
+    def get_embeddings(self, inputs: List[str]) -> List[List[float]]:
         ...
 
     @property

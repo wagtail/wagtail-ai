@@ -33,8 +33,8 @@ class OpenAIBackend:
             system_messages=system_messages, user_messages=user_messages
         )
 
-    def get_embedding(self, input: str) -> List[float]:
-        return self.client.get_embedding(input)
+    def get_embeddings(self, inputs: List[str]) -> List[List[float]]:
+        return self.client.get_embeddings(inputs)
 
     @property
     def embedding_dimensions(self) -> int:
