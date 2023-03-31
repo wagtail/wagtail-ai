@@ -231,19 +231,21 @@ class ModelVectorIndex(VectorIndex):
         for embedding in instance_embeddings:
             similar_documents += self.vector_backend.search(self, embedding)
 
-        return [
-            self._get_instance_from_backend_metadata(doc)
-            for doc in set(similar_documents)
-        ]
+        return list(
+            {
+                self._get_instance_from_backend_metadata(doc)
+                for doc in set(similar_documents)
+            }
+        )
 
     def search(self, query: str, *, limit: int = 5) -> List[models.Model]:
         query_embedding = self.embedding_service.embeddings_for_strings([query])[0]
         similar_documents = self.vector_backend.search(
             self, query_embedding, limit=limit
         )
-        return [
-            self._get_instance_from_backend_metadata(doc) for doc in similar_documents
-        ]
+        return list(
+            {self._get_instance_from_backend_metadata(doc) for doc in similar_documents}
+        )
 
 
 def get_vector_indexes() -> List[VectorIndex]:
