@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Generic, Iterable, List, Type, TypeVar
 
 from django.apps import apps
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.core import checks
@@ -254,19 +255,23 @@ class ModelVectorIndex(VectorIndex[models.Model]):
     def query(self, query):
         query_embedding = self.embedding_service.embeddings_for_strings([query])[0]
         similar_documents = self.backend_index.similarity_search(query_embedding)
-        sources = [
+        sources = {
             self._get_instance_from_response_document(doc) for doc in similar_documents
-        ]
+        }
         merged_context = "\n".join(doc.metadata["content"] for doc in similar_documents)
+        prompt = (
+            getattr(settings, "WAGTAIL_AI_QUERY_PROMPT", None)
+            or "You are a helpful assistant. Use the following context to answer the question. Don't mention the context in your answer."
+        )
         user_messages = [
-            "You are a helpful assistant. Use the following context to answer the question. Don't mention the context in your answer.",
+            prompt,
             merged_context,
             query,
         ]
         response = self.ai_backend.prompt(
             system_messages=[], user_messages=user_messages
         )
-        return QueryResponse(response=response, sources=sources)
+        return QueryResponse(response=response, sources=list(sources))
 
     def similar(self, instance: "VectorIndexed") -> List[models.Model]:
         instance_embeddings = self.embedding_service.embeddings_for_instance(instance)

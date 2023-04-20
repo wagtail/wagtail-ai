@@ -165,6 +165,7 @@ WAGTAIL_AI_BACKENDS = {
         "API_KEY": os.environ.get("OPENAI_API_KEY"),
     }
 }
+
 WAGTAIL_AI_VECTOR_BACKENDS = {
     "default": {
         "BACKEND": "wagtail_ai.vector_backends.numpy.NumpyBackend",
