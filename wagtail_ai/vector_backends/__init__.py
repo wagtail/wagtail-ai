@@ -20,7 +20,7 @@ class InvalidVectorBackendError(ImproperlyConfigured):
     pass
 
 
-@dataclass
+@dataclass(frozen=True, eq=True)
 class SearchResponseDocument:
     id: Union[str, int]
     metadata: dict
