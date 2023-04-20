@@ -282,7 +282,7 @@ class ModelVectorIndex(VectorIndex[models.Model]):
         return list(
             {
                 self._get_instance_from_response_document(doc)
-                for doc in set(similar_documents)
+                for doc in similar_documents
             }
         )
 
