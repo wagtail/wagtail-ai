@@ -277,7 +277,7 @@ class ModelVectorIndex(VectorIndex[models.Model]):
         instance_embeddings = self.embedding_service.embeddings_for_instance(instance)
         similar_documents = []
         for embedding in instance_embeddings:
-            similar_documents += self.backend_index.similarity_search(embedding)
+            similar_documents += self.backend_index.similarity_search(embedding.vector)
 
         return list(
             {
