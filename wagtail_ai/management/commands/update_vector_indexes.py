@@ -2,7 +2,7 @@ import inspect
 
 from django.core.management.base import BaseCommand
 
-from wagtail_ai.vector_backends import get_vector_backend
+from wagtail_ai.index import get_vector_indexes
 
 
 class Command(BaseCommand):
@@ -38,7 +38,8 @@ class Command(BaseCommand):
 
         if confirm == "yes":
             self.stdout.write("Rebuilding vector indexes")
-            backend = get_vector_backend()
-            backend.rebuild_indexes()
+            indexes = get_vector_indexes()
+            for _, index in indexes.items():
+                index.build_index()
         else:
             self.stdout.write("Index update cancelled")

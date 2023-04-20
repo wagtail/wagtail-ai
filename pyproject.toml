@@ -39,6 +39,12 @@ dependencies = [
 numpy = [
     "numpy>=1.24.2",
 ]
+qdrant = [
+    "qdrant-client>=1.1.4",
+]
+weaviate = [
+    "weaviate-client>=3.15.6",
+]
 testing = [
     "dj-database-url==1.2.0",
     "pre-commit>=2.21.0",

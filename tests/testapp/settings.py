@@ -159,11 +159,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "test-media")
 
 WAGTAIL_SITE_NAME = "Wagtail AI test site"
 
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+WAGTAIL_AI_BACKENDS = {
+    "default": {
+        "BACKEND": "wagtail_ai.ai_backends.openai.OpenAIBackend",
+        "API_KEY": os.environ.get("OPENAI_API_KEY"),
+    }
+}
 WAGTAIL_AI_VECTOR_BACKENDS = {
     "default": {
-        "BACKEND": "wagtail_ai.vector_backends.qdrant.QdrantBackend",
-        "API_KEY": os.environ.get("QDRANT_API_KEY"),
-        "HOST": os.environ.get("QDRANT_HOST"),
+        "BACKEND": "wagtail_ai.vector_backends.numpy.NumpyBackend",
+        #        "BACKEND": "wagtail_ai.vector_backends.qdrant.QdrantBackend",
+        #        "API_KEY": os.environ.get("QDRANT_API_KEY"),
+        #        "HOST": os.environ.get("QDRANT_HOST"),
     }
 }

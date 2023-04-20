@@ -10,10 +10,11 @@ from wagtail_ai.ai_backends import get_ai_backend
 
 
 if TYPE_CHECKING:
-    from wagtail_ai.index import VectorIndex
+    from wagtail_ai.index import Document
 
 
 ConfigClass = TypeVar("ConfigClass")
+IndexClass = TypeVar("IndexClass", bound="Index")
 
 
 class InvalidVectorBackendError(ImproperlyConfigured):
@@ -26,8 +27,23 @@ class QueryResponse:
     sources: List[models.Model]
 
 
-class Backend(Generic[ConfigClass]):
+class Index:
+    def __init__(self, index_name):
+        self.index_name = index_name
+
+    def upsert(self, *, documents: List["Document"]):
+        raise NotImplementedError
+
+    def delete(self, *, document_ids: List[str]):
+        raise NotImplementedError
+
+    def similarity_search(self, query_vector, *, limit: int = 5) -> List[dict]:
+        raise NotImplementedError
+
+
+class Backend(Generic[ConfigClass, IndexClass]):
     config_class: Type[ConfigClass]
+    index_class: Type[IndexClass]
 
     def __init__(self, config):
         try:
@@ -37,36 +53,25 @@ class Backend(Generic[ConfigClass]):
         except TypeError as e:
             raise ImproperlyConfigured(
                 f"Missing configuration settings for the vector backend: {e}"
-            )
+            ) from e
 
     def __init_subclass__(cls, **kwargs):
         try:
             cls.config_class
-        except AttributeError:
+        except AttributeError as e:
             raise AttributeError(
                 f"Vector backend {cls.__name__} must specify a `config_class` class attribute"
-            )
+            ) from e
         return super().__init_subclass__(**kwargs)
 
-    def _get_indexes(self) -> List["VectorIndex"]:
-        from wagtail_ai.index import get_vector_indexes
-
-        return get_vector_indexes()
-
-    def search(self, index_class, query_embedding, *, limit: int = 5) -> List[dict]:
+    def get_index(self, index_name) -> IndexClass:
         raise NotImplementedError
 
-    def _build_index(self, index: "VectorIndex"):
+    def create_index(self, index_name, *, vector_size: int) -> IndexClass:
         raise NotImplementedError
 
-    def rebuild_indexes(self):
-        for index in self._get_indexes():
-            try:
-                index._pre_build_index()
-            except AttributeError:
-                # It's not a problem if the index doesn't specify a `pre_build_index` hook
-                pass
-            self._build_index(index)
+    def delete_index(self, index_name):
+        raise NotImplementedError
 
 
 def get_vector_backend_config():
@@ -82,20 +87,22 @@ def get_vector_backend_config():
     return vector_backends
 
 
-def get_vector_backend(alias="default") -> Backend:
+def get_vector_backend(*, alias="default") -> Backend:
     backend_config = get_vector_backend_config()
 
     try:
         config = backend_config[alias]
     except KeyError as e:
-        raise InvalidVectorBackendError(f"No vector backend with alias '{alias}': {e}")
+        raise InvalidVectorBackendError(
+            f"No vector backend with alias '{alias}': {e}"
+        ) from e
 
     try:
         imported = import_string(config["BACKEND"])
     except ImportError as e:
         raise InvalidVectorBackendError(
             f"Couldn't import backend {config['BACKEND']}: {e}"
-        )
+        ) from e
 
     params = config.copy()
     params.pop("BACKEND")

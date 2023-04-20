@@ -28,7 +28,7 @@ def test_get_vector_indexes():
         "DifferentPageIndex",
         "MultiplePageVectorIndex",
     ]
-    index_class_names = [index.__class__.__name__ for index in indexes]
+    index_class_names = [index.__class__.__name__ for index in indexes.values()]
     assert set(index_class_names) == set(expected_class_names)
 
 
@@ -40,7 +40,7 @@ def test_indexed_model_has_vector_index():
 def test_register_custom_vector_index():
     custom_index = type("MyVectorIndex", (VectorIndex,), {})
     registry.register()(custom_index)
-    index_classes = [index.__class__ for index in get_vector_indexes()]
+    index_classes = [index.__class__ for index in get_vector_indexes().values()]
     assert custom_index in index_classes
 
 
@@ -96,3 +96,14 @@ def test_get_split_content_adds_important_field_to_each_split(patch_embedding_fi
         instance = ExamplePageFactory.create(title="Important Title", body=body)
         splits = instance.get_split_content(split_length=50, split_overlap=0)
         assert all(split.startswith(instance.title) for split in splits)
+
+
+@pytest.mark.django_db
+def test_index_get_documents_returns_at_least_one_document_per_page():
+    pages = ExamplePageFactory.create_batch(10)
+    index = get_vector_indexes()["ExamplePageIndex"]
+    index.build_index()
+    documents = index.get_documents()
+    found_pages = {document.metadata.object_id for document in documents}
+
+    assert found_pages == {str(page.pk) for page in pages}

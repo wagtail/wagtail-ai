@@ -6,13 +6,32 @@ import requests
 BASE_URL = "https://api.openai.com/v1/"
 
 
+class OpenAIApiException(Exception):
+    pass
+
+
+class OpenAIAuthException(OpenAIApiException):
+    pass
+
+
 class OpenAIClient:
     def __init__(self, api_key: str):
         self.api_key = api_key
 
     def do_request(self, path: str, json: dict) -> dict:
         headers = {"Authorization": f"Bearer {self.api_key}"}
-        return requests.post(f"{BASE_URL}{path}", headers=headers, json=json).json()
+        try:
+            res = requests.post(f"{BASE_URL}{path}", headers=headers, json=json)
+            res.raise_for_status()
+            res_json = res.json()
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 401:
+                raise OpenAIAuthException(e.response.json()["error"]["message"]) from e
+            raise OpenAIApiException(e.response.json()["error"]["message"]) from e
+        except requests.JSONDecodeError as e:
+            raise OpenAIAuthException("Failed to parse response from OpenAI") from e
+
+        return res_json
 
     def chat(
         self, *, system_messages: Optional[List[str]] = None, user_messages: List[str]
