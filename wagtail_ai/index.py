@@ -13,7 +13,7 @@ from wagtail.search.index import BaseField
 from .ai_backends import get_ai_backend
 from .embedding import ModelEmbeddingService
 from .models import Embedding
-from .vector_backends import get_vector_backend
+from .vector_backends import SearchResponseDocument, get_vector_backend
 
 
 EMBEDDING_SPLIT_LENGTH_CHARS = 800
@@ -243,17 +243,21 @@ class ModelVectorIndex(VectorIndex[models.Model]):
                         ),
                     )
 
-    def _get_instance_from_backend_metadata(self, metadata: dict) -> models.Model:
-        ct = ContentType.objects.get_for_id(metadata["content_type_id"])
-        return ct.get_object_for_this_type(pk=metadata["object_id"])
+    def _get_instance_from_response_document(
+        self, response_document: SearchResponseDocument
+    ) -> models.Model:
+        ct = ContentType.objects.get_for_id(
+            response_document.metadata["content_type_id"]
+        )
+        return ct.get_object_for_this_type(pk=response_document.metadata["object_id"])
 
     def query(self, query):
         query_embedding = self.embedding_service.embeddings_for_strings([query])[0]
         similar_documents = self.backend_index.similarity_search(query_embedding)
         sources = [
-            self._get_instance_from_backend_metadata(doc) for doc in similar_documents
+            self._get_instance_from_response_document(doc) for doc in similar_documents
         ]
-        merged_context = "\n".join(doc["content"] for doc in similar_documents)
+        merged_context = "\n".join(doc.metadata["content"] for doc in similar_documents)
         user_messages = [
             "You are a helpful assistant. Use the following context to answer the question. Don't mention the context in your answer.",
             merged_context,
@@ -272,7 +276,7 @@ class ModelVectorIndex(VectorIndex[models.Model]):
 
         return list(
             {
-                self._get_instance_from_backend_metadata(doc)
+                self._get_instance_from_response_document(doc)
                 for doc in set(similar_documents)
             }
         )
@@ -283,7 +287,10 @@ class ModelVectorIndex(VectorIndex[models.Model]):
             query_embedding, limit=limit
         )
         return list(
-            {self._get_instance_from_backend_metadata(doc) for doc in similar_documents}
+            {
+                self._get_instance_from_response_document(doc)
+                for doc in similar_documents
+            }
         )
 
 

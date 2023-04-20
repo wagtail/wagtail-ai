@@ -1,9 +1,8 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Generic, List, Type, TypeVar
+from typing import TYPE_CHECKING, Generic, List, Type, TypeVar, Union
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.db import models
 from django.utils.module_loading import import_string
 
 from wagtail_ai.ai_backends import get_ai_backend
@@ -22,9 +21,9 @@ class InvalidVectorBackendError(ImproperlyConfigured):
 
 
 @dataclass
-class QueryResponse:
-    content: str
-    sources: List[models.Model]
+class SearchResponseDocument:
+    id: Union[str, int]
+    metadata: dict
 
 
 class Index:
@@ -37,7 +36,9 @@ class Index:
     def delete(self, *, document_ids: List[str]):
         raise NotImplementedError
 
-    def similarity_search(self, query_vector, *, limit: int = 5) -> List[dict]:
+    def similarity_search(
+        self, query_vector, *, limit: int = 5
+    ) -> List[SearchResponseDocument]:
         raise NotImplementedError
 
 

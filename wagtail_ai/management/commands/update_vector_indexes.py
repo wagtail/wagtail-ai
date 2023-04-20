@@ -26,7 +26,7 @@ class Command(BaseCommand):
                 You are triggering a Wagtail AI index update.
 
                 Depending on your configured AI backend;
-                 * Multiple chargeable API calls will be triggered to chargeable services.
+                 * Multiple API calls will be triggered to chargeable services.
                  * Contents from every indexed model will be sent to third-party APIs.
 
                 Are you sure you want to do this?

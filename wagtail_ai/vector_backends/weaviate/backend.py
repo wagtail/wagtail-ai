@@ -3,7 +3,7 @@ from typing import List, Optional
 
 import weaviate
 
-from wagtail_ai.vector_backends import Backend, Index
+from wagtail_ai.vector_backends import Backend, Index, SearchResponseDocument
 
 
 @dataclass
@@ -28,18 +28,23 @@ class WeaviateIndex(Index):
         # TODO: Handle deletion
         raise NotImplementedError
 
-    def similarity_search(self, query_vector, *, limit: int = 5) -> List[dict]:
+    def similarity_search(self, query_vector, *, limit: int = 5):
         near_vector = {
             "vector": query_vector,
         }
         similar_documents = (
-            self.client.query.get(self.index_name, ["content_type_id", "object_id"])
+            self.client.query.get(
+                self.index_name, ["id", "content_type_id", "object_id", "content"]
+            )
             .with_additional("distance")
             .with_near_vector(near_vector)
             .with_limit(limit)
             .do()
         )["data"]["Get"][self.index_name]
-        return [doc["payload"] for doc in similar_documents]
+        return [
+            SearchResponseDocument(id=doc["id"], metadata=doc)
+            for doc in similar_documents
+        ]
 
 
 class WeaviateBackend(Backend[BackendConfig, WeaviateIndex]):

@@ -1,12 +1,12 @@
 import logging
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import List
 
 import numpy as np
 
 from wagtail_ai.index import Document, get_vector_indexes
-from wagtail_ai.vector_backends import Backend, Index
+from wagtail_ai.vector_backends import Backend, Index, SearchResponseDocument
 
 
 logger = logging.Logger(__name__)
@@ -24,7 +24,7 @@ class NumpyIndex(Index):
     def delete(self, *, document_ids: List[str]):
         pass
 
-    def similarity_search(self, query_vector, *, limit: int = 5) -> List[dict]:
+    def similarity_search(self, query_vector, *, limit: int = 5):
         similarities = []
         vector_index = get_vector_indexes()[self.index_name]
         for document in vector_index.get_documents():
@@ -40,11 +40,9 @@ class NumpyIndex(Index):
         )
         top_similarities = [pair[1] for pair in sorted_similarities][:limit]
         return [
-            {
-                "id": similarity.id,
-                "content_type_id": similarity.metadata.content_type_id,
-                "object_id": similarity.metadata.object_id,
-            }
+            SearchResponseDocument(
+                id=similarity.id, metadata=asdict(similarity.metadata)
+            )
             for similarity in top_similarities
         ]
 

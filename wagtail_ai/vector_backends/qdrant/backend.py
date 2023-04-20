@@ -5,7 +5,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models as qdrant_models
 from wagail_ai.index import Document
 
-from wagtail_ai.vector_backends import Backend, Index
+from wagtail_ai.vector_backends import Backend, Index, SearchResponseDocument
 
 
 @dataclass
@@ -36,11 +36,14 @@ class QdrantIndex(Index):
             points_selector=qdrant_models.PointIdsList(points=document_ids),
         )
 
-    def similarity_search(self, query_vector, *, limit: int = 5) -> List[dict]:
+    def similarity_search(self, query_vector, *, limit: int = 5):
         similar_documents = self.client.search(
             collection_name=self.index_name, query_vector=query_vector, limit=limit
         )
-        return [doc["payload"] for doc in similar_documents]
+        return [
+            SearchResponseDocument(id=doc["id"], metadata=doc["payload"])
+            for doc in similar_documents
+        ]
 
 
 class QdrantBackend(Backend[BackendConfig, QdrantIndex]):
