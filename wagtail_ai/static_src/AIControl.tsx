@@ -66,7 +66,7 @@ const fetchAIResponse = async (
   formData.append('text', text);
   formData.append('prompt', prompt.id);
   try {
-    const res = await fetch('/admin/ai/process/', {
+    const res = await fetch(window.WAGTAIL_AI_PROCESS_URL, {
       method: 'POST',
       body: formData,
     });

@@ -37,6 +37,7 @@ declare global {
   }
 
   interface Window {
+    WAGTAIL_AI_PROCESS_URL: string;
     WAGTAIL_AI_PROMPTS: [Prompt];
   }
 
