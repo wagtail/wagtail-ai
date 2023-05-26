@@ -62,6 +62,10 @@ docs = [
 [project.urls]
 Home = "https://github.com/tomusher/wagtail-ai"
 
+[tool.ruff]
+select = ["F", "E", "C90", "I", "B", "DJ", "RUF", "TRY", "C4"]
+ignore = ["TRY003"]
+
 [tool.flit.module]
 name = "wagtail_ai"
 
