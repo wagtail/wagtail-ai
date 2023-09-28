@@ -4,12 +4,11 @@ from django.db import transaction
 
 from .models import Embedding
 
-
 if TYPE_CHECKING:
-    from .index import VectorIndexed
+    from .index import VectorIndexedMixin
 
 
-class ModelEmbeddingService:
+class ModelCachedEmbeddingService:
     """A service to generate embeddings and store them in the Embedding model
     for reuse in future index operations."""
 
@@ -19,6 +18,8 @@ class ModelEmbeddingService:
     def _existing_embeddings_match(
         self, embeddings: Iterable[Embedding], splits: List[str]
     ) -> bool:
+        """Determine whether the embeddings passed in match the text content
+        passed in"""
         if not embeddings:
             return False
 
@@ -30,20 +31,23 @@ class ModelEmbeddingService:
         return False
 
     def embeddings_for_strings(self, strings: List[str]) -> List[List[float]]:
+        """Use the AI backend to generate embeddings for a list of strings"""
         return self.ai_backend.get_embeddings(strings)
 
     @transaction.atomic
     def embeddings_for_instance(
         self,
-        instance: "VectorIndexed",
-    ) -> Iterable[Embedding]:
+        instance: "VectorIndexedMixin",
+    ) -> List[List[float]]:
+        """Use the AI backend to generate and store embeddings for an instance
+        of VectorIndexedMixin"""
         splits = instance.get_split_content()
         embeddings = Embedding.get_for_instance(instance)
 
         # If the existing embeddings all match on content, we return them
         # without generating new ones
         if self._existing_embeddings_match(embeddings, splits):
-            return embeddings
+            return [e.vector for e in embeddings]
 
         # Otherwise we delete all the existing embeddings and get new ones
         embeddings.delete()
@@ -57,4 +61,4 @@ class ModelEmbeddingService:
             embedding.save()
             generated_embeddings.append(embedding)
 
-        return generated_embeddings
+        return [e.vector for e in generated_embeddings]

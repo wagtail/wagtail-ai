@@ -1,5 +1,4 @@
 import os
-
 from typing import List, Optional, Protocol, Type, TypeVar
 
 from django.conf import settings
@@ -8,7 +7,8 @@ from django.utils.module_loading import import_string
 
 
 class InvalidAIBackendError(ImproperlyConfigured):
-    pass
+    def __init__(self, alias):
+        super().__init__(f"Invalid AI backend: {alias}")
 
 
 ConfigClass = TypeVar("ConfigClass")
@@ -49,13 +49,9 @@ def get_ai_backend(alias="default") -> Backend:
 
     try:
         config = backend_config[alias]
-    except KeyError as e:
-        raise InvalidAIBackendError(f"No AI backend with alias '{alias}': {e}")
-
-    try:
         imported = import_string(config["BACKEND"])
-    except ImportError as e:
-        raise InvalidAIBackendError(f"Couldn't import backend {config['BACKEND']}: {e}")
+    except (KeyError, ImportError) as e:
+        raise InvalidAIBackendError(alias) from e
 
     params = config.copy()
     params.pop("BACKEND")

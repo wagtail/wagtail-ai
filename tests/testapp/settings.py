@@ -12,6 +12,7 @@ import os
 
 import dj_database_url
 
+import wagtail_ai
 
 # Build paths inside the project like this: os.path.join(PROJECT_DIR, ...)
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -174,3 +175,17 @@ WAGTAIL_AI_VECTOR_BACKENDS = {
         #        "HOST": os.environ.get("QDRANT_HOST"),
     }
 }
+
+WAGTAIL_AI_PROMPTS = [
+    *wagtail_ai.DEFAULT_PROMPTS,
+    {
+        "label": "Translate to French",
+        "prompt": "Translate the following content in to French",
+        "method": "replace",
+    },
+    {
+        "label": "Simplify",
+        "prompt": "Change this content so it uses easier to understand words",
+        "method": "replace",
+    },
+]

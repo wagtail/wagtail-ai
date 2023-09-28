@@ -1,9 +1,7 @@
 import factory
 import wagtail_factories
-
 from faker import Faker
 from testapp.models import DifferentPage, ExamplePage
-
 
 fake = Faker()
 

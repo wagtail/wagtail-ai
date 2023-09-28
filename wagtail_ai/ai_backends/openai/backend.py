@@ -1,10 +1,9 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from django.core.exceptions import ImproperlyConfigured
 
 from .openai import OpenAIClient
-
 
 # Fixed for now until we support other models
 EMBEDDING_DIMENSIONS = 1536
@@ -23,12 +22,14 @@ class OpenAIBackend:
             self.config = self.config_class(**config)
             api_key = self.config.API_KEY
             self.client = OpenAIClient(api_key=api_key)
-        except AttributeError:
+        except AttributeError as e:
             raise ImproperlyConfigured(
                 "The API_KEY setting must be configured to use OpenAI"
-            )
+            ) from e
 
-    def prompt(self, *, system_messages: List[str], user_messages: List[str]) -> str:
+    def prompt(
+        self, *, system_messages: Optional[List[str]] = None, user_messages: List[str]
+    ) -> str:
         return self.client.chat(
             system_messages=system_messages, user_messages=user_messages
         )

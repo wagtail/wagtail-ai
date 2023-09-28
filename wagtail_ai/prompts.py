@@ -1,5 +1,4 @@
 import inspect
-
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, Union
@@ -40,7 +39,8 @@ DEFAULT_PROMPTS = [
         "description": "Correct grammar and spelling",
         "prompt": """You are assisting a user in writing content for their website.
             The user has provided some text (following the colon).
-            Return the provided text but with corrected grammar, spelling and punctuation.
+            Return the provided text but with corrected grammar, spelling and
+            punctuation.
             Do not add additional punctuation, quotation marks or change any words:""",
         "method": "replace",
     },
@@ -63,12 +63,12 @@ def get_prompts():
                 getattr(settings, "WAGTAIL_AI_PROMPTS", []) or DEFAULT_PROMPTS
             )
         ]
-    except TypeError:
+    except TypeError as e:
         raise ImproperlyConfigured(
             """WAGTAIL_AI_PROMPTS must be a list of dictionaries, where each dictionary
             has a 'label', 'description', 'prompt' and 'method' key.
             The 'method' must be one of 'append' or 'replace'."""
-        )
+        ) from e
 
 
 def get_prompt_by_id(id: int) -> Optional[Prompt]:

@@ -8,7 +8,6 @@ import warnings
 
 from django.core.management import execute_from_command_line
 
-
 os.environ["DJANGO_SETTINGS_MODULE"] = "testapp.settings"
 sys.path.append("tests")
 
@@ -52,7 +51,7 @@ def runtests():
         # Deprecation warnings are ignored by default
         pass
 
-    argv = [sys.argv[0]] + rest
+    argv = [sys.argv[0], *rest]
 
     try:
         execute_from_command_line(argv)

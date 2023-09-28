@@ -1,5 +1,4 @@
 import pytest
-
 from factories import ExamplePageFactory
 from faker import Faker
 from testapp.models import DifferentPage, ExamplePage
@@ -11,7 +10,6 @@ from wagtail_ai.index import (
     get_vector_indexes,
     registry,
 )
-
 
 fake = Faker()
 

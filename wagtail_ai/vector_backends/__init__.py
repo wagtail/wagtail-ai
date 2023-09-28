@@ -7,7 +7,6 @@ from django.utils.module_loading import import_string
 
 from wagtail_ai.ai_backends import get_ai_backend
 
-
 if TYPE_CHECKING:
     from wagtail_ai.index import Document
 
@@ -58,10 +57,11 @@ class Backend(Generic[ConfigClass, IndexClass]):
 
     def __init_subclass__(cls, **kwargs):
         try:
-            cls.config_class
+            cls.config_class  # noqa: B018
         except AttributeError as e:
             raise AttributeError(
-                f"Vector backend {cls.__name__} must specify a `config_class` class attribute"
+                f"Vector backend {cls.__name__} must specify a `config_class` class \
+                    attribute"
             ) from e
         return super().__init_subclass__(**kwargs)
 

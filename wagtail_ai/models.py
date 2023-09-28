@@ -19,6 +19,9 @@ class Embedding(models.Model):
     vector = models.JSONField()
     content = models.TextField()
 
+    def __str__(self):
+        return f"Embedding for {self.object_id}"
+
     @classmethod
     def _get_base_content_type(cls, model_or_object):
         parents = model_or_object._meta.get_parent_list()

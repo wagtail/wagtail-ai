@@ -1,14 +1,12 @@
 import os
 
 import tiktoken
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from .ai_backends import get_ai_backend
 from .prompts import Prompt, get_prompt_by_id
-
 
 DEFAULT_MODEL = "gpt-3.5-turbo"
 DEFAULT_MAX_TOKENS = 4096
@@ -65,7 +63,8 @@ def process(request):
     if not text:
         return JsonResponse(
             {
-                "error": "No text provided - please enter some text before using AI features"
+                "error": "No text provided - please enter some text before using AI \
+                    features"
             },
             status=400,
         )

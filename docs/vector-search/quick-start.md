@@ -15,15 +15,18 @@ An embedding is a big list (vector) of floating point numbers that represent you
 This way, when you provide a query, we can use the same model to get an embedding of that query and do some maths (cosine similarity) to see what content in your vector database is similar to your query.
 
 ## Indexing Your Models/Pages
-To index your models, subclass Wagtail AI's `VectorIndexed` model, specifying the fields to be used as part of your embedding:
+To index your models:
+
+1. Add Wagtail AI's `VectorIndexedMixin` mixin to your model
+2. Set `embedding_fields` to a list of `EmbeddingField`s representing the fields you want to be included in the embeddings
 
 ```python
 from django.db import models
 from wagtail.models import Page
-from wagtail_ai.index import VectorIndexed, EmbeddingField
+from wagtail_ai.index import VectorIndexedMixin, EmbeddingField
 
 
-class MyPage(VectorIndexed, Page):
+class MyPage(VectorIndexedMixin, Page):
     body = models.TextField()
 
     embedding_fields = [EmbeddingField("title"), EmbeddingField("body")]
@@ -35,6 +38,9 @@ A `ModelVectorIndex` will be generated for your model which can be accessed usin
 index = MyPage.get_vector_index()
 ```
 
+If you want more control over how content is indexed, you can instead create your own indexes. See [./customising.md](Customising) for more details.
+
+
 ## Updating indexes
 
 To update all indexes, run the `update_vector_indexes` management command:
@@ -45,7 +51,11 @@ python manage.py update_vector_indexes
 
 To skip the prompt, use the `--noinput` flag.
 
-## Natural language question/answers
+## Using Vector Indexes
+
+Once you've got an instance of a Vector Index, either through `get_vector_index` on a `VectorIndexedMixin` model, or through your own custom index, you can run a few useful operations on the index:
+
+### Natural language question/answers
 
 The `query` method can be used to ask natural language questions:
 
@@ -67,7 +77,7 @@ Behind the scenes, this:
 It returns a `QueryResponse` containing the `response` from the AI backend, and `sources`,
 a list of objects that were used as context.
 
-## Getting similar content
+### Getting similar content
 
 The `similar` index method can be used to find model instances that are similar to another instance:
 
@@ -77,7 +87,7 @@ index.similar(my_model_instance)
 [MyPage(1), MyPage(2)]
 ```
 
-The passed model instance doesn't have to be in the same index, but it must be a subclass of `VectorIndexed`.
+The passed model instance doesn't have to be in the same index, but it must be a subclass of `VectorIndexedMixin`.
 
 This works by:
 
@@ -85,7 +95,7 @@ This works by:
 2. Using the vector database to find matching embeddings
 3. Returning the original model instances that were used to generate these matching embeddings
 
-## Searching content
+### Searching content
 
 The `search` index method can be used to use natural language to search content in the index.
 

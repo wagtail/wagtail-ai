@@ -1,5 +1,4 @@
 import pytest
-
 from django.core.exceptions import ImproperlyConfigured
 
 from wagtail_ai import DEFAULT_PROMPTS
@@ -35,13 +34,14 @@ def test_custom_prompt(settings):
 
 
 def test_extending_prompts(settings):
-    settings.WAGTAIL_AI_PROMPTS = DEFAULT_PROMPTS + [
+    settings.WAGTAIL_AI_PROMPTS = [
+        *DEFAULT_PROMPTS,
         {
             "label": "Custom Prompt",
             "description": "This is a custom prompt",
             "prompt": "The prompt",
             "method": "append",
-        }
+        },
     ]
 
     assert get_prompts()[-1].label == "Custom Prompt"

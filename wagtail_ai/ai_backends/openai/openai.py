@@ -2,7 +2,6 @@ from typing import List, Optional
 
 import requests
 
-
 BASE_URL = "https://api.openai.com/v1/"
 
 

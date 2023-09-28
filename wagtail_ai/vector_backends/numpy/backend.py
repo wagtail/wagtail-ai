@@ -1,13 +1,11 @@
 import logging
-
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from typing import List
 
 import numpy as np
 
 from wagtail_ai.index import Document, get_vector_indexes
 from wagtail_ai.vector_backends import Backend, Index, SearchResponseDocument
-
 
 logger = logging.Logger(__name__)
 
@@ -40,9 +38,7 @@ class NumpyIndex(Index):
         )
         top_similarities = [pair[1] for pair in sorted_similarities][:limit]
         return [
-            SearchResponseDocument(
-                id=similarity.id, metadata=asdict(similarity.metadata)
-            )
+            SearchResponseDocument(id=similarity.id, metadata=similarity.metadata)
             for similarity in top_similarities
         ]
 

@@ -1,16 +1,15 @@
 import pytest
-
 from factories import ExamplePageFactory
 
 from wagtail_ai.ai_backends import get_ai_backend
-from wagtail_ai.embedding import ModelEmbeddingService
+from wagtail_ai.embedding import ModelCachedEmbeddingService
 from wagtail_ai.models import Embedding
 
 
 @pytest.fixture
 def embedding_service():
     ai_backend = get_ai_backend()
-    embedding_service = ModelEmbeddingService(ai_backend)
+    embedding_service = ModelCachedEmbeddingService(ai_backend)
     return embedding_service
 
 

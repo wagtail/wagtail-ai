@@ -40,6 +40,6 @@ class Command(BaseCommand):
             self.stdout.write("Rebuilding vector indexes")
             indexes = get_vector_indexes()
             for _, index in indexes.items():
-                index.build_index()
+                index.rebuild_index()
         else:
             self.stdout.write("Index update cancelled")
