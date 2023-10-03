@@ -279,12 +279,10 @@ class ModelVectorIndex(VectorIndex[models.Model]):
         for embedding in instance_embeddings:
             similar_documents += self.backend_index.similarity_search(embedding.vector)
 
-        return list(
-            {
-                self._get_instance_from_response_document(doc)
-                for doc in similar_documents
-            }
-        )
+        return [
+            self._get_instance_from_response_document(doc)
+            for doc in similar_documents
+        ]
 
     def search(self, query: str, *, limit: int = 5):
         query_embedding = self.embedding_service.embeddings_for_strings([query])[0]
