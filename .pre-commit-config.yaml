@@ -1,3 +1,5 @@
+exclude: ^.devcontainer
+
 ci:
   autofix_prs: false
 
@@ -18,15 +20,15 @@ repos:
         args: ['--unsafe']
       - id: end-of-file-fixer
       - id: trailing-whitespace
-  - repo: https://github.com/psf/black
-    rev: 22.12.0
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 23.9.1
     hooks:
       - id: black
         language_version: python3
         args: ['--target-version', 'py37']
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.0.270
+    rev: v0.0.291
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]

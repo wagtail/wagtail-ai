@@ -1,10 +1,11 @@
 import pytest
 from django.core.exceptions import ImproperlyConfigured
-
+from django.test import override_settings
 from wagtail_ai import DEFAULT_PROMPTS
 from wagtail_ai.prompts import get_prompt_by_id, get_prompts
 
 
+@override_settings(WAGTAIL_AI_PROMPTS=[])
 def test_get_prompts_returns_default_prompts():
     prompts = get_prompts()
     assert len(prompts) == len(DEFAULT_PROMPTS)

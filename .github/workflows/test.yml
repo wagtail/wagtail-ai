@@ -20,14 +20,14 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Set up Python 3.8
+      - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
-          python-version: '3.8'
-      - uses: pre-commit/action@v2.0.3
+          python-version: '3.11'
+      - uses: pre-commit/action@v3.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -38,14 +38,14 @@ jobs:
       matrix:
         python: ['3.8', '3.9']
         django: ['3.2']
-        wagtail: ['2.15', '4.0', '4.1']
+        wagtail: ['4.1', '4.2']
         include:
           - python: '3.10'
-            django: '4.1'
-            wagtail: '4.1'
+            django: '4.2'
+            wagtail: '5.1'
           - python: '3.11'
-            django: '4.1'
-            wagtail: '4.1'
+            django: '4.2'
+            wagtail: '5.1'
 
     steps:
       - uses: actions/checkout@v3
@@ -70,18 +70,15 @@ jobs:
       matrix:
         python: ['3.8', '3.9']
         django: ['3.2']
-        wagtail: ['2.15', '4.0', '4.1']
+        wagtail: ['4.1', '4.2']
         experimental: [false]
         include:
-          - python: '3.9'
-            django: '4.0'
-            wagtail: '4.0'
           - python: '3.10'
-            django: '4.0'
-            wagtail: '4.1'
+            django: '4.2'
+            wagtail: '5.1'
           - python: '3.11'
-            django: '4.1'
-            wagtail: '4.1'
+            django: '4.2'
+            wagtail: '5.1'
 
     services:
       postgres:

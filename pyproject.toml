@@ -25,38 +25,40 @@ classifiers = [
     "Framework :: Django :: 3.2",
     "Framework :: Django :: 4.0",
     "Framework :: Django :: 4.1",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
     "Framework :: Wagtail",
     "Framework :: Wagtail :: 4",
+    "Framework :: Wagtail :: 5",
 ]
 dynamic = ["version"]
 dependencies = [
-    "Django>=3.0",
+    "Django>=3.2",
     "Wagtail>=4.0",
     "langchain>=0.0.106",
-    "tiktoken>=0.3.3"
+    "tiktoken>=0.3.3",
+    "every-ai>=1.1.1"
 ]
 [project.optional-dependencies]
-numpy = [
-    "numpy>=1.24.2",
+openai = [
+    "every-ai[openai]>=1.1.1"
 ]
-qdrant = [
-    "qdrant-client>=1.1.4",
-]
-weaviate = [
-    "weaviate-client>=3.15.6",
+anthropic = [
+    "every-ai[anthropic]>=1.1.1"
 ]
 testing = [
-    "dj-database-url==1.2.0",
-    "pre-commit>=2.21.0",
-    "pytest>=7.2.2",
+    "dj-database-url==2.1.0",
+    "pre-commit>=3.4.0",
+    "pytest>=7.4.2",
     "pytest-django>=4.5.2",
-    "wagtail-factories>=4.0.0",
-    "factory-boy>=3.2.1"
+    "wagtail-factories>=4.1.0",
+    "factory-boy>=3.3.0"
 ]
 docs = [
-    "mkdocs>=1.4.2",
-    "mkdocs-material>=9.1.3",
-    "mkdocs-awesome-pages-plugin>=2.8.0"
+    "mkdocs>=1.5.3",
+    "mkdocs-material>=9.4.5",
+    "mkdocs-awesome-pages-plugin>=2.9.2"
 ]
 
 [project.urls]
@@ -64,7 +66,7 @@ Home = "https://github.com/tomusher/wagtail-ai"
 
 [tool.ruff]
 select = ["F", "E", "C90", "I", "B", "DJ", "RUF", "TRY", "C4"]
-ignore = ["TRY003", "E501"]
+ignore = ["TRY003", "E501", "RUF012"]
 
 [tool.flit.module]
 name = "wagtail_ai"

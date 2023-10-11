@@ -8,7 +8,7 @@ Get help with your content using AI superpowers.
 [![PyPI version](https://badge.fury.io/py/wagtail-ai.svg)](https://badge.fury.io/py/wagtail-ai)
 [![ai CI](https://github.com/tomusher/wagtail-ai/actions/workflows/test.yml/badge.svg)](https://github.com/tomusher/wagtail-ai/actions/workflows/test.yml)
 
-Wagtail AI integrates Wagtail with OpenAI's APIs (think ChatGPT) to help you write and correct your content.
+Wagtail AI integrates Wagtail with AI's APIs (think ChatGPT) to help you write and correct your content.
 
 Right now, it can:
 
@@ -20,7 +20,7 @@ https://user-images.githubusercontent.com/27112/223072938-8cb5ccff-4835-489a-8be
 
 ## Requirements & Costs
 
-You'll need a paid OpenAI account and an API key. There'll also be some cost involved. For the API used here, OpenAI charges $0.002 for 1,000 tokens (a word is about 1.3 tokens). Every token sent to the API, and every token we get back counts, so you can expect using 'correction' on 1,000 word paragraph to cost roughly:
+You'll need a paid OpenAI or Anthropic account and an API key. There'll also be some cost involved. For the OpenAI API used here, OpenAI charges $0.002 for 1,000 tokens (a word is about 1.3 tokens). Every token sent to the API, and every token we get back counts, so you can expect using 'correction' on 1,000 word paragraph to cost roughly:
 
 * (1,000 * 1.3) + (35 * 1.3) (for the initial prompt) tokens sent to the API
 * \+ (1,000 * 1.3) tokens received from the API
@@ -50,7 +50,7 @@ If you're interested in working on these things, please do!
 
 ## Supported Versions
 
-* Wagtail 4.0, 4.1 and 4.2
+* Wagtail 4.0, 4.1, 4.2, 5.0, 5.2
 
 ## Contributing
 

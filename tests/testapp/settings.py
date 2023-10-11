@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/stable/ref/settings/
 import os
 
 import dj_database_url
-
 import wagtail_ai
 
 # Build paths inside the project like this: os.path.join(PROJECT_DIR, ...)
@@ -162,19 +161,13 @@ WAGTAIL_SITE_NAME = "Wagtail AI test site"
 
 WAGTAIL_AI_BACKENDS = {
     "default": {
-        "BACKEND": "wagtail_ai.ai_backends.openai.OpenAIBackend",
-        "API_KEY": os.environ.get("OPENAI_API_KEY"),
+        "BACKEND": "openai",
+        "CONFIG": {
+            "api_key": os.environ.get("OPENAI_API_KEY"),
+        },
     }
 }
 
-WAGTAIL_AI_VECTOR_BACKENDS = {
-    "default": {
-        "BACKEND": "wagtail_ai.vector_backends.numpy.NumpyBackend",
-        #        "BACKEND": "wagtail_ai.vector_backends.qdrant.QdrantBackend",
-        #        "API_KEY": os.environ.get("QDRANT_API_KEY"),
-        #        "HOST": os.environ.get("QDRANT_HOST"),
-    }
-}
 
 WAGTAIL_AI_PROMPTS = [
     *wagtail_ai.DEFAULT_PROMPTS,

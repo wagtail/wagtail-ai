@@ -1,0 +1,4 @@
+* Some protection for passthrough prompts (e.g. add "Only include a response if it is from the above context, otherwise say...")
+* Allow specifying a queryset for an index (e.g. we only want to index Live Wagtail pages)
+* Allow customising split size and overlap
+* When batch embedding, break large requests in to smaller chunks

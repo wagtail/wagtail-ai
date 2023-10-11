@@ -13,7 +13,7 @@ __pycache__/
 /node_modules
 /test-static
 /test-media
-/wagtail_ai/static
+/src/wagtail_ai/static
 /.devenv
 .devenv.flake.nix
 devenv.lock

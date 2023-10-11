@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-from .ai_backends import get_ai_backend
+from .ai import get_ai_backend
 from .prompts import Prompt, get_prompt_by_id
 
 DEFAULT_MODEL = "gpt-3.5-turbo"
@@ -32,7 +32,7 @@ def _replace_handler(prompt: Prompt, text: str):
     for split in texts:
         full_prompt = "\n".join([prompt.prompt, split])
         backend = get_ai_backend()
-        message = backend.prompt(user_messages=[full_prompt])
+        message = backend.chat(user_messages=[full_prompt])
         # Remove extra blank lines returned by the API
         message = os.linesep.join([s for s in message.splitlines() if s])
         text = text.replace(split, message)
@@ -47,7 +47,7 @@ def _append_handler(prompt: Prompt, text: str):
 
     full_prompt = "\n".join([prompt.prompt, text])
     backend = get_ai_backend()
-    message = backend.prompt(user_messages=[full_prompt])
+    message = backend.chat(user_messages=[full_prompt])
     # Remove extra blank lines returned by the API
     message = os.linesep.join([s for s in message.splitlines() if s])
 
