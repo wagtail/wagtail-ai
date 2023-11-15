@@ -36,7 +36,7 @@ WAGTAIL_AI_PROMPTS = wagtail_ai.DEFAULT_PROMPTS + [
     {
         "label": "Simplify",
         "description": "Rewrite your text in a simpler form",
-        "prompt": "Rewrite the following text to make it simper and more succinct",
+        "prompt": "Rewrite the following text to make it simpler and more succinct",
         "method": "replace",
     }
 ]
