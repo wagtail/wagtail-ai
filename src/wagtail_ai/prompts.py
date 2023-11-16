@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Prompt:
     class Method(Enum):
         REPLACE = "replace"
@@ -16,6 +16,7 @@ class Prompt:
     id: int
     label: str
     prompt: str
+    backend: str = "default"
     description: str = ""
     method: Union[str, Method] = Method.REPLACE
 

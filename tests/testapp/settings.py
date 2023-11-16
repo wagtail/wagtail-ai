@@ -158,14 +158,25 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "test-media")
 
 WAGTAIL_SITE_NAME = "Wagtail AI test site"
 
-WAGTAIL_AI_BACKENDS = {
-    "default": {
-        "BACKEND": "openai",
-        "CONFIG": {
-            "api_key": os.environ.get("OPENAI_API_KEY"),
+if os.environ.get("WAGTAIL_AI_DEFAULT_BACKEND") == "chatgpt":
+    WAGTAIL_AI_BACKENDS = {
+        "default": {
+            "CLASS": "wagtail_ai.ai.llm.LLMBackend",
+            "CONFIG": {
+                "MODEL_ID": "gpt-3.5-turbo",
+                "MODEL_CONFIG": {
+                    "key": os.environ.get("OPENAI_API_KEY"),
+                },
+            },
+        }
+    }
+else:
+    WAGTAIL_AI_BACKENDS = {
+        "default": {
+            "CLASS": "wagtail_ai.ai.echo.EchoBackend",
+            "CONFIG": {"MAX_WORD_SLEEP_SECONDS": 1},
         },
     }
-}
 
 
 WAGTAIL_AI_PROMPTS = [
@@ -181,3 +192,41 @@ WAGTAIL_AI_PROMPTS = [
         "method": "replace",
     },
 ]
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "formatters": {
+        "verbose": {
+            "format": "[%(asctime)s][%(process)d][%(levelname)s][%(name)s] %(message)s"
+        }
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "wagtail_ai": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "llm": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "testapp": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+    },
+}
