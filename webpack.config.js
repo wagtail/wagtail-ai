@@ -3,7 +3,7 @@ const postcssPresetEnv = require('postcss-preset-env');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-  entry: './wagtail_ai/static_src/main.tsx',
+  entry: './src/wagtail_ai/static_src/main.tsx',
   plugins: [new MiniCssExtractPlugin()],
   module: {
     rules: [
@@ -49,7 +49,7 @@ module.exports = {
     'draft-js': 'DraftJS',
   },
   output: {
-    path: path.resolve(__dirname, 'wagtail_ai/static/wagtail_ai'),
+    path: path.resolve(__dirname, 'src/wagtail_ai/static/wagtail_ai'),
     filename: 'wagtail-ai.js',
   },
 };

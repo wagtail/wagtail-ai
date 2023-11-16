@@ -19,3 +19,4 @@ __pycache__/
 devenv.lock
 devenv.nix
 .env
+.DS_Store
