@@ -65,6 +65,14 @@ cd wagtail-ai
 
 With your preferred virtualenv activated, install testing dependencies:
 
+#### Compile front-end assets
+
+```sh
+nvm use
+npm install
+npm run build
+```
+
 #### Using pip
 
 ```sh
