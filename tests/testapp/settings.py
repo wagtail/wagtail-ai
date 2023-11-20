@@ -159,22 +159,24 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "test-media")
 WAGTAIL_SITE_NAME = "Wagtail AI test site"
 
 if os.environ.get("WAGTAIL_AI_DEFAULT_BACKEND") == "chatgpt":
-    WAGTAIL_AI_BACKENDS = {
-        "default": {
-            "CLASS": "wagtail_ai.ai.llm.LLMBackend",
-            "CONFIG": {
-                "MODEL_ID": "gpt-3.5-turbo",
-                "MODEL_CONFIG": {
-                    "key": os.environ.get("OPENAI_API_KEY"),
+    WAGTAIL_AI = {
+        "BACKENDS": {
+            "default": {
+                "CLASS": "wagtail_ai.ai.llm.LLMBackend",
+                "CHAT_MODEL": {
+                    "ID": "gpt-3.5-turbo",
                 },
-            },
+            }
         }
     }
 else:
     WAGTAIL_AI_BACKENDS = {
-        "default": {
-            "CLASS": "wagtail_ai.ai.echo.EchoBackend",
-            "CONFIG": {"MAX_WORD_SLEEP_SECONDS": 1},
+        "BACKENDS": {
+            "default": {
+                "CLASS": "wagtail_ai.ai.echo.EchoBackend",
+                "CONFIG": {"MAX_WORD_SLEEP_SECONDS": 0},
+                "CHAT_MODEL": {"ID": "echo", "TOKEN_LIMIT": 100},
+            },
         },
     }
 

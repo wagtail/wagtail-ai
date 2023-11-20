@@ -26,9 +26,7 @@ classifiers = [
 dynamic = ["version"]
 dependencies = [
     "Django>=4.2",
-    "Wagtail>=5.2",
-    "langchain>=0.0.106",
-    "tiktoken>=0.3.3",
+    "Wagtail>=4.0",
 ]
 requires-python = ">=3.11"
 
