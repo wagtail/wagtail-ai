@@ -36,16 +36,10 @@ jobs:
     needs: lint
     strategy:
       matrix:
-        python: ['3.8', '3.9']
-        django: ['3.2']
-        wagtail: ['4.1', '4.2']
-        include:
-          - python: '3.10'
-            django: '4.2'
-            wagtail: '5.1'
-          - python: '3.11'
-            django: '4.2'
-            wagtail: '5.1'
+        python: ['3.11', '3.12']
+        django: ['4.2']
+        wagtail: ['5.2']
+        experimental: [false]
 
     steps:
       - uses: actions/checkout@v3
@@ -68,17 +62,10 @@ jobs:
     needs: lint
     strategy:
       matrix:
-        python: ['3.8', '3.9']
-        django: ['3.2']
-        wagtail: ['4.1', '4.2']
+        python: ['3.11', '3.12']
+        django: ['4.2']
+        wagtail: ['5.2']
         experimental: [false]
-        include:
-          - python: '3.10'
-            django: '4.2'
-            wagtail: '5.1'
-          - python: '3.11'
-            django: '4.2'
-            wagtail: '5.1'
 
     services:
       postgres:
