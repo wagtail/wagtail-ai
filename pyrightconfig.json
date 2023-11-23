@@ -1,0 +1,13 @@
+{
+  "include": ["src/**"],
+  "exclude": [
+    "**/migrations",
+    ".tox/**",
+    ".venv",
+    "venv/**",
+    "node_modules/**"
+  ],
+  "venvPath": ".venv/lib/python3.11/site-packages",
+  "pythonVersion": "3.11",
+  "pythonPlatform": "Linux"
+}
