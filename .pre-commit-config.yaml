@@ -24,6 +24,10 @@ repos:
     rev: 23.11.0
     hooks:
       - id: black
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.337
+    hooks:
+      - id: pyright
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
     rev: v0.1.6
