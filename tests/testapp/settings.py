@@ -163,19 +163,22 @@ if os.environ.get("WAGTAIL_AI_DEFAULT_BACKEND") == "chatgpt":
         "BACKENDS": {
             "default": {
                 "CLASS": "wagtail_ai.ai.llm.LLMBackend",
-                "CHAT_MODEL": {
-                    "ID": "gpt-3.5-turbo",
+                "CONFIG": {
+                    "MODEL_ID": "gpt-3.5-turbo",
                 },
             }
         }
     }
 else:
-    WAGTAIL_AI_BACKENDS = {
+    WAGTAIL_AI = {
         "BACKENDS": {
             "default": {
                 "CLASS": "wagtail_ai.ai.echo.EchoBackend",
-                "CONFIG": {"MAX_WORD_SLEEP_SECONDS": 0},
-                "CHAT_MODEL": {"ID": "echo", "TOKEN_LIMIT": 100},
+                "CONFIG": {
+                    "MODEL_ID": "echo",
+                    "MAX_WORD_SLEEP_SECONDS": 1,
+                    "TOKEN_LIMIT": 100,
+                },
             },
         },
     }

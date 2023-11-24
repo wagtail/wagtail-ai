@@ -1,9 +1,17 @@
 import random
 import time
 from collections.abc import Generator, Iterator
-from typing import Any, NotRequired, TypedDict
+from dataclasses import dataclass
+from typing import Any, NotRequired, Self
 
-from .base import AIBackend, AIResponse, ChatModelConfig
+from django.core.exceptions import ImproperlyConfigured
+
+from .base import (
+    AIBackend,
+    AIResponse,
+    BaseAIBackendConfig,
+    BaseAIBackendConfigSettings,
+)
 
 
 class EchoResponse(AIResponse):
@@ -23,38 +31,48 @@ class EchoResponse(AIResponse):
         return self._text
 
 
-class EchoBackendConfig(TypedDict):
+@dataclass(kw_only=True)
+class EchoBackendSettingsDict(BaseAIBackendConfigSettings):
     MAX_WORD_SLEEP_SECONDS: NotRequired[int]
 
 
-class EchoBackend(AIBackend[EchoBackendConfig, ChatModelConfig]):
-    max_word_sleep_seconds: int = 1
+@dataclass(kw_only=True)
+class EchoBackendConfig(BaseAIBackendConfig[EchoBackendSettingsDict]):
+    max_word_sleep_seconds: int
 
-    def init_config(
-        self,
-        *,
-        backend_config: EchoBackendConfig | None,
-        chat_model_config: ChatModelConfig,
-    ) -> None:
-        if backend_config is not None:
-            try:
-                self.max_word_sleep_seconds = int(
-                    backend_config["MAX_WORD_SLEEP_SECONDS"]
-                )
-            except KeyError:
-                pass
+    @classmethod
+    def from_settings(cls, config: EchoBackendSettingsDict, **kwargs: Any) -> Self:
+        max_word_sleep_seconds = config.get("MAX_WORD_SLEEP_SECONDS")
+        if max_word_sleep_seconds is None:
+            max_word_sleep_seconds = 0
+        try:
+            max_word_sleep_seconds = int(max_word_sleep_seconds)
+        except ValueError as e:
+            raise ImproperlyConfigured(
+                f'"MAX_WORD_SLEEP_SECONDS" is not an "int", it is a "{type(max_word_sleep_seconds)}".'
+            ) from e
+        kwargs.setdefault("max_word_sleep_seconds", max_word_sleep_seconds)
 
-    def prompt(self, *, prompt: str, content: str, **kwargs: Any) -> EchoResponse:
+        return super().from_settings(config, **kwargs)
+
+
+class EchoBackend(AIBackend[EchoBackendConfig]):
+    config_cls = EchoBackendConfig
+
+    def prompt_with_context(
+        self, *, pre_prompt: str, context: str, post_prompt: str | None = None
+    ) -> AIResponse:
         def response_iterator() -> Generator[str, None, None]:
             response = ["This", "is", "an", "echo", "backend:"]
-            response += content.split()
+            response += context.split()
             for word in response:
                 if (
-                    self.max_word_sleep_seconds is not None
-                    and self.max_word_sleep_seconds > 0
+                    self.config.max_word_sleep_seconds is not None
+                    and self.config.max_word_sleep_seconds > 0
                 ):
                     time.sleep(
-                        random.random() * random.randint(0, self.max_word_sleep_seconds)
+                        random.random()
+                        * random.randint(0, self.config.max_word_sleep_seconds)
                     )
                 yield word
 

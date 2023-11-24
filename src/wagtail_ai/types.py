@@ -22,3 +22,8 @@ class TextSplitterProtocol(Protocol):
 
     def split_text(self, text: str) -> list[str]:
         ...
+
+
+class TextSplitterLengthCalculatorProtocol(Protocol):
+    def get_splitter_length(self, text: str) -> int:
+        ...

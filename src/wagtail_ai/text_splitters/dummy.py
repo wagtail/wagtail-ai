@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 class DummyTextSplitter(TextSplitterProtocol):
     def __init__(
-        self, *, chunk_size: int, length_function: Callable[[str], int] = len
+        self, *, chunk_size: int, length_function: Callable[[str], int]
     ) -> None:
         pass
 

@@ -1,38 +1,60 @@
 import os
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, NotRequired, Self
 
 import llm
+from llm.models import dataclass
 
-from .base import AIBackend, ChatModelConfig
+from ..types import AIResponse
+from .base import AIBackend, BaseAIBackendConfig, BaseAIBackendConfigSettings
 
 
-class LLMBackend(AIBackend[None, ChatModelConfig]):
-    llm_model_prompt_params: Mapping[str, Any] | None = None
-    llm_model_init_kwargs: Mapping[str, Any] | None = None
+class LLMBackendConfigSettingsDict(BaseAIBackendConfigSettings):
+    PROMPT_KWARGS: NotRequired[Mapping[str, Any] | None]
+    INIT_KWARGS: NotRequired[Mapping[str, Any] | None]
 
-    def init_config(
-        self, *, backend_config: None, chat_model_config: ChatModelConfig
-    ) -> None:
-        if chat_model_config["extra"] is not None:
-            self.llm_model_prompt_params = chat_model_config["extra"].get(
-                "prompt_params"
-            )
-            self.llm_model_init_kwargs = chat_model_config["extra"].get("init_kwargs")
 
-    def prompt(self, *, prompt: str, content: str, **kwargs: Any) -> llm.Response:
+@dataclass(kw_only=True)
+class LLMBackendConfig(BaseAIBackendConfig[LLMBackendConfigSettingsDict]):
+    prompt_kwargs: Mapping[str, Any]
+    init_kwargs: Mapping[str, Any]
+
+    @classmethod
+    def from_settings(cls, config: LLMBackendConfigSettingsDict, **kwargs: Any) -> Self:
+        init_kwargs = config.get("INIT_KWARGS")
+        if init_kwargs is None:
+            init_kwargs = {}
+        kwargs.setdefault("init_kwargs", init_kwargs)
+
+        prompt_kwargs = config.get("PROMPT_KWARGS")
+        if prompt_kwargs is None:
+            prompt_kwargs = {}
+        kwargs.setdefault("prompt_kwargs", prompt_kwargs)
+
+        return super().from_settings(config, **kwargs)
+
+
+class LLMBackend(AIBackend[LLMBackendConfig]):
+    config_cls = LLMBackendConfig
+
+    def prompt_with_context(
+        self, *, pre_prompt: str, context: str, post_prompt: str | None = None
+    ) -> AIResponse:
         model = self.get_llm_model()
-        full_prompt = os.linesep.join([prompt, content])
+        parts = [pre_prompt, context]
 
-        if self.llm_model_prompt_params is not None:
-            for param_key, param_val in self.llm_model_prompt_params.items():
-                kwargs.setdefault(param_key, param_val)
+        if post_prompt is not None:
+            parts.append(post_prompt)
 
-        return model.prompt(full_prompt, **kwargs)
+        full_prompt = os.linesep.join(parts)
+        prompt_kwargs = {}
+        if self.config.prompt_kwargs is not None:
+            prompt_kwargs.update(self.config.prompt_kwargs)
+        return model.prompt(full_prompt, **prompt_kwargs)
 
     def get_llm_model(self) -> llm.Model:
-        model = llm.get_model(self.chat_model_config["id"])
-        if self.llm_model_init_kwargs is not None:
-            for config_key, config_val in self.llm_model_init_kwargs.items():
+        model = llm.get_model(self.config.model_id)
+        if self.config.init_kwargs is not None:
+            for config_key, config_val in self.config.init_kwargs.items():
                 setattr(model, config_key, config_val)
         return model

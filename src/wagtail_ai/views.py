@@ -19,7 +19,9 @@ def _replace_handler(*, prompt: prompts.Prompt, text: str) -> str:
     texts = splitter.split_text(text)
 
     for split in texts:
-        response = ai_backend.prompt(prompt=prompt.prompt, content=split)
+        response = ai_backend.prompt_with_context(
+            pre_prompt=prompt.prompt, context=split
+        )
         # Remove extra blank lines returned by the API
         message = os.linesep.join([s for s in response.text().splitlines() if s])
         text = text.replace(split, message)
@@ -29,10 +31,11 @@ def _replace_handler(*, prompt: prompts.Prompt, text: str) -> str:
 
 def _append_handler(*, prompt: prompts.Prompt, text: str) -> str:
     ai_backend = ai.get_ai_backend(alias=prompt.backend)
-    if ai_backend.get_splitter_length(text) > ai_backend.chat_model_config.token_limit:
+    length_calculator = ai_backend.get_splitter_length_calculator()
+    if length_calculator.get_splitter_length(text) > ai_backend.config.token_limit:
         raise AIHandlerException("Cannot run completion on text this long")
 
-    response = ai_backend.prompt(prompt=prompt.prompt, content=text)
+    response = ai_backend.prompt_with_context(pre_prompt=prompt.prompt, context=text)
     # Remove extra blank lines returned by the API
     message = os.linesep.join([s for s in response.text().splitlines() if s])
 
@@ -56,7 +59,7 @@ def process(request):
 
     try:
         prompt = prompts.get_prompt_by_id(int(prompt_idx))
-    except prompts.PromptNotFound:
+    except prompts.Prompt.DoesNotExist:
         return JsonResponse({"error": "Invalid prompt provided"}, status=400)
 
     handlers = {

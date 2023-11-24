@@ -13,6 +13,9 @@ class Prompt:
         REPLACE = "replace"
         APPEND = "append"
 
+    class DoesNotExist(Exception):
+        pass
+
     id: int
     label: str
     prompt: str
@@ -72,12 +75,8 @@ def get_prompts():
         ) from e
 
 
-class PromptNotFound(Exception):
-    pass
-
-
 def get_prompt_by_id(id: int) -> Prompt:
     for prompt in get_prompts():
         if prompt.id == id:
             return prompt
-    raise PromptNotFound(id)
+    raise Prompt.DoesNotExist(f"Can't get prompt by id: {id}")

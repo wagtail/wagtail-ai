@@ -1,57 +1,118 @@
 from abc import ABCMeta, abstractmethod
-from collections.abc import Mapping
-from typing import Any, Generic, TypedDict, TypeVar
+from dataclasses import dataclass
+from typing import (
+    Any,
+    ClassVar,
+    Generic,
+    NotRequired,
+    Protocol,
+    Required,
+    Self,
+    TypedDict,
+    TypeVar,
+)
 
-from ..text_splitters.base import BaseTextSplitterLength
-from ..types import AIResponse, TextSplitterProtocol
+from django.conf import ImproperlyConfigured
+
+from .. import tokens
+from ..types import (
+    AIResponse,
+    TextSplitterLengthCalculatorProtocol,
+    TextSplitterProtocol,
+)
 
 
-class ChatModelConfig(TypedDict):
-    id: str
+class BaseAIBackendConfigSettings(TypedDict):
+    MODEL_ID: Required[str]
+    TOKEN_LIMIT: NotRequired[int | None]
+
+
+AIBackendConfigSettings = TypeVar(
+    "AIBackendConfigSettings", bound=BaseAIBackendConfigSettings, contravariant=True
+)
+
+
+class ConfigClassProtocol(Protocol[AIBackendConfigSettings]):
+    @classmethod
+    def from_settings(cls, config: AIBackendConfigSettings, **kwargs: Any) -> Self:
+        ...
+
+
+@dataclass(kw_only=True)
+class BaseAIBackendConfig(ConfigClassProtocol[AIBackendConfigSettings]):
+    model_id: str
     token_limit: int
-    extra: Mapping[str, Any] | None
     text_splitter_class: type[TextSplitterProtocol]
-    text_splitter_length_class: type[BaseTextSplitterLength]
+    text_splitter_length_calculator_class: type[TextSplitterLengthCalculatorProtocol]
+
+    @classmethod
+    def from_settings(
+        cls,
+        config: AIBackendConfigSettings,
+        *,
+        text_splitter_class: type[TextSplitterProtocol],
+        text_splitter_length_calculator_class: type[
+            TextSplitterLengthCalculatorProtocol
+        ],
+        **kwargs: Any,
+    ) -> Self:
+        token_limit = cls.get_token_limit(
+            model_id=config["MODEL_ID"], custom_value=config.get("TOKEN_LIMIT")
+        )
+
+        return cls(
+            model_id=config["MODEL_ID"],
+            token_limit=token_limit,
+            text_splitter_class=text_splitter_class,
+            text_splitter_length_calculator_class=text_splitter_length_calculator_class,
+            **kwargs,
+        )
+
+    @classmethod
+    def get_token_limit(cls, *, model_id: str, custom_value: int | None) -> int:
+        if custom_value is not None:
+            try:
+                return int(custom_value)
+            except ValueError as e:
+                raise ImproperlyConfigured(
+                    f'"TOKEN_LIMIT" is not an "int", it is a "{type(custom_value)}".'
+                ) from e
+        try:
+            return tokens.get_default_token_limit(model_id=model_id)
+        except tokens.NoTokenLimitFound as e:
+            raise ImproperlyConfigured(
+                f'"TOKEN_LIMIT" is not configured for model "{model_id}".'
+            ) from e
 
 
-AIBackendConfig = TypeVar("AIBackendConfig")
-CMC = TypeVar("CMC", bound=ChatModelConfig)
+AIBackendConfig = TypeVar("AIBackendConfig", bound=BaseAIBackendConfig)
 
 
-class AIBackend(Generic[AIBackendConfig, CMC], metaclass=ABCMeta):
-    text_splitter_class: type[TextSplitterProtocol]
-    chat_model_config: CMC
+class AIBackend(Generic[AIBackendConfig], metaclass=ABCMeta):
+    config_cls: ClassVar[type[ConfigClassProtocol]]
+    config: AIBackendConfig
 
     def __init__(
-        self, *, config: AIBackendConfig | None, chat_model_config: CMC
+        self,
+        *,
+        config: AIBackendConfig,
     ) -> None:
-        self.chat_model_config = chat_model_config
-        self.init_config(backend_config=config, chat_model_config=chat_model_config)
-
-    def init_config(
-        self, *, backend_config: AIBackendConfig | None, chat_model_config: CMC
-    ) -> None:
-        """
-        Take the settings dictionary and parse it onto the backend's instance.
-
-        This method is meant to be overridden by subclasses and is optional.
-        """
-        pass
+        self.config = config
 
     @abstractmethod
-    def prompt(self, prompt: str, content: str) -> AIResponse:
+    def prompt_with_context(
+        self, *, pre_prompt: str, context: str, post_prompt: str | None = None
+    ) -> AIResponse:
         """
-        Given a prompt and a content, return a response.
+        Given a prompt and a context, return a response.
         """
         ...
 
     def get_text_splitter(self) -> TextSplitterProtocol:
-        return self.chat_model_config["text_splitter_class"](
-            chunk_size=self.chat_model_config["token_limit"],
-            length_function=self.get_splitter_length,
+        return self.config.text_splitter_class(
+            chunk_size=self.config.token_limit,
+            length_function=self.get_splitter_length_calculator().get_splitter_length,
         )
 
-    def get_splitter_length(self, text: str) -> int:
-        return self.chat_model_config[
-            "text_splitter_length_class"
-        ]().get_splitter_length(text)
+    def get_splitter_length_calculator(self) -> TextSplitterLengthCalculatorProtocol:
+        return self.config.text_splitter_length_calculator_class()

@@ -3,12 +3,12 @@ import logging
 import math
 import re
 
-from .base import BaseTextSplitterLength
+from ..types import TextSplitterLengthCalculatorProtocol
 
 logger = logging.getLogger(__name__)
 
 
-class NaiveTextSplitterLength(BaseTextSplitterLength):
+class NaiveTextSplitterCalculator(TextSplitterLengthCalculatorProtocol):
     """
     Text splitter length function that estimates how many tokens there
     are in the text rather than actually giving the correct reading.
