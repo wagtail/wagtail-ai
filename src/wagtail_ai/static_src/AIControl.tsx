@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import jsxRuntime from 'react/jsx-runtime';
 import {
   EditorState,
   Modifier,
@@ -6,9 +7,12 @@ import {
   ContentState,
   RichUtils,
 } from 'draft-js';
-import { ControlComponentProps, ToolbarButton, Icon } from 'draftail';
+import { ControlComponentProps, Icon } from 'draftail';
 import { createPortal } from 'react-dom';
-import { Prompt } from './custom';
+import { useOutsideAlerter } from './hooks';
+
+import type { ToolbarButtonProps } from 'draftail';
+import type { Prompt } from './custom';
 
 class APIRequestError extends Error {}
 
@@ -145,9 +149,16 @@ const processAction = async (
   return editorStateHandler(editorState, response);
 };
 
-function ToolbarDropdown({ onAction }: { onAction: (prompt: Prompt) => void }) {
+function ToolbarDropdown({ close, onAction }: { close: any, onAction: (prompt: Prompt) => void }) {
+  const toolBarRef = useRef(null);
+  // Close the dropdown when user clicks outside of it
+  useOutsideAlerter(toolBarRef, close);
+
   return (
-    <div className="Draftail-AI-ButtonDropdown">
+    <div 
+      ref={toolBarRef}
+      className="Draftail-AI-ButtonDropdown"
+    >
       {window.WAGTAIL_AI_PROMPTS.map((prompt) => (
         <button type="button" onMouseDown={() => onAction(prompt)}>
           <span>{prompt.label}</span> {prompt.description}
@@ -161,6 +172,51 @@ function ToolbarIcon() {
   return <Icon icon={<WandIcon />} />;
 }
 
+interface ToolbarButtonState {
+  showTooltipOnHover: boolean;
+}
+interface CustomToolbarButtonProps extends Omit<ToolbarButtonProps, 'onClick'> {
+  onClick?: ((e: MouseEvent, name: string) => void) | null | undefined;
+}
+
+/*
+* This is a copy of the ToolbarButton component from draftail, with a modified onMouseDown method
+* with to pass events to onClick 
+* TODO open and reference issue here
+*/
+class CustomToolbarButton extends React.PureComponent<CustomToolbarButtonProps, ToolbarButtonState> {
+    constructor(props: CustomToolbarButtonProps) {
+        super(props);
+        this.state = {
+            showTooltipOnHover: true,
+        };
+        this.onMouseDown = this.onMouseDown.bind(this);
+        this.onMouseLeave = this.onMouseLeave.bind(this);
+    }
+    onMouseDown(e: MouseEvent) {
+      const { name, onClick } = this.props;
+      e.preventDefault();
+      this.setState({
+        showTooltipOnHover: false,
+      });
+      if (onClick) {
+        onClick(e, name || "");
+      }
+    }
+    onMouseLeave() {
+        this.setState({
+            showTooltipOnHover: true,
+        });
+    }
+    render() {
+        const { name, active, label, title, icon, className, tooltipDirection } = this.props;
+        const { showTooltipOnHover } = this.state;
+        const showTooltip = title && showTooltipOnHover;
+        // @ts-ignore
+        return (jsxRuntime.jsxs("button", { name: name, className: `Draftail-ToolbarButton ${className || ""}${active ? " Draftail-ToolbarButton--active" : ""}`, type: "button", "aria-label": title || undefined, "data-draftail-balloon": showTooltip ? tooltipDirection || "up" : null, tabIndex: -1, onMouseDown: this.onMouseDown, onMouseLeave: this.onMouseLeave, children: [icon ? jsxRuntime.jsx(Icon, { icon: icon }) : null, label ? (jsxRuntime.jsx("span", { className: "Draftail-ToolbarButton__label", children: label })) : null] }));
+    }
+}
+
 type ControlComponentPropsExtended = ControlComponentProps & {
   field: any;
 };
@@ -168,16 +224,12 @@ type ControlComponentPropsExtended = ControlComponentProps & {
 function AIControl({
   getEditorState,
   onChange,
-  field,
 }: ControlComponentPropsExtended) {
   const editorState = getEditorState() as EditorState;
-  const [isLoading, setIsLoading] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState<Boolean>(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState<Boolean>(false);
   const [error, setError] = useState(null);
-
-  const handleClick = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+  const draftailEditorWrapperRef = useRef<any>(null);
 
   const handleAction = async (prompt: Prompt) => {
     setError(null);
@@ -195,15 +247,26 @@ function AIControl({
     setIsLoading(false);
   };
 
+  const handleClick = (e: any): void => {
+    if (!e.target) {
+      return
+    }
+    if (!draftailEditorWrapperRef?.current) {
+      // Reference the Draftail editor wrapper so we can insert error messages and loading overlays
+      draftailEditorWrapperRef.current = e.target.closest("[data-draftail-editor-wrapper]")
+    }
+    setIsDropdownOpen(!isDropdownOpen)
+  };
+
   return (
     <>
-      <ToolbarButton
+      <CustomToolbarButton
         name="AI Tools"
         icon={<ToolbarIcon />}
         onClick={handleClick}
       />
-      {isDropdownOpen ? <ToolbarDropdown onAction={handleAction} /> : null}
-      {error
+      {isDropdownOpen ? <ToolbarDropdown close={() => setIsDropdownOpen(false)} onAction={handleAction} /> : null}
+      {error && draftailEditorWrapperRef?.current
         ? createPortal(
             <>
               <svg
@@ -214,10 +277,12 @@ function AIControl({
               </svg>
               <p className="error-message">{error}</p>
             </>,
-            field.parentNode.previousElementSibling,
+            draftailEditorWrapperRef?.current.previousElementSibling,
           )
         : null}
-      {isLoading ? createPortal(<LoadingOverlay />, field.parentNode) : null}
+      {isLoading && draftailEditorWrapperRef?.current ? createPortal(<LoadingOverlay />, 
+        draftailEditorWrapperRef?.current 
+      ) : null}
     </>
   );
 }
