@@ -1,7 +1,6 @@
 import './main.css';
 import AIControl from './AIControl';
 
-
 declare global {
   interface Window {
     draftail: any;
