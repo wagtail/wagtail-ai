@@ -24,12 +24,6 @@ repos:
     rev: 23.11.0
     hooks:
       - id: black
-  - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.336
-    hooks:
-      - id: pyright
-        language_version: python3
-        args: ['--project', './pyrightconfig.json']
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
     rev: v0.1.6
