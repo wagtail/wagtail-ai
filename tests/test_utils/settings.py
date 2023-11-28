@@ -8,7 +8,7 @@ from wagtail_ai.ai import AIBackendSettingsDict, TextSplittingSettingsDict
 DEFAULT_ALIAS = "default"
 
 
-def custom_wagtail_ai_backend_settings(
+def custom_ai_backend_settings(
     *, alias: str = DEFAULT_ALIAS, new_value: AIBackendSettingsDict
 ):
     def decorator(func):
@@ -39,9 +39,9 @@ def custom_ai_backend_specific_settings(
                 },
             )
             backend_settings[settings_key] = new_value
-            return custom_wagtail_ai_backend_settings(
-                new_value=backend_settings, alias=alias
-            )(func)(*args, **kwargs)
+            return custom_ai_backend_settings(new_value=backend_settings, alias=alias)(
+                func
+            )(*args, **kwargs)
 
         return inner
 

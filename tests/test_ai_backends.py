@@ -1,8 +1,11 @@
+import re
+
+import pytest
 from test_utils.settings import (
     custom_ai_backend_class,
-    custom_wagtail_ai_backend_settings,
+    custom_ai_backend_settings,
 )
-from wagtail_ai.ai import get_ai_backend
+from wagtail_ai.ai import InvalidAIBackendError, get_ai_backend
 from wagtail_ai.ai.echo import EchoBackend
 
 
@@ -12,7 +15,19 @@ def test_get_configured_backend_instance():
     assert isinstance(backend, EchoBackend)
 
 
-@custom_wagtail_ai_backend_settings(
+@custom_ai_backend_class("some.random.not.existing.path")
+def test_get_invalid_backend_class_instance():
+    with pytest.raises(
+        InvalidAIBackendError,
+        match=re.escape(
+            'Invalid AI backend: "AI backend "default" settings: "CLASS" '
+            '("some.random.not.existing.path") is not importable.'
+        ),
+    ):
+        get_ai_backend("default")
+
+
+@custom_ai_backend_settings(
     new_value={
         "CLASS": "wagtail_ai.ai.echo.EchoBackend",
         "CONFIG": {
@@ -25,11 +40,12 @@ def test_get_configured_backend_instance():
 def test_get_backend_instance_with_custom_setting():
     backend = get_ai_backend("default")
     assert isinstance(backend, EchoBackend)
+    assert backend.config.model_id == "echo"
     assert backend.config.max_word_sleep_seconds == 150
     assert backend.config.token_limit == 123123
 
 
-@custom_wagtail_ai_backend_settings(
+@custom_ai_backend_settings(
     new_value={
         "CLASS": "wagtail_ai.ai.echo.EchoBackend",
         "CONFIG": {
@@ -48,7 +64,7 @@ def test_prompt_with_context():
     assert response.text() == "This is an echo backend: I like trains."
 
 
-@custom_wagtail_ai_backend_settings(
+@custom_ai_backend_settings(
     new_value={
         "CLASS": "wagtail_ai.ai.echo.EchoBackend",
         "CONFIG": {

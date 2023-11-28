@@ -137,10 +137,17 @@ def _get_text_splitter_config(
 def get_ai_backend(alias: str) -> AIBackend:
     backend_dict = get_ai_backend_settings(alias)
 
+    if "CLASS" not in backend_dict:
+        raise ImproperlyConfigured(
+            f'"AI backend "{alias}" settings: "CLASS" is missing in the configuration.'
+        )
+
     try:
         ai_backend_cls = cast(type[AIBackend], import_string(backend_dict["CLASS"]))
-    except (KeyError, ImportError) as e:
-        raise InvalidAIBackendError(alias) from e
+    except ImportError as e:
+        raise InvalidAIBackendError(
+            f'"AI backend "{alias}" settings: "CLASS" ("{backend_dict["CLASS"]}") is not importable.'
+        ) from e
 
     backend_settings = backend_dict["CONFIG"]
     text_splitting = _get_text_splitter_config(
