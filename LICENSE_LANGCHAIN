@@ -1,3 +1,6 @@
+This is the license for the Langchain text splitter that is vendored
+in "src/wagtail_ai/text_splitters/langchain.py".
+
 MIT License
 
 Copyright (c) LangChain, Inc.
