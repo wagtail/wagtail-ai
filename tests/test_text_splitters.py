@@ -1,18 +1,11 @@
 import pytest
-from test_utils.settings import custom_wagtail_ai_backend_settings
+from test_utils.settings import custom_text_splitting
 from wagtail_ai.ai import (
-    TextSplittingSettingsDict,
     get_ai_backend,
 )
 from wagtail_ai.text_splitters.dummy import DummyLengthCalculator, DummyTextSplitter
 from wagtail_ai.text_splitters.langchain import LangchainRecursiveCharacterTextSplitter
 from wagtail_ai.text_splitters.length import NaiveTextSplitterCalculator
-
-
-def custom_text_splitting(new_settings: TextSplittingSettingsDict):
-    return custom_wagtail_ai_backend_settings(
-        settings_key="TEXT_SPLITTING", new_value=new_settings
-    )
 
 
 @custom_text_splitting({})

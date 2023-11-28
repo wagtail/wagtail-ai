@@ -56,12 +56,29 @@ def get_ai_backends_settings() -> Mapping[str, AIBackendSettingsDict]:
     }
 
 
+def _validate_backend_settings(*, settings: AIBackendSettingsDict, alias: str) -> None:
+    if "CONFIG" not in settings:
+        raise ImproperlyConfigured(
+            'AI backend settings for "{alias}": Missing "CONFIG".'
+        )
+    if not isinstance(settings["CONFIG"], Mapping):
+        raise ImproperlyConfigured(
+            'AI backend settings for "{alias}": "CONFIG" is not a Mapping.'
+        )
+    if "MODEL_ID" not in settings["CONFIG"]:
+        raise ImproperlyConfigured(
+            'AI backend settings for "{alias}": "MODEL_ID" is missing in "CONFIG".'
+        )
+
+
 def get_ai_backend_settings(alias: str) -> AIBackendSettingsDict:
     backends_settings = get_ai_backends_settings()
     try:
         return backends_settings[alias]
     except (KeyError, ImportError) as e:
         raise InvalidAIBackendError(alias) from e
+
+    _validate_backend_settings(settings=backends_settings, alias=alias)
 
 
 def _get_default_text_splitter_class() -> type[LangchainRecursiveCharacterTextSplitter]:
