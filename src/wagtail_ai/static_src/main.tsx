@@ -8,7 +8,10 @@ declare global {
   }
 }
 
-window.draftail.registerPlugin({
-  type: 'ai',
-  inline: AIControl,
-}, 'controls');
+window.draftail.registerPlugin(
+  {
+    type: 'ai',
+    inline: AIControl,
+  },
+  'controls',
+);

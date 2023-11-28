@@ -46,10 +46,10 @@ def register_ai_feature(features):
         feature_name,
         ControlFeature(
             {
-                'type': feature_name,
+                "type": feature_name,
             },
             js=["wagtail_ai/wagtail-ai.js"],
-            css={"all": ["wagtail_ai/main.css"]}
+            css={"all": ["wagtail_ai/main.css"]},
         ),
     )
 
