@@ -13,6 +13,7 @@ class APIRequestError extends Error {}
 const fetchAIResponse = async (
   text: string,
   prompt: Prompt,
+  signal: AbortSignal,
 ): Promise<string> => {
   const formData = new FormData();
   formData.append('text', text);
@@ -21,6 +22,7 @@ const fetchAIResponse = async (
     const res = await fetch(window.WAGTAIL_AI_PROCESS_URL, {
       method: 'POST',
       body: formData,
+      signal: signal,
     });
     const json = await res.json();
     if (res.ok) {
@@ -29,7 +31,6 @@ const fetchAIResponse = async (
       throw new APIRequestError(json.error);
     }
   } catch (err) {
-    console.log('here');
     throw new APIRequestError(err.message);
   }
 };
@@ -90,9 +91,14 @@ export const processAction = async (
     editorState: EditorState,
     response: string,
   ) => EditorState,
+  abortController: AbortController, // Pass the AbortController instance
 ): Promise<EditorState> => {
   const content = editorState.getCurrentContent();
   const plainText = content.getPlainText();
-  const response = await fetchAIResponse(plainText, prompt);
+  const response = await fetchAIResponse(
+    plainText,
+    prompt,
+    abortController.signal,
+  );
   return editorStateHandler(editorState, response);
 };
