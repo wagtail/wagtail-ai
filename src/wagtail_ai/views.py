@@ -1,10 +1,11 @@
 import logging
 import os
+from typing import Callable, Any
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from . import ai, prompts
+from . import ai, prompts, types
 
 logger = logging.getLogger(__name__)
 
@@ -13,14 +14,36 @@ class AIHandlerException(Exception):
     pass
 
 
+def _process_backend_request(ai_backend: ai.AIBackend, pre_prompt: str, context: str) -> types.AIResponse:
+    """
+    Method for processing prompt requests and handling errors.
+
+    Errors will either be an API or Python library error, this method uses exception
+    chaining to retain the original error and raise a more generic error message to be sent to the front-end.
+
+    :return: The response message from the AI backend.
+    :raises AIHandlerException: Raised for specific error scenarios to be communicated to the front-end.
+    """
+    try:
+        response = ai_backend.prompt_with_context(pre_prompt=pre_prompt, context=context)
+        return response
+    except Exception as e:
+        # Raise a more generic error to send to the front-end
+        raise AIHandlerException(
+            "Error processing request, Please try again later."
+        ) from e
+
+
 def _replace_handler(*, prompt: prompts.Prompt, text: str) -> str:
     ai_backend = ai.get_ai_backend(alias=prompt.backend)
     splitter = ai_backend.get_text_splitter()
     texts = splitter.split_text(text)
 
     for split in texts:
-        response = ai_backend.prompt_with_context(
-            pre_prompt=prompt.prompt, context=split
+        response = _process_backend_request(
+            ai_backend,
+            pre_prompt=prompt.prompt, 
+            context=split
         )
         # Remove extra blank lines returned by the API
         message = os.linesep.join([s for s in response.text().splitlines() if s])
@@ -34,8 +57,8 @@ def _append_handler(*, prompt: prompts.Prompt, text: str) -> str:
     length_calculator = ai_backend.get_splitter_length_calculator()
     if length_calculator.get_splitter_length(text) > ai_backend.config.token_limit:
         raise AIHandlerException("Cannot run completion on text this long")
-
-    response = ai_backend.prompt_with_context(pre_prompt=prompt.prompt, context=text)
+            
+    response = _process_backend_request(ai_backend, pre_prompt=prompt.prompt, context=text)
     # Remove extra blank lines returned by the API
     message = os.linesep.join([s for s in response.text().splitlines() if s])
 
