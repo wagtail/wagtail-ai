@@ -34,17 +34,19 @@
 
 .Draftail-AI-ButtonDropdown {
   position: absolute;
-  border: 1px solid var(--w-color-grey-200);
   border-radius: 0.3125rem;
-  background-color: white;
+  background-color: var(--w-color-surface-tooltip);
+  color: var(--w-color-text-label-menus-default);
   display: flex;
   flex-direction: column;
   min-width: 300px;
   z-index: 200;
+  padding: 0.5rem 0;
 }
 
 .Draftail-AI-ButtonDropdown > button {
-  background-color: transparent;
+  color: var(--w-color-text-label-menus-default);
+  background-color: initial;
   padding: 8px;
   text-align: left;
 }
@@ -55,7 +57,8 @@
 }
 
 .Draftail-AI-ButtonDropdown > button:hover {
-  background-color: var(--w-color-grey-200);
+  background-color: var(--w-color-surface-menu-item-active);
+  color: var(--w-color-text-label-menus-active);
 }
 
 /* Temp fix for wagtail issue https://github.com/wagtail/wagtail/issues/11302 */
