@@ -105,15 +105,16 @@ function AIControl({ getEditorState, onChange }: ControlComponentProps) {
       ) : null}
       {error && container?.parentNode
         ? createPortal(
-            <>
+            <div className="w-field__errors">
               <svg
                 className="icon icon-warning w-field__errors-icon"
                 aria-hidden="true"
               >
                 <use href="#icon-warning"></use>
               </svg>
+              &nbsp;
               <p className="error-message">{error}</p>
-            </>,
+            </div>,
             container.parentNode.previousElementSibling,
           )
         : null}
