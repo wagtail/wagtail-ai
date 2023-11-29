@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import type { RefObject } from 'react';
 
 /**
- * Hook that alerts clicks outside of the passed ref
+ * Attaches event listners to a handler method when a user
+ * clicks outside of reference object
  */
 export const useOutsideAlerter = (
   ref: RefObject<HTMLElement>,

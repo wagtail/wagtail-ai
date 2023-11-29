@@ -119,8 +119,10 @@ class CustomToolbarButton extends React.PureComponent<
       'onMouseDown': this.onMouseDown,
       'onMouseLeave': this.onMouseLeave,
       'children': [
+        // @ts-ignore
         icon ? jsxRuntime.jsx(Icon, { icon: icon }) : null,
         label
+          // @ts-ignore
           ? jsxRuntime.jsx('span', {
               className: 'Draftail-ToolbarButton__label',
               children: label,
@@ -199,7 +201,7 @@ function AIControl({
               </svg>
               <p className="error-message">{error}</p>
             </>,
-            draftailEditorWrapperRef?.current.previousElementSibling,
+            draftailEditorWrapperRef?.current.parentNode.previousElementSibling,
           )
         : null}
       {isLoading && draftailEditorWrapperRef?.current
