@@ -23,7 +23,11 @@ const LOADING_MESSAGES = [
   'Interpreting your message, loading...',
 ];
 
-function LoadingOverlay() {
+function LoadingOverlay({
+  cancelHandler,
+}: {
+  cancelHandler: React.MouseEventHandler<HTMLButtonElement>;
+}) {
   const loadingMessage =
     LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)];
 
@@ -35,6 +39,10 @@ function LoadingOverlay() {
         </svg>
         {loadingMessage}
       </span>
+
+      <button onClick={cancelHandler} className="button button-secondary">
+        Cancel request
+      </button>
     </div>
   );
 }
@@ -65,12 +73,21 @@ function AIControl({ getEditorState, onChange }: ControlComponentProps) {
   const editorState = getEditorState() as EditorState;
   const [isLoading, setIsLoading] = useState<Boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState<Boolean>(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<null | string>(null);
   const aIControlRef = useRef<any>();
 
   const container = aIControlRef?.current
     ? aIControlRef?.current.closest('[data-draftail-editor-wrapper]')
     : null;
+
+  const abortController = new AbortController();
+
+  const cancelRequest: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    // Call the abort method to cancel the request
+    abortController.abort();
+    setIsLoading(false); // Set loading to false to hide the overlay
+  };
 
   const handleAction = async (prompt: Prompt) => {
     setError(null);
@@ -78,9 +95,23 @@ function AIControl({ getEditorState, onChange }: ControlComponentProps) {
     setIsLoading(true);
     try {
       if (prompt.method === 'append') {
-        onChange(await processAction(editorState, prompt, handleAppend));
+        onChange(
+          await processAction(
+            editorState,
+            prompt,
+            handleAppend,
+            abortController,
+          ),
+        );
       } else {
-        onChange(await processAction(editorState, prompt, handleReplace));
+        onChange(
+          await processAction(
+            editorState,
+            prompt,
+            handleReplace,
+            abortController,
+          ),
+        );
       }
     } catch (err) {
       setError(err.message);
@@ -119,7 +150,10 @@ function AIControl({ getEditorState, onChange }: ControlComponentProps) {
           )
         : null}
       {isLoading && container
-        ? createPortal(<LoadingOverlay />, container)
+        ? createPortal(
+            <LoadingOverlay cancelHandler={cancelRequest} />,
+            container,
+          )
         : null}
     </>
   );
