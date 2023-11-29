@@ -122,8 +122,8 @@ class CustomToolbarButton extends React.PureComponent<
         // @ts-ignore
         icon ? jsxRuntime.jsx(Icon, { icon: icon }) : null,
         label
-          // @ts-ignore
-          ? jsxRuntime.jsx('span', {
+          ? // @ts-ignore
+            jsxRuntime.jsx('span', {
               className: 'Draftail-ToolbarButton__label',
               children: label,
             })
