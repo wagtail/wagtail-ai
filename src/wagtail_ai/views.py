@@ -1,55 +1,43 @@
+import logging
 import os
 
-import tiktoken
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-from .ai import get_ai_backend
-from .prompts import Prompt, get_prompt_by_id
+from . import ai, prompts
 
-DEFAULT_MODEL = "gpt-3.5-turbo"
-DEFAULT_MAX_TOKENS = 4096
+logger = logging.getLogger(__name__)
 
 
 class AIHandlerException(Exception):
     pass
 
 
-def _splitter_length(string):
-    """Return the number of tokens in a string, used by the Langchain
-    splitter so we split based on tokens rather than characters."""
-    encoding = tiktoken.encoding_for_model(DEFAULT_MODEL)
-    return len(encoding.encode(string))
-
-
-def _replace_handler(prompt: Prompt, text: str):
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=DEFAULT_MAX_TOKENS, length_function=_splitter_length
-    )
+def _replace_handler(*, prompt: prompts.Prompt, text: str) -> str:
+    ai_backend = ai.get_ai_backend(alias=prompt.backend)
+    splitter = ai_backend.get_text_splitter()
     texts = splitter.split_text(text)
 
     for split in texts:
-        full_prompt = "\n".join([prompt.prompt, split])
-        backend = get_ai_backend()
-        message = backend.chat(user_messages=[full_prompt])
+        response = ai_backend.prompt_with_context(
+            pre_prompt=prompt.prompt, context=split
+        )
         # Remove extra blank lines returned by the API
-        message = os.linesep.join([s for s in message.splitlines() if s])
+        message = os.linesep.join([s for s in response.text().splitlines() if s])
         text = text.replace(split, message)
 
     return text
 
 
-def _append_handler(prompt: Prompt, text: str):
-    tokens = _splitter_length(text)
-    if tokens > DEFAULT_MAX_TOKENS:
+def _append_handler(*, prompt: prompts.Prompt, text: str) -> str:
+    ai_backend = ai.get_ai_backend(alias=prompt.backend)
+    length_calculator = ai_backend.get_splitter_length_calculator()
+    if length_calculator.get_splitter_length(text) > ai_backend.config.token_limit:
         raise AIHandlerException("Cannot run completion on text this long")
 
-    full_prompt = "\n".join([prompt.prompt, text])
-    backend = get_ai_backend()
-    message = backend.chat(user_messages=[full_prompt])
+    response = ai_backend.prompt_with_context(pre_prompt=prompt.prompt, context=text)
     # Remove extra blank lines returned by the API
-    message = os.linesep.join([s for s in message.splitlines() if s])
+    message = os.linesep.join([s for s in response.text().splitlines() if s])
 
     return message
 
@@ -57,8 +45,6 @@ def _append_handler(prompt: Prompt, text: str):
 @csrf_exempt
 def process(request):
     text = request.POST.get("text")
-    prompt_idx = request.POST.get("prompt")
-    prompt = get_prompt_by_id(int(prompt_idx))
 
     if not text:
         return JsonResponse(
@@ -69,18 +55,26 @@ def process(request):
             status=400,
         )
 
-    if not prompt:
+    prompt_idx = request.POST.get("prompt")
+
+    try:
+        prompt = prompts.get_prompt_by_id(int(prompt_idx))
+    except prompts.Prompt.DoesNotExist:
         return JsonResponse({"error": "Invalid prompt provided"}, status=400)
 
     handlers = {
-        Prompt.Method.REPLACE: _replace_handler,
-        Prompt.Method.APPEND: _append_handler,
+        prompts.Prompt.Method.REPLACE: _replace_handler,
+        prompts.Prompt.Method.APPEND: _append_handler,
     }
 
-    handler = handlers[prompt.method]
+    handler = handlers[prompts.Prompt.Method(prompt.method)]
+
     try:
-        response = handler(prompt, text)
+        response = handler(prompt=prompt, text=text)
     except AIHandlerException as e:
         return JsonResponse({"error": str(e)}, status=400)
+    except Exception:
+        logger.exception("An unexpected error occurred.")
+        return JsonResponse({"error": "An unexpected error occurred"}, status=500)
 
     return JsonResponse({"message": response})

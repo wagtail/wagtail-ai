@@ -1,21 +1,25 @@
 import inspect
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, Union
+from typing import Union
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Prompt:
     class Method(Enum):
         REPLACE = "replace"
         APPEND = "append"
 
+    class DoesNotExist(Exception):
+        pass
+
     id: int
     label: str
     prompt: str
+    backend: str = "default"
     description: str = ""
     method: Union[str, Method] = Method.REPLACE
 
@@ -29,7 +33,7 @@ class Prompt:
             "label": self.label,
             "description": self.description,
             "prompt": self.prompt,
-            "method": self.method.value,
+            "method": Prompt.Method(self.method).value,
         }
 
 
@@ -71,8 +75,8 @@ def get_prompts():
         ) from e
 
 
-def get_prompt_by_id(id: int) -> Optional[Prompt]:
+def get_prompt_by_id(id: int) -> Prompt:
     for prompt in get_prompts():
         if prompt.id == id:
             return prompt
-    return None
+    raise Prompt.DoesNotExist(f"Can't get prompt by id: {id}")

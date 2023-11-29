@@ -10,7 +10,7 @@ from .prompts import get_prompts
 from .views import process
 
 
-@hooks.register("register_admin_urls")
+@hooks.register("register_admin_urls")  # type: ignore
 def register_admin_urls():
     urls = [
         path(
@@ -41,7 +41,7 @@ class ControlFeature(draftail_features.Feature):
         return None
 
 
-@hooks.register("register_rich_text_features")
+@hooks.register("register_rich_text_features")  # type: ignore
 def register_ai_feature(features):
     features.default_features.append("ai")
     features.register_editor_plugin(
@@ -53,7 +53,7 @@ def register_ai_feature(features):
     )
 
 
-@hooks.register("insert_editor_js")
+@hooks.register("insert_editor_js")  # type: ignore
 def ai_editor_js():
     prompt_json = json.dumps([prompt.as_dict() for prompt in get_prompts()])
     process_url = reverse("wagtail_ai:process")
