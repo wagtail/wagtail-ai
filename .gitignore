@@ -7,6 +7,7 @@ __pycache__/
 /htmlcov
 /.tox
 /venv
+/.venv
 /.vscode
 /site
 /test_wagtail_ai.db

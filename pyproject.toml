@@ -79,3 +79,11 @@ exclude = [
     "*.ini",
     "*.yml"
 ]
+
+[tool.pyright]
+include = ["src/**"]
+exclude = ["**/migrations", ".tox/**", ".venv", "venv/**", "node_modules/**"]
+venvPath = ".venv"
+venv = "."
+pythonVersion = "3.11"
+pythonPlatform = "Linux"
