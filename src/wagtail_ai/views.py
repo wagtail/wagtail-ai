@@ -3,8 +3,10 @@ import os
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from wagtail.admin.ui.tables import UpdatedAtColumn
+from wagtail.admin.viewsets.model import ModelViewSet
 
-from . import ai, prompts, types
+from . import ai, models, prompts, types
 
 logger = logging.getLogger(__name__)
 
@@ -104,3 +106,16 @@ def process(request):
         return JsonResponse({"error": "An unexpected error occurred"}, status=500)
 
     return JsonResponse({"message": response})
+
+
+class PromptViewSet(ModelViewSet):
+    model = models.Prompt
+    form_fields = ["label", "description", "prompt", "method"]
+    list_display = ["label", "description", UpdatedAtColumn()]  # type: ignore
+    icon = "edit"
+    add_to_settings_menu = True
+    inspect_view_enabled = True
+    menu_order = 300
+
+
+prompt_viewset = PromptViewSet("prompt")

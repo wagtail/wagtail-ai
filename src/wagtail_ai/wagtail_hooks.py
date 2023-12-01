@@ -7,7 +7,7 @@ from wagtail import hooks
 from wagtail.admin.rich_text.editors.draftail.features import ControlFeature
 
 from .prompts import get_prompts
-from .views import process
+from .views import process, prompt_viewset
 
 
 @hooks.register("register_admin_urls")  # type: ignore
@@ -67,3 +67,8 @@ def ai_editor_js():
         </script>
         """
     )
+
+
+@hooks.register("register_admin_viewset")  # type: ignore
+def register_viewset():
+    return prompt_viewset
