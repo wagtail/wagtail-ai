@@ -11,7 +11,10 @@ You can also define your own prompts:
 
 ### Adding Your Own Prompts
 
-To add custom prompts, add the `WAGTAIL_AI_PROMPTS` setting to your settings file. This is a list of all the prompts to enable, where each prompt is a dictionary in the form:
+Explore the [ModelViewSet](https://docs.wagtail.org/en/stable/reference/viewsets.html#modelviewset) labeled `Prompts` within the Wagtail settings menu, here you'll be able to view, edit and add new prompts.
+
+
+To customize the default prompts offered by Wagtail AI, introduce the `WAGTAIL_AI_PROMPTS` setting in your settings file. This setting is a list containing all the prompts loaded during the initial app migration `0002_populate_default_prompts`. Each prompt is represented as a dictionary in the following format:
 
 ```python
 {
