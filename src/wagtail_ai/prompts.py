@@ -1,40 +1,4 @@
-import inspect
-from dataclasses import dataclass
-from typing import Union
-
-from django.core.exceptions import ImproperlyConfigured
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-
-
-@dataclass(kw_only=True)
-class Prompt:
-    class Method(models.TextChoices):
-        REPLACE = "replace", _("Replace content")
-        APPEND = "append", _("Append after existing content")
-
-    class DoesNotExist(Exception):
-        pass
-
-    id: int
-    label: str
-    prompt: str
-    backend: str = "default"
-    description: str = ""
-    method: Union[str, Method] = Method.REPLACE
-
-    def __post_init__(self):
-        self.prompt = inspect.cleandoc(self.prompt)
-        self.method = Prompt.Method(self.method)
-
-    def as_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "label": self.label,
-            "description": self.description,
-            "prompt": self.prompt,
-            "method": Prompt.Method(self.method).value,
-        }
+from .models import Prompt
 
 
 DEFAULT_PROMPTS = [
@@ -63,29 +27,4 @@ DEFAULT_PROMPTS = [
 
 
 def get_prompts() -> list[Prompt]:
-    from .models import Prompt as PromptModel  # Avoid circular import
-
-    try:
-        return [
-            Prompt(
-                label=prompt.label,
-                description=prompt.description,
-                prompt=prompt.prompt,
-                method=prompt.method,
-                id=idx,
-            )
-            for idx, prompt in enumerate(PromptModel.objects.all())  # type: ignore
-        ]
-    except TypeError as e:
-        raise ImproperlyConfigured(
-            """WAGTAIL_AI_PROMPTS must be a list of dictionaries, where each dictionary
-            has a 'label', 'description', 'prompt' and 'method' key.
-            The 'method' must be one of 'append' or 'replace'."""
-        ) from e
-
-
-def get_prompt_by_id(id: int) -> Prompt:
-    for prompt in get_prompts():
-        if prompt.id == id:
-            return prompt
-    raise Prompt.DoesNotExist(f"Can't get prompt by id: {id}")
+    return [prompt.as_dict() for prompt in Prompt.objects.all()]  # type: ignore

@@ -184,21 +184,6 @@ else:
     }
 
 
-WAGTAIL_AI_PROMPTS = [
-    *wagtail_ai.DEFAULT_PROMPTS,
-    {
-        "label": "Translate to French",
-        "prompt": "Translate the following content in to French",
-        "method": "replace",
-    },
-    {
-        "label": "Simplify",
-        "prompt": "Change this content so it uses easier to understand words",
-        "method": "replace",
-    },
-]
-
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

@@ -6,7 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 from wagtail.admin.ui.tables import UpdatedAtColumn
 from wagtail.admin.viewsets.model import ModelViewSet
 
-from . import ai, models, prompts, types
+from . import ai, prompts, types
+from .models import Prompt
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ def _process_backend_request(
     return response
 
 
-def _replace_handler(*, prompt: prompts.Prompt, text: str) -> str:
+def _replace_handler(*, prompt: Prompt, text: str) -> str:
     ai_backend = ai.get_ai_backend(alias=prompt.backend)
     splitter = ai_backend.get_text_splitter()
     texts = splitter.split_text(text)
@@ -55,7 +56,7 @@ def _replace_handler(*, prompt: prompts.Prompt, text: str) -> str:
     return text
 
 
-def _append_handler(*, prompt: prompts.Prompt, text: str) -> str:
+def _append_handler(*, prompt: Prompt, text: str) -> str:
     ai_backend = ai.get_ai_backend(alias=prompt.backend)
     length_calculator = ai_backend.get_splitter_length_calculator()
     if length_calculator.get_splitter_length(text) > ai_backend.config.token_limit:
@@ -83,16 +84,16 @@ def process(request):
             status=400,
         )
 
-    prompt_idx = request.POST.get("prompt")
+    prompt_id = request.POST.get("prompt")
 
     try:
-        prompt = prompts.get_prompt_by_id(int(prompt_idx))
-    except prompts.Prompt.DoesNotExist:
+        prompt = Prompt.objects.get(int(prompt_id))
+    except Prompt.DoesNotExist:
         return JsonResponse({"error": "Invalid prompt provided"}, status=400)
 
     handlers = {
-        prompts.Prompt.Method.REPLACE: _replace_handler,
-        prompts.Prompt.Method.APPEND: _append_handler,
+        Prompt.Method.REPLACE: _replace_handler,
+        Prompt.Method.APPEND: _append_handler,
     }
 
     handler = handlers[prompts.Prompt.Method(prompt.method)]
@@ -109,7 +110,7 @@ def process(request):
 
 
 class PromptViewSet(ModelViewSet):
-    model = models.Prompt
+    model = Prompt
     form_fields = ["label", "description", "prompt", "method"]
     list_display = ["label", "description", UpdatedAtColumn()]  # type: ignore
     icon = "edit"

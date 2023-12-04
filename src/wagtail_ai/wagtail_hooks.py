@@ -56,7 +56,7 @@ def register_ai_feature(features):
 
 @hooks.register("insert_editor_js")  # type: ignore
 def ai_editor_js():
-    prompt_json = json.dumps([prompt.as_dict() for prompt in get_prompts()])
+    prompt_json = json.dumps(get_prompts())
     process_url = reverse("wagtail_ai:process")
 
     return mark_safe(
