@@ -4,6 +4,9 @@ from django.test import override_settings
 from wagtail_ai import DEFAULT_PROMPTS
 from wagtail_ai.prompts import get_prompt_by_id, get_prompts
 
+# Apply pytest.mark.django_db to all tests in this file
+pytestmark = pytest.mark.django_db
+
 
 @override_settings(WAGTAIL_AI_PROMPTS=[])
 def test_get_prompts_returns_default_prompts():
