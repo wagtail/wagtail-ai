@@ -42,11 +42,11 @@
   background-color: var(--w-color-grey-200);
 }
 
-/* TODO update, Fix wagtail issue ... */
+/* Temp fixes for wagtail issue https://github.com/wagtail/wagtail/issues/11302 */
 .Draftail-CommentControl {
   display: none;
 
   .tab-content--comments-enabled & {
-    display: inline;
+    display: inline-block;
   }
 }
