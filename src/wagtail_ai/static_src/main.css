@@ -42,7 +42,7 @@
   background-color: var(--w-color-grey-200);
 }
 
-/* Temp fixes for wagtail issue https://github.com/wagtail/wagtail/issues/11302 */
+/* Temp fix for wagtail issue https://github.com/wagtail/wagtail/issues/11302 */
 .Draftail-CommentControl {
   display: none;
 

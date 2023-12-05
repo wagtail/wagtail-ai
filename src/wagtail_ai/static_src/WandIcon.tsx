@@ -1,5 +1,6 @@
 import React from 'react';
 import { Icon } from 'draftail';
+import type { IconProp } from 'draftail';
 
 const WandSVG = () => {
   // Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc.
@@ -17,6 +18,6 @@ const WandSVG = () => {
   );
 };
 
-const WandIcon = () => <Icon icon={<WandSVG />} />;
+const WandIcon: IconProp = <Icon icon={<WandSVG />} />;
 
 export default WandIcon;
