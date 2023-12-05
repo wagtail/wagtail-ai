@@ -89,13 +89,14 @@ function AIControl({ getEditorState, onChange }: ControlComponentProps) {
   };
 
   return (
-    <div ref={aIControlRef}>
+    <>
       <ToolbarButton
         name="AI Tools"
         title="AI prompts"
         icon={WandIcon}
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       />
+      <span ref={aIControlRef} />
       {isDropdownOpen ? (
         <ToolbarDropdown
           close={() => setIsDropdownOpen(false)}
@@ -119,7 +120,7 @@ function AIControl({ getEditorState, onChange }: ControlComponentProps) {
       {isLoading && container
         ? createPortal(<LoadingOverlay />, container)
         : null}
-    </div>
+    </>
   );
 }
 
