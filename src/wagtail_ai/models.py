@@ -37,7 +37,7 @@ class Prompt(models.Model, index.Indexed):
         APPEND = "append", _("Append after existing content")
 
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    label = models.CharField(max_length=255)
+    label = models.CharField(max_length=50)
     description = models.CharField(
         max_length=255,
         blank=True,

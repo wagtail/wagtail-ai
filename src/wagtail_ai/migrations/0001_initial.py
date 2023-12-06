@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("uuid", models.UUIDField(default=uuid.uuid4, editable=False)),
-                ("label", models.CharField(max_length=255)),
+                ("label", models.CharField(max_length=50)),
                 (
                     "description",
                     models.CharField(
