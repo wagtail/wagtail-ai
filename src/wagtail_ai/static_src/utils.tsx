@@ -17,7 +17,7 @@ const fetchAIResponse = async (
 ): Promise<string> => {
   const formData = new FormData();
   formData.append('text', text);
-  formData.append('prompt', prompt.id);
+  formData.append('prompt', prompt.uuid);
   try {
     const res = await fetch(window.WAGTAIL_AI_PROCESS_URL, {
       method: 'POST',

@@ -92,7 +92,7 @@ class Prompt(models.Model):
 
     def as_dict(self) -> dict:
         return {
-            "id": str(self.uuid),  # todo update to ID
+            "uuid": str(self.uuid),
             "label": self.label,
             "description": self.description,
             "prompt": self.prompt_value,

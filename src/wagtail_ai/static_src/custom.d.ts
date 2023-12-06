@@ -2,7 +2,7 @@
 export {};
 
 export type Prompt = {
-  id: string;
+  uuid: string;
   label: string;
   description: string;
   prompt: string;
