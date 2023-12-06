@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from wagtail.search import index
 
 DEFAULT_PROMPTS = [
     {
@@ -30,7 +31,7 @@ DEFAULT_PROMPTS = [
 ]
 
 
-class Prompt(models.Model):
+class Prompt(models.Model, index.Indexed):
     class Method(models.TextChoices):
         REPLACE = "replace", _("Replace content")
         APPEND = "append", _("Append after existing content")
@@ -56,6 +57,12 @@ class Prompt(models.Model):
         choices=Method.choices,
         help_text=_("The method used for processing the responses to the prompt."),
     )
+
+    search_fields = [
+        index.SearchField("label"),
+        index.SearchField("description"),
+        index.SearchField("prompt"),
+    ]
 
     def __str__(self):
         return self.label
