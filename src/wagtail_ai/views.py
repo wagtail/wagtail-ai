@@ -1,6 +1,7 @@
 import logging
 import os
 
+from django import forms
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from wagtail.admin.ui.tables import UpdatedAtColumn
@@ -41,13 +42,13 @@ def _process_backend_request(
 
 
 def _replace_handler(*, prompt: Prompt, text: str) -> str:
-    ai_backend = ai.get_ai_backend(alias=prompt.backend)
+    ai_backend = ai.get_ai_backend(alias="default")  # TODO update
     splitter = ai_backend.get_text_splitter()
     texts = splitter.split_text(text)
 
     for split in texts:
         response = _process_backend_request(
-            ai_backend, pre_prompt=prompt.prompt, context=split
+            ai_backend, pre_prompt=prompt.prompt_value, context=split
         )
         # Remove extra blank lines returned by the API
         message = os.linesep.join([s for s in response.text().splitlines() if s])
@@ -57,13 +58,13 @@ def _replace_handler(*, prompt: Prompt, text: str) -> str:
 
 
 def _append_handler(*, prompt: Prompt, text: str) -> str:
-    ai_backend = ai.get_ai_backend(alias=prompt.backend)
+    ai_backend = ai.get_ai_backend(alias="default")  # TODO update
     length_calculator = ai_backend.get_splitter_length_calculator()
     if length_calculator.get_splitter_length(text) > ai_backend.config.token_limit:
         raise AIHandlerException("Cannot run completion on text this long")
 
     response = _process_backend_request(
-        ai_backend, pre_prompt=prompt.prompt, context=text
+        ai_backend, pre_prompt=prompt.prompt_value, context=text
     )
     # Remove extra blank lines returned by the API
     message = os.linesep.join([s for s in response.text().splitlines() if s])
@@ -87,7 +88,7 @@ def process(request):
     prompt_id = request.POST.get("prompt")
 
     try:
-        prompt = Prompt.objects.get(int(prompt_id))
+        prompt = Prompt.objects.get(uuid=prompt_id)
     except Prompt.DoesNotExist:
         return JsonResponse({"error": "Invalid prompt provided"}, status=400)
 
@@ -109,14 +110,39 @@ def process(request):
     return JsonResponse({"message": response})
 
 
+class PromptEditForm(forms.ModelForm):
+    """
+    Custom form for the model admin to allow users to view and edit default prompts
+    """
+
+    class Meta:
+        model = Prompt
+        fields = ["label", "description", "prompt", "method"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.instance.is_default_prompt():
+            # Make the prompt field not required if it's a default prompt
+            self.fields["prompt"].required = False
+            # Populate the placeholder with the value from DEFAULT_PROMPTS
+            self.fields["prompt"].widget.attrs[
+                "placeholder"
+            ] = self.instance.get_default_prompt_value()
+
+
 class PromptViewSet(ModelViewSet):
     model = Prompt
-    form_fields = ["label", "description", "prompt", "method"]
-    list_display = ["label", "description", UpdatedAtColumn()]  # type: ignore
+    form_fields = PromptEditForm.Meta.fields
+    list_display = ["label", "description", "method", UpdatedAtColumn()]  # type: ignore
     icon = "edit"
     add_to_settings_menu = True
-    inspect_view_enabled = True
     menu_order = 300
+
+    def get_form_class(self, for_update=False):
+        if for_update:
+            return PromptEditForm
+        return super().get_form_class(for_update)
 
 
 prompt_viewset = PromptViewSet("prompt")

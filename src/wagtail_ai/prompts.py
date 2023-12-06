@@ -1,6 +1,5 @@
 from .models import Prompt
 
-
 DEFAULT_PROMPTS = [
     {
         "label": "AI Correction",

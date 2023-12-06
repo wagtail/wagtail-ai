@@ -1,39 +1,24 @@
-# Generated using Django 4.2.7 on 2023-12-01 09:35
+# Created using Django 4.2.7 on 2023-12-05 16:59
 
-from django.conf import settings
 from django.db import migrations
 
-import wagtail_ai
+from wagtail_ai.models import DEFAULT_PROMPTS
 
 
 def set_default_ai_prompts(apps, schema_editor):
     """
-    Loop through each default prompt in settings and
-    create instances in the database.
+    Loop through each default prompt and
+    populate the database.
     """
     Prompt = apps.get_model("wagtail_ai", "Prompt")
-
-    default_prompts = (
-        wagtail_ai.DEFAULT_PROMPTS if hasattr(wagtail_ai, "DEFAULT_PROMPTS") else []
-    )
-
-    for default_prompt in (
-        getattr(settings, "WAGTAIL_AI_PROMPTS", []) or default_prompts
-    ):
+    for default_prompt in DEFAULT_PROMPTS:
         Prompt.objects.create(
+            uuid=default_prompt["uuid"],
             label=default_prompt["label"],
-            prompt=default_prompt["prompt"],
+            prompt=None,  # Left blank to allow users to override the prompt value and maintainers of wagtail AI to manage the prompt in the codebase.
             description=default_prompt.get("description", ""),
             method=default_prompt.get("method", None),
         )
-
-
-def reverse_set_default_ai_prompts(apps, schema_editor):
-    """
-    Reverse the migration by deleting all instances of the Prompt model.
-    """
-    Prompt = apps.get_model("wagtail_ai", "Prompt")
-    Prompt.objects.all().delete()
 
 
 class Migration(migrations.Migration):
@@ -42,7 +27,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(
-            set_default_ai_prompts, reverse_code=reverse_set_default_ai_prompts
-        ),
+        migrations.RunPython(set_default_ai_prompts, migrations.RunPython.noop),
     ]
