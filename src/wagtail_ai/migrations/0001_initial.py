@@ -47,7 +47,6 @@ class Migration(migrations.Migration):
                             ("replace", "Replace content"),
                             ("append", "Append after existing content"),
                         ],
-                        default="replace",
                         help_text="The method used for processing the responses to the prompt.",
                         max_length=25,
                     ),

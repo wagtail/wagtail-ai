@@ -54,7 +54,6 @@ class Prompt(models.Model):
     method = models.CharField(
         max_length=25,
         choices=Method.choices,
-        default=Method.REPLACE,
         help_text=_("The method used for processing the responses to the prompt."),
     )
 
