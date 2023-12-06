@@ -12,7 +12,7 @@ def set_default_ai_prompts(apps, schema_editor):
     """
     Prompt = apps.get_model("wagtail_ai", "Prompt")
     for default_prompt in DEFAULT_PROMPTS:
-        Prompt.objects.create(
+        Prompt.objects.update_or_create(
             uuid=default_prompt["uuid"],
             label=default_prompt["label"],
             prompt=None,  # Left blank to allow users to override the prompt value and maintainers of wagtail AI to manage the prompt in the codebase.

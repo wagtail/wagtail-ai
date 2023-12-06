@@ -11,4 +11,4 @@ You can also define your own prompts:
 
 ### Adding Your Own Prompts
 
-Explore the [ModelViewSet](https://docs.wagtail.org/en/stable/reference/viewsets.html#modelviewset) labeled `Prompts` within the Wagtail settings menu, here you'll be able to view, edit and add new prompts.
+Explore the [ModelViewSet](https://docs.wagtail.org/en/stable/reference/viewsets.html#modelviewset) labeled "Prompts" within the Wagtail settings menu, here you'll be able to view, edit and add new prompts.
