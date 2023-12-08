@@ -1,10 +1,10 @@
 import json
 
-import wagtail.admin.rich_text.editors.draftail.features as draftail_features
 from django.urls import include, path, reverse
 from django.utils.safestring import mark_safe
 from django.views.i18n import JavaScriptCatalog
 from wagtail import hooks
+from wagtail.admin.rich_text.editors.draftail.features import ControlFeature
 
 from .prompts import get_prompts
 from .views import process
@@ -36,19 +36,20 @@ def register_admin_urls():
     ]
 
 
-class ControlFeature(draftail_features.Feature):
-    def construct_options(self, options):
-        return None
-
-
 @hooks.register("register_rich_text_features")  # type: ignore
 def register_ai_feature(features):
-    features.default_features.append("ai")
+    feature_name = "ai"
+    features.default_features.append(feature_name)
+
     features.register_editor_plugin(
         "draftail",
-        "ai",
+        feature_name,
         ControlFeature(
-            js=["wagtail_ai/wagtail-ai.js"], css={"all": ["wagtail_ai/main.css"]}
+            {
+                "type": feature_name,
+            },
+            js=["wagtail_ai/wagtail-ai.js"],
+            css={"all": ["wagtail_ai/main.css"]},
         ),
     )
 

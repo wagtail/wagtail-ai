@@ -41,3 +41,12 @@
 .Draftail-AI-ButtonDropdown > button:hover {
   background-color: var(--w-color-grey-200);
 }
+
+/* Temp fix for wagtail issue https://github.com/wagtail/wagtail/issues/11302 */
+.Draftail-CommentControl {
+  display: none;
+
+  .tab-content--comments-enabled & {
+    display: inline-block;
+  }
+}
