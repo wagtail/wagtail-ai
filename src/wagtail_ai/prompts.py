@@ -1,82 +1,36 @@
-import inspect
-from dataclasses import dataclass
-from enum import Enum
-from typing import Union
-
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
+from typing import NotRequired, Required, Sequence, TypedDict
 
 
-@dataclass(kw_only=True)
-class Prompt:
-    class Method(Enum):
-        REPLACE = "replace"
-        APPEND = "append"
-
-    class DoesNotExist(Exception):
-        pass
-
-    id: int
-    label: str
-    prompt: str
-    backend: str = "default"
-    description: str = ""
-    method: Union[str, Method] = Method.REPLACE
-
-    def __post_init__(self):
-        self.prompt = inspect.cleandoc(self.prompt)
-        self.method = Prompt.Method(self.method)
-
-    def as_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "label": self.label,
-            "description": self.description,
-            "prompt": self.prompt,
-            "method": Prompt.Method(self.method).value,
-        }
+class PromptDict(TypedDict):
+    default_prompt_id: Required[int]
+    label: Required[str]
+    description: NotRequired[str]
+    prompt: Required[str]
+    method: Required[str]
 
 
-DEFAULT_PROMPTS = [
+DEFAULT_PROMPTS: Sequence[PromptDict] = [
     {
+        "default_prompt_id": 1,  # A unique ID used to identify and manage default prompts
         "label": "AI Correction",
         "description": "Correct grammar and spelling",
-        "prompt": """You are assisting a user in writing content for their website.
-            The user has provided some text (following the colon).
-            Return the provided text but with corrected grammar, spelling and
-            punctuation.
-            Do not add additional punctuation, quotation marks or change any words:""",
+        "prompt": (
+            "You are assisting a user in writing content for their website. "
+            "The user has provided some text (following the colon). "
+            "Return the provided text but with corrected grammar, spelling and punctuation. "
+            "Do not add additional punctuation, quotation marks or change any words:"
+        ),
         "method": "replace",
     },
     {
+        "default_prompt_id": 2,  # A unique ID used to identify and manage default prompts
         "label": "AI Completion",
         "description": "Get help writing more content based on what you've written",
-        "prompt": """You are assisting a user in writing content for their website.
-            The user has provided some initial text (following the colon).
-            Assist the user in writing the remaining content:""",
+        "prompt": (
+            "You are assisting a user in writing content for their website. "
+            "The user has provided some initial text (following the colon). "
+            "Assist the user in writing the remaining content:"
+        ),
         "method": "append",
     },
 ]
-
-
-def get_prompts():
-    try:
-        return [
-            Prompt(**prompt, id=idx)
-            for idx, prompt in enumerate(
-                getattr(settings, "WAGTAIL_AI_PROMPTS", []) or DEFAULT_PROMPTS
-            )
-        ]
-    except TypeError as e:
-        raise ImproperlyConfigured(
-            """WAGTAIL_AI_PROMPTS must be a list of dictionaries, where each dictionary
-            has a 'label', 'description', 'prompt' and 'method' key.
-            The 'method' must be one of 'append' or 'replace'."""
-        ) from e
-
-
-def get_prompt_by_id(id: int) -> Prompt:
-    for prompt in get_prompts():
-        if prompt.id == id:
-            return prompt
-    raise Prompt.DoesNotExist(f"Can't get prompt by id: {id}")

@@ -12,7 +12,7 @@ from typing import (
     TypeVar,
 )
 
-from django.conf import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured
 
 from .. import tokens
 from ..types import (

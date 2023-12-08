@@ -1,6 +1,3 @@
-from .prompts import DEFAULT_PROMPTS  # noqa
-
-
 default_app_config = "wagtail_ai.apps.WagtailAiAppConfig"
 
 
