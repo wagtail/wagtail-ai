@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from wagtail.admin.ui.tables import UpdatedAtColumn
 from wagtail.admin.viewsets.model import ModelViewSet
 
-from . import ai, prompts, types
+from . import ai, types
 from .models import Prompt
 
 logger = logging.getLogger(__name__)
@@ -97,7 +97,7 @@ def process(request):
         Prompt.Method.APPEND: _append_handler,
     }
 
-    handler = handlers[prompts.Prompt.Method(prompt.method)]
+    handler = handlers[Prompt.Method(prompt.method)]
 
     try:
         response = handler(prompt=prompt, text=text)

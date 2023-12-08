@@ -4,31 +4,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from wagtail.search import index
 
-DEFAULT_PROMPTS = [
-    {
-        "uuid": "fe029b02-833e-49d6-8002-14619962946a",  # This is a static UUID used to identify the prompt
-        "label": "AI Correction",
-        "description": "Correct grammar and spelling",
-        "prompt": (
-            "You are assisting a user in writing content for their website. "
-            "The user has provided some text (following the colon). "
-            "Return the provided text but with corrected grammar, spelling and punctuation. "
-            "Do not add additional punctuation, quotation marks or change any words:"
-        ),
-        "method": "replace",
-    },
-    {
-        "uuid": "cc4805e3-abb6-4a09-b71c-b5543af34eb1",  # This is a static UUID used to identify the prompt
-        "label": "AI Completion",
-        "description": "Get help writing more content based on what you've written",
-        "prompt": (
-            "You are assisting a user in writing content for their website. "
-            "The user has provided some initial text (following the colon). "
-            "Assist the user in writing the remaining content:"
-        ),
-        "method": "append",
-    },
-]
+from wagtail_ai.prompts import DEFAULT_PROMPTS
 
 
 class Prompt(models.Model, index.Indexed):
@@ -36,7 +12,8 @@ class Prompt(models.Model, index.Indexed):
         REPLACE = "replace", _("Replace content")
         APPEND = "append", _("Append after existing content")
 
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    default_prompt_id = models.SmallIntegerField(unique=True, editable=False, null=True)
     label = models.CharField(max_length=50)
     description = models.CharField(
         max_length=255,
@@ -59,7 +36,7 @@ class Prompt(models.Model, index.Indexed):
     )
 
     search_fields = [
-        index.SearchField("label"),
+        index.AutocompleteField("label"),
         index.SearchField("description"),
         index.SearchField("prompt"),
     ]
@@ -71,7 +48,7 @@ class Prompt(models.Model, index.Indexed):
         """
         Returns True if the prompt is one of the default prompts.
         """
-        return str(self.uuid) in [prompt["uuid"] for prompt in DEFAULT_PROMPTS]
+        return self.default_prompt_id is not None
 
     def get_default_prompt_value(self) -> str:
         """
@@ -81,7 +58,7 @@ class Prompt(models.Model, index.Indexed):
             (
                 prompt["prompt"]
                 for prompt in DEFAULT_PROMPTS
-                if prompt["uuid"] == str(self.uuid)
+                if prompt["default_prompt_id"] == self.default_prompt_id
             ),
             None,
         )
@@ -98,7 +75,7 @@ class Prompt(models.Model, index.Indexed):
 
     def as_dict(self) -> dict:
         return {
-            "uuid": str(self.uuid),
+            "uuid": self.uuid,
             "label": self.label,
             "description": self.description,
             "prompt": self.prompt_value,

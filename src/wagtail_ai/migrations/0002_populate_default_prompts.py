@@ -1,8 +1,8 @@
-# Created using Django 4.2.7 on 2023-12-06 10:07
+# Created using Django 4.2.7 on 2023-12-08 09:39
 
 from django.db import migrations
 
-from wagtail_ai.models import DEFAULT_PROMPTS
+from wagtail_ai.prompts import DEFAULT_PROMPTS
 
 
 def set_default_ai_prompts(apps, schema_editor):
@@ -13,11 +13,14 @@ def set_default_ai_prompts(apps, schema_editor):
     Prompt = apps.get_model("wagtail_ai", "Prompt")
     for default_prompt in DEFAULT_PROMPTS:
         Prompt.objects.update_or_create(
-            uuid=default_prompt["uuid"],
-            label=default_prompt["label"],
-            prompt=None,  # Left blank to allow users to override the prompt value and maintainers of wagtail AI to manage the prompt in the codebase.
-            description=default_prompt.get("description", ""),
-            method=default_prompt.get("method", None),
+            default_prompt_id=default_prompt["default_prompt_id"],
+            defaults={
+                "uuid": default_prompt["uuid"],
+                "label": default_prompt["label"],
+                "prompt": None,  # Left blank to allow users to override the prompt value and maintainers to manage the prompt value in the codebase if left blank.
+                "description": default_prompt.get("description", ""),
+                "method": default_prompt.get("method", None),
+            },
         )
 
 
