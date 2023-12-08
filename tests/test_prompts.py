@@ -9,7 +9,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_prompt_model(setup_prompt_object, test_prompt_values):
-    assert setup_prompt_object.is_default_prompt() is False
+    assert setup_prompt_object.is_default is False
     assert str(setup_prompt_object) == test_prompt_values["label"]
     assert setup_prompt_object.label == test_prompt_values["label"]
     assert setup_prompt_object.prompt_value == test_prompt_values["prompt"]

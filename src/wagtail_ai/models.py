@@ -23,7 +23,7 @@ class Prompt(models.Model, index.Indexed):
         ),
     )
     prompt = models.TextField(  # noqa: DJ001
-        null=True,
+        null=True,  # field is nullable to manage default prompts, see the prompt_value property for more info.
         blank=False,
         help_text=_(
             "The prompt text sent to the Large Language Model (e.g. ChatGPT) to generate content."
@@ -44,12 +44,6 @@ class Prompt(models.Model, index.Indexed):
     def __str__(self):
         return self.label
 
-    def is_default_prompt(self) -> bool:
-        """
-        Returns True if the prompt is one of the default prompts.
-        """
-        return self.default_prompt_id is not None
-
     def get_default_prompt_value(self) -> str:
         """
         Return the default prompt value from DEFAULT_PROMPTS.
@@ -64,13 +58,20 @@ class Prompt(models.Model, index.Indexed):
         )
 
     @property
+    def is_default(self) -> bool:
+        """
+        Returns True if the prompt is one of the default prompts.
+        """
+        return self.default_prompt_id is not None
+
+    @property
     def prompt_value(self) -> str:
         """
         Return the prompt value, otherwise if the prompt is None and belongs
         to the default prompts, map to the default prompt value.
         """
         if self.prompt is None:
-            if self.is_default_prompt():
+            if self.is_default:
                 return self.get_default_prompt_value()
             else:
                 raise ValueError("Prompt value is None and not a default prompt.")

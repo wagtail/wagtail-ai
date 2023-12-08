@@ -122,7 +122,7 @@ class PromptEditForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if self.instance.is_default_prompt():
+        if self.instance.is_default:
             # Make the prompt field not required if it's a default prompt
             self.fields["prompt"].required = False
             # Populate the placeholder with the value from DEFAULT_PROMPTS

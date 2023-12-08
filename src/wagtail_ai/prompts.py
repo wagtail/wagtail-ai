@@ -1,6 +1,19 @@
 import uuid
+from typing import NotRequired, Required, Sequence, TypedDict
 
-DEFAULT_PROMPTS = [
+
+class PromptDict(TypedDict):
+    # Fields should match the Prompt type defined in custom.d.ts
+    # be careful not to expose any sensitive or exploitable data here.
+    uuid: Required[uuid.UUID]
+    default_prompt_id: Required[int]
+    label: Required[str]
+    description: NotRequired[str]
+    prompt: Required[str]
+    method: Required[str]
+
+
+DEFAULT_PROMPTS: Sequence[PromptDict] = [
     {
         "uuid": uuid.UUID("fe029b02-833e-49d6-8002-14619962946a"),
         "default_prompt_id": 1,  # A unique ID used to identify and manage default prompts
