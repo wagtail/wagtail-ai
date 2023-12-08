@@ -1,11 +1,7 @@
-import uuid
 from typing import NotRequired, Required, Sequence, TypedDict
 
 
 class PromptDict(TypedDict):
-    # Fields should match the Prompt type defined in custom.d.ts
-    # be careful not to expose any sensitive or exploitable data here.
-    uuid: Required[uuid.UUID]
     default_prompt_id: Required[int]
     label: Required[str]
     description: NotRequired[str]
