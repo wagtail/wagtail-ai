@@ -2,7 +2,6 @@ import json
 import uuid
 from typing import NotRequired, Required, TypedDict
 
-import wagtail.admin.rich_text.editors.draftail.features as draftail_features
 from django.core.serializers.json import DjangoJSONEncoder
 from django.urls import include, path, reverse
 from django.utils.safestring import mark_safe
