@@ -62,10 +62,10 @@ class PromptDict(TypedDict):
     # Fields should match the Prompt type defined in custom.d.ts
     # be careful not to expose any sensitive or exploitable data here.
     uuid: Required[uuid.UUID]
-    label: NotRequired[str]
-    description: Required[str]
+    label: Required[str]
+    description: NotRequired[str]
     prompt: Required[str]
-    method: Required[Prompt.Method]
+    method: Required[str]
 
 
 def _serialize_prompt(prompt: Prompt) -> PromptDict:

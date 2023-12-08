@@ -60,24 +60,18 @@ class Prompt(models.Model, index.Indexed):
                 for prompt in DEFAULT_PROMPTS
                 if prompt["default_prompt_id"] == self.default_prompt_id
             ),
-            None,
+            "",
         )
 
     @property
-    def prompt_value(self) -> str | None:
+    def prompt_value(self) -> str:
         """
         Return the prompt value, otherwise if the prompt is None and belongs
         to the default prompts, map to the default prompt value.
         """
-        if self.prompt is None and self.is_default_prompt():
-            return self.get_default_prompt_value()
+        if self.prompt is None:
+            if self.is_default_prompt():
+                return self.get_default_prompt_value()
+            else:
+                raise ValueError("Prompt value is None and not a default prompt.")
         return self.prompt
-
-    def as_dict(self) -> dict:
-        return {
-            "uuid": self.uuid,
-            "label": self.label,
-            "description": self.description,
-            "prompt": self.prompt_value,
-            "method": self.Method(self.method).value,
-        }
