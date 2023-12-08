@@ -18,7 +18,6 @@ def set_default_ai_prompts(apps, schema_editor):
             # to manage default prompts that are None (not overridden) using the get_default_prompt_value method.
             prompt=None,
             defaults={
-                "uuid": default_prompt["uuid"],
                 "label": default_prompt["label"],
                 "description": default_prompt.get("description", ""),
                 "method": default_prompt.get("method", None),
