@@ -1,7 +1,6 @@
 import uuid
 from typing import NotRequired, Required, TypedDict
 
-from django.core.serializers.json import DjangoJSONEncoder
 from django.urls import include, path, reverse
 from django.utils.html import json_script
 from django.utils.safestring import mark_safe
@@ -89,7 +88,6 @@ def ai_editor_js():
     wagtail_ai_config = json_script(
         {"aiPrompts": prompt_json, "aiProcessUrl": process_url},
         "wagtail-ai-config",
-        DjangoJSONEncoder,
     )
 
     return mark_safe(wagtail_ai_config)
