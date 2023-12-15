@@ -2,8 +2,8 @@
 export {};
 
 export interface WagtailAiConfiguration {
-  wagtailAiPrompts: Prompt[];
-  wagtailAiProcessUrl: string;
+  aiPrompts: Prompt[];
+  aiProcessUrl: string;
 }
 
 export type Prompt = {

@@ -77,7 +77,7 @@ function ToolbarDropdown({
 }
 
 function AIControl({ getEditorState, onChange }: ControlComponentProps) {
-  const aiPrompts = getAIConfiguration()?.wagtailAiPrompts as Prompt[];
+  const aiPrompts = getAIConfiguration()?.aiPrompts as Prompt[];
   const editorState = getEditorState() as EditorState;
   const [isLoading, setIsLoading] = useState<Boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState<Boolean>(false);
