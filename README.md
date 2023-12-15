@@ -42,11 +42,11 @@ If you're interested in working on these things, please do!
 
 ## Links
 
-- [Documentation](https://github.com/tomusher/wagtail-ai/blob/main/README.md)
-- [Changelog](https://github.com/tomusher/wagtail-ai/blob/main/CHANGELOG.md)
-- [Contributing](https://github.com/tomusher/wagtail-ai/blob/main/CHANGELOG.md)
-- [Discussions](https://github.com/tomusher/wagtail-ai/discussions)
-- [Security](https://github.com/tomusher/wagtail-ai/security)
+- [Documentation](https://github.com/wagtail/wagtail-ai/blob/main/docs/index.md)
+- [Changelog](https://github.com/wagtail/wagtail-ai/blob/main/CHANGELOG.md)
+- [Contributing](https://github.com/wagtail/wagtail-ai/blob/main/docs/contributing.md)
+- [Discussions](https://github.com/wagtail/wagtail-ai/discussions)
+- [Security](https://github.com/wagtail/wagtail-ai/security)
 
 ## Supported Versions
 

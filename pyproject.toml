@@ -51,7 +51,7 @@ docs = [
 ]
 
 [project.urls]
-Home = "https://github.com/tomusher/wagtail-ai"
+Home = "https://github.com/wagtail/wagtail-ai"
 
 [tool.ruff]
 select = ["F", "E", "C90", "I", "B", "DJ", "RUF", "TRY", "C4"]
