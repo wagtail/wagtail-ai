@@ -1,6 +1,5 @@
 nav:
   - installation.md
   - editor-integration.md
-  - "Backends":
-    - llm-backend.md
+  - ai-backends.md
   - text-splitting.md
