@@ -14,13 +14,15 @@ export const getAIConfiguration = (): WagtailAiConfiguration => {
   const configurationElement =
     document.querySelector<HTMLScriptElement>('#wagtail-ai-config');
   if (!configurationElement || !configurationElement.textContent) {
-    throw Error('No wagtail-ai configuration found.');
+    throw new Error('No wagtail-ai configuration found.');
   }
 
   try {
     return JSON.parse(configurationElement.textContent);
   } catch (err) {
-    throw Error(err);
+    throw new SyntaxError(
+      `Error parsing wagtail-ai configuration: ${err.message}`,
+    );
   }
 };
 
