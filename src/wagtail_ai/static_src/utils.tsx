@@ -35,7 +35,7 @@ const fetchAIResponse = async (
   formData.append('text', text);
   formData.append('prompt', prompt.uuid);
   try {
-    const aiProcessUrl = getAIConfiguration()?.aiProcessUrl;
+    const aiProcessUrl = getAIConfiguration().aiProcessUrl;
 
     const res = await fetch(aiProcessUrl, {
       method: 'POST',
