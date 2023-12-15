@@ -4,7 +4,12 @@ import { ToolbarButton } from 'draftail';
 import { createPortal } from 'react-dom';
 import { useOutsideAlerter } from './hooks';
 import WandIcon from './WandIcon';
-import { handleAppend, handleReplace, processAction } from './utils';
+import {
+  handleAppend,
+  handleReplace,
+  processAction,
+  getAIConfiguration,
+} from './utils';
 
 import type { ControlComponentProps } from 'draftail';
 import type { Prompt } from './custom';
@@ -50,9 +55,11 @@ function LoadingOverlay({
 function ToolbarDropdown({
   close,
   onAction,
+  aiPrompts,
 }: {
   close: any;
   onAction: (prompt: Prompt) => void;
+  aiPrompts: Array<Prompt> | [];
 }) {
   const toolBarRef = useRef(null);
   // Close the dropdown when user clicks outside of it
@@ -60,7 +67,7 @@ function ToolbarDropdown({
 
   return (
     <div ref={toolBarRef} className="Draftail-AI-ButtonDropdown">
-      {window.WAGTAIL_AI_PROMPTS.map((prompt) => (
+      {aiPrompts.map((prompt) => (
         <button type="button" onMouseDown={() => onAction(prompt)}>
           <span>{prompt.label}</span> {prompt.description}
         </button>
@@ -70,6 +77,7 @@ function ToolbarDropdown({
 }
 
 function AIControl({ getEditorState, onChange }: ControlComponentProps) {
+  const aiPrompts = getAIConfiguration()?.wagtailAiPrompts as Array<Prompt>;
   const editorState = getEditorState() as EditorState;
   const [isLoading, setIsLoading] = useState<Boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState<Boolean>(false);
@@ -132,6 +140,7 @@ function AIControl({ getEditorState, onChange }: ControlComponentProps) {
         <ToolbarDropdown
           close={() => setIsDropdownOpen(false)}
           onAction={handleAction}
+          aiPrompts={aiPrompts}
         />
       ) : null}
       {error && container?.parentNode

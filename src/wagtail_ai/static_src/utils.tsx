@@ -5,10 +5,26 @@ import {
   ContentState,
   RichUtils,
 } from 'draft-js';
-
-import type { Prompt } from './custom';
+import { camelizeKeys } from 'humps';
+import type { Prompt, WagtailAiConfiguration } from './custom';
 
 class APIRequestError extends Error {}
+
+export const getAIConfiguration = (): WagtailAiConfiguration => {
+  const configurationElement =
+    document.querySelector<HTMLScriptElement>('#wagtail-ai-config');
+  if (!configurationElement || !configurationElement.textContent) {
+    throw Error('No wagtail-ai configuration found.');
+  }
+
+  try {
+    return camelizeKeys(
+      JSON.parse(configurationElement.textContent),
+    ) as WagtailAiConfiguration;
+  } catch (err) {
+    throw Error(err);
+  }
+};
 
 const fetchAIResponse = async (
   text: string,
@@ -19,7 +35,9 @@ const fetchAIResponse = async (
   formData.append('text', text);
   formData.append('prompt', prompt.uuid);
   try {
-    const res = await fetch(window.WAGTAIL_AI_PROCESS_URL, {
+    const aiProcessUrl = getAIConfiguration()?.wagtailAiProcessUrl;
+
+    const res = await fetch(aiProcessUrl, {
       method: 'POST',
       body: formData,
       signal: signal,

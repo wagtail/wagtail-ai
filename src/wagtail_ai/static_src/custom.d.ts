@@ -1,6 +1,11 @@
 /* eslint-disable no-unused-vars */
 export {};
 
+export interface WagtailAiConfiguration {
+  wagtailAiPrompts: Array<Prompt>;
+  wagtailAiProcessUrl: string;
+}
+
 export type Prompt = {
   uuid: string;
   label: string;

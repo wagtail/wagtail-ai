@@ -1,9 +1,9 @@
-import json
 import uuid
 from typing import NotRequired, Required, TypedDict
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.urls import include, path, reverse
+from django.utils.html import json_script
 from django.utils.safestring import mark_safe
 from django.views.i18n import JavaScriptCatalog
 from wagtail import hooks
@@ -83,17 +83,16 @@ def get_prompts():
 
 @hooks.register("insert_editor_js")  # type: ignore
 def ai_editor_js():
-    prompt_json = json.dumps(get_prompts(), cls=DjangoJSONEncoder)
+    prompt_json = get_prompts()
     process_url = reverse("wagtail_ai:process")
 
-    return mark_safe(
-        f"""
-        <script>
-            window.WAGTAIL_AI_PROCESS_URL = "{process_url}";
-            window.WAGTAIL_AI_PROMPTS = {prompt_json};
-        </script>
-        """
+    wagtail_ai_config = json_script(
+        {"wagtail_ai_prompts": prompt_json, "wagtail_ai_process_url": process_url},
+        "wagtail-ai-config",
+        DjangoJSONEncoder,
     )
+
+    return mark_safe(wagtail_ai_config)
 
 
 @hooks.register("register_admin_viewset")  # type: ignore
