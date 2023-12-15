@@ -87,7 +87,7 @@ def ai_editor_js():
     process_url = reverse("wagtail_ai:process")
 
     wagtail_ai_config = json_script(
-        {"ai_prompts": prompt_json, "ai_process_url": process_url},
+        {"aiPrompts": prompt_json, "aiProcessUrl": process_url},
         "wagtail-ai-config",
         DjangoJSONEncoder,
     )

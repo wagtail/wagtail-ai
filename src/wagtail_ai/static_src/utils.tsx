@@ -5,7 +5,7 @@ import {
   ContentState,
   RichUtils,
 } from 'draft-js';
-import { camelizeKeys } from 'humps';
+
 import type { Prompt, WagtailAiConfiguration } from './custom';
 
 class APIRequestError extends Error {}
@@ -18,9 +18,7 @@ export const getAIConfiguration = (): WagtailAiConfiguration => {
   }
 
   try {
-    return camelizeKeys(
-      JSON.parse(configurationElement.textContent),
-    ) as WagtailAiConfiguration;
+    return JSON.parse(configurationElement.textContent);
   } catch (err) {
     throw Error(err);
   }
