@@ -2,7 +2,7 @@
 export {};
 
 export interface WagtailAiConfiguration {
-  wagtailAiPrompts: Array<Prompt>;
+  wagtailAiPrompts: Prompt[];
   wagtailAiProcessUrl: string;
 }
 

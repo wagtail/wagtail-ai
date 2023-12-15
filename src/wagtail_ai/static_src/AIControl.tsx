@@ -59,7 +59,7 @@ function ToolbarDropdown({
 }: {
   close: any;
   onAction: (prompt: Prompt) => void;
-  aiPrompts: Array<Prompt> | [];
+  aiPrompts: Prompt[] | [];
 }) {
   const toolBarRef = useRef(null);
   // Close the dropdown when user clicks outside of it
@@ -77,7 +77,7 @@ function ToolbarDropdown({
 }
 
 function AIControl({ getEditorState, onChange }: ControlComponentProps) {
-  const aiPrompts = getAIConfiguration()?.wagtailAiPrompts as Array<Prompt>;
+  const aiPrompts = getAIConfiguration()?.wagtailAiPrompts as Prompt[];
   const editorState = getEditorState() as EditorState;
   const [isLoading, setIsLoading] = useState<Boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState<Boolean>(false);
