@@ -12,7 +12,7 @@ if "SLACK_WEBHOOK_URL" in os.environ:
     response = requests.post(
         os.environ["SLACK_WEBHOOK_URL"],
         json={
-            "text": "A Nightly build failed. See https://github.com/tomusher/wagtail-ai/actions/runs/"
+            "text": "A Nightly build failed. See https://github.com/wagtail/wagtail-ai/actions/runs/"
             + os.environ["GITHUB_RUN_ID"],
         },
     )
