@@ -66,14 +66,17 @@ pythonpath = ["./", "./tests"]
 
 [tool.flit.sdist]
 include = [
-    "wagtail_ai/static"
+    "src/wagtail_ai/static/wagtail_ai"
 ]
 exclude = [
-    "wagtail_ai/static_src",
-    "wagtail_ai/test",
-    "wagtail_ai/static/wagtail_ai/js/.gitignore",
+    "docs",
+    "src/wagtail_ai/static_src",
+    "src/wagtail_ai/static/wagtail_ai/js/.gitignore",
     "tests",
     "testmanage.py",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "TODOs",
     ".*",
     "*.js",
     "*.json",
