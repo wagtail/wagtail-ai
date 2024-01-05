@@ -107,3 +107,46 @@ WAGTAIL_AI = {
     }
 }
 ```
+
+#### Using a custom OpenAI or OpenAI-compatible model
+
+llm supports adding custom OpenAI models. This may be necessary if:
+
+- You want to use a model that's not supported by llm package yet.
+- You want to use a proxy for OpenAI requests.
+
+llm specific can be found here: https://llm.datasette.io/en/stable/other-models.html#adding-more-openai-models.
+
+1. Establish llm directory. You can set a custom one with the
+   [`LLM_USER_PATH`](https://llm.datasette.io/en/stable/setup.html#setting-a-custom-directory-location)
+   setting. You can then confirm the path with the following shell command:
+   `dirname "$(llm logs path)"`.
+2. Then you can create `extra-openai-models.yaml` as per the instructions in the
+   [llm documentation](https://llm.datasette.io/en/stable/other-models.html#adding-more-openai-models).
+   For example to set up a proxy:
+   ```yaml
+    - model_id: customgateway-gpt-3.5-turbo
+      model_name: gpt-3.5-turbo
+      api_base: "https://yourcustomproxy.example.com/"
+      headers:
+        apikey: your-api-key
+   ```
+3. Then you can set the `MODEL_ID` in the Wagtail AI settings in your Django project
+   settings to the `model_id` you set in the yaml file.
+   ```python
+   WAGTAIL_AI = {
+       "BACKENDS": {
+           "default": {
+               "CLASS": "wagtail_ai.ai.llm.LLMBackend",
+               "CONFIG": {
+                   # MODEL_ID should match the model_id in the yaml file.
+                   "MODEL_ID": "customgateway-gpt-3.5-turbo",
+                   # TOKEN_LIMIT has to be defined because you use a custom model name.
+                   # You are looking to use the context window value from:
+                   # https://platform.openai.com/docs/models/gpt-3-5
+                   "TOKEN_LIMIT": 4096,
+               },
+           }
+       }
+   }
+   ```
