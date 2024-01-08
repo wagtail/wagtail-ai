@@ -2,6 +2,7 @@ import logging
 import os
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from wagtail.admin.ui.tables import UpdatedAtColumn
@@ -84,7 +85,7 @@ def process(request):
 
     try:
         prompt = Prompt.objects.get(uuid=prompt_id)
-    except Prompt.DoesNotExist:
+    except (Prompt.DoesNotExist, ValidationError):
         return JsonResponse({"error": "Invalid prompt provided"}, status=400)
 
     handlers = {
