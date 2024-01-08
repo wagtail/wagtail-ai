@@ -11,14 +11,15 @@
         # ...
     ]
     ```
-3. Add an AI chat model and backend configuration (by default, `MODEL_ID` can be any model supported by [llm](https://llm.datasette.io/en/stable/)).
+3. Add an AI chat model and backend configuration (by default, `MODEL_ID` can be any model supported by [the "LLM" library](https://llm.datasette.io/en/stable/)).
     ```python
     WAGTAIL_AI = {
         "BACKENDS": {
             "default": {
                 "CLASS": "wagtail_ai.ai.llm.LLMBackend",
                 "CONFIG": {
-                    "MODEL_ID": "gpt-3.5-turbo",  # Model ID recognizable by the llm package.
+                    # Model ID recognizable by the "LLM" library.
+                    "MODEL_ID": "gpt-3.5-turbo",
                 },
             }
         }
