@@ -77,13 +77,8 @@ def process(request):
     text = request.POST.get("text")
 
     if not text:
-        return JsonResponse(
-            {
-                "error": "No text provided - please enter some text before using AI \
-                    features"
-            },
-            status=400,
-        )
+        error = "No text provided - please enter some text before using AI features."
+        return JsonResponse({"error": error}, status=400)
 
     prompt_id = request.POST.get("prompt")
 
