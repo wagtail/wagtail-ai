@@ -122,10 +122,9 @@ The "LLM" library supports adding custom OpenAI models. This may be necessary if
 
 You can find the "LLM" library specific instructions at: https://llm.datasette.io/en/stable/other-models.html#adding-more-openai-models.
 
-1. Find the "LLM" library's directory. You can set a custom one with the. You can
-   set a custom one with the
+1. Find the "LLM" library's directory. You can set a custom one with the
    [`LLM_USER_PATH`](https://llm.datasette.io/en/stable/setup.html#setting-a-custom-directory-location)
-   setting. You can then confirm the path with the following shell command:
+   setting. To confirm the path, you can use the following shell command:
    `dirname "$(llm logs path)"`.
 2. Create `extra-openai-models.yaml` as noted in
    [the "LLM" library's documentation](https://llm.datasette.io/en/stable/other-models.html#adding-more-openai-models).
@@ -138,7 +137,7 @@ You can find the "LLM" library specific instructions at: https://llm.datasette.i
         apikey: your-api-key
    ```
 3. Set the `MODEL_ID` in the Wagtail AI settings in your Django project
-   settings to the `model_id` you set in the yaml file.
+   settings file to the `model_id` you added in `extra-openai-models.yaml`.
    ```python
    WAGTAIL_AI = {
        "BACKENDS": {
