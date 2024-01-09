@@ -1,17 +1,27 @@
 [run]
 branch = True
-include = wagtail_ai/*
-omit = */migrations/*,*/tests/*
+concurrency = multiprocessing, thread
+parallel = True
+source_pkgs = wagtail_ai
+omit = **/migrations/*,tests/*
+
+[paths]
+source = src,.tox/py*/**/site-packages
 
 [report]
+show_missing = True
+ignore_errors = True
+skip_covered = True
+
 # Regexes for lines to exclude from consideration
-exclude_lines =
+exclude_also =
     # Have to re-enable the standard pragma
     pragma: no cover
 
     # Don't complain about missing debug-only code:
     def __repr__
-    if self\.debug
+    if self.debug
+    if settings.DEBUG
 
     # Don't complain if tests don't hit defensive assertion code:
     raise AssertionError
@@ -21,4 +31,7 @@ exclude_lines =
     if 0:
     if __name__ == .__main__.:
 
-ignore_errors = True
+    # Nor complain about type checking
+    "if TYPE_CHECKING:",
+    class .*\bProtocol\):
+    @(abc\.)?abstractmethod
