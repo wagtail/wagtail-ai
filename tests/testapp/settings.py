@@ -219,3 +219,5 @@ LOGGING = {
         },
     },
 }
+
+FORMS_URLFIELD_ASSUME_HTTPS = True
