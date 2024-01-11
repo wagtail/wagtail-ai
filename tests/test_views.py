@@ -79,7 +79,7 @@ def test_process_view_with_bad_prompt_id(client, setup_users, prompt):
 
     response = client.post(url, data=data)
     assert response.status_code == 400
-    assert response.json() == {"error": "Invalid prompt provided"}
+    assert response.json() == {"error": "Invalid prompt provided."}
 
 
 @pytest.mark.django_db

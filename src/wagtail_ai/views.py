@@ -4,6 +4,7 @@ import uuid
 
 from django import forms
 from django.http import JsonResponse
+from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from wagtail.admin.ui.tables import UpdatedAtColumn
 from wagtail.admin.viewsets.model import ModelViewSet
@@ -87,18 +88,19 @@ def process(request) -> JsonResponse:
     text = request.POST.get("text", "").strip()
 
     if not text:
-        error = "No text provided - please enter some text before using AI features."
+        error = _("No text provided - please enter some text before using AI features.")
         return JsonResponse({"error": error}, status=400)
 
+    invalid_prompt_error = _("Invalid prompt provided.")
     prompt_id = request.POST.get("prompt", "").strip()
 
     if not _is_prompt_id_valid(prompt_id):
-        return JsonResponse({"error": "Invalid prompt provided"}, status=400)
+        return JsonResponse({"error": invalid_prompt_error}, status=400)
 
     try:
         prompt = Prompt.objects.get(uuid=prompt_id)
     except Prompt.DoesNotExist:
-        return JsonResponse({"error": "Invalid prompt provided"}, status=400)
+        return JsonResponse({"error": invalid_prompt_error}, status=400)
 
     handlers = {
         Prompt.Method.REPLACE: _replace_handler,
@@ -113,7 +115,7 @@ def process(request) -> JsonResponse:
         return JsonResponse({"error": str(e)}, status=400)
     except Exception:
         logger.exception("An unexpected error occurred.")
-        return JsonResponse({"error": "An unexpected error occurred"}, status=500)
+        return JsonResponse({"error": _("An unexpected error occurred.")}, status=500)
 
     return JsonResponse({"message": response})
 
