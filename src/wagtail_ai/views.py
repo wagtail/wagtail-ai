@@ -1,8 +1,8 @@
 import logging
 import os
+import uuid
 
 from django import forms
-from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from wagtail.admin.ui.tables import UpdatedAtColumn
@@ -73,19 +73,31 @@ def _append_handler(*, prompt: Prompt, text: str) -> str:
     return message
 
 
+def _is_prompt_id_valid(prompt_id: str) -> bool:
+    try:
+        uuid_object = uuid.UUID(prompt_id)
+    except ValueError:
+        return False
+    else:
+        return uuid_object.version == 4
+
+
 @csrf_exempt
-def process(request):
-    text = request.POST.get("text")
+def process(request) -> JsonResponse:
+    text = request.POST.get("text", "").strip()
 
     if not text:
         error = "No text provided - please enter some text before using AI features."
         return JsonResponse({"error": error}, status=400)
 
-    prompt_id = request.POST.get("prompt")
+    prompt_id = request.POST.get("prompt", "").strip()
+
+    if not _is_prompt_id_valid(prompt_id):
+        return JsonResponse({"error": "Invalid prompt provided"}, status=400)
 
     try:
         prompt = Prompt.objects.get(uuid=prompt_id)
-    except (Prompt.DoesNotExist, ValidationError):
+    except Prompt.DoesNotExist:
         return JsonResponse({"error": "Invalid prompt provided"}, status=400)
 
     handlers = {
