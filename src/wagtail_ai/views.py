@@ -3,11 +3,13 @@ import os
 
 from django import forms
 from django.http import JsonResponse
+from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from wagtail.admin.ui.tables import UpdatedAtColumn
 from wagtail.admin.viewsets.model import ModelViewSet
 
 from . import ai, types
+from .forms import PromptForm
 from .models import Prompt
 
 logger = logging.getLogger(__name__)
@@ -73,24 +75,18 @@ def _append_handler(*, prompt: Prompt, text: str) -> str:
 
 
 @csrf_exempt
-def process(request):
-    text = request.POST.get("text")
+def process(request) -> JsonResponse:
+    prompt_form = PromptForm(request.POST)
 
-    if not text:
+    if not prompt_form.is_valid():
         return JsonResponse(
-            {
-                "error": "No text provided - please enter some text before using AI \
-                    features"
-            },
-            status=400,
+            {"error": prompt_form.errors_for_json_response()}, status=400
         )
 
-    prompt_id = request.POST.get("prompt")
-
     try:
-        prompt = Prompt.objects.get(uuid=prompt_id)
+        prompt = Prompt.objects.get(uuid=prompt_form.cleaned_data["prompt"])
     except Prompt.DoesNotExist:
-        return JsonResponse({"error": "Invalid prompt provided"}, status=400)
+        return JsonResponse({"error": _("Invalid prompt provided.")}, status=400)
 
     handlers = {
         Prompt.Method.REPLACE: _replace_handler,
@@ -100,12 +96,12 @@ def process(request):
     handler = handlers[Prompt.Method(prompt.method)]
 
     try:
-        response = handler(prompt=prompt, text=text)
+        response = handler(prompt=prompt, text=prompt_form.cleaned_data["text"])
     except AIHandlerException as e:
         return JsonResponse({"error": str(e)}, status=400)
     except Exception:
         logger.exception("An unexpected error occurred.")
-        return JsonResponse({"error": "An unexpected error occurred"}, status=500)
+        return JsonResponse({"error": _("An unexpected error occurred.")}, status=500)
 
     return JsonResponse({"message": response})
 
