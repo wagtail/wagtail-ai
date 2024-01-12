@@ -4,7 +4,7 @@
     "postCreateCommand": "pip install tox && tox devenv -e interactive && npm ci && ./venv/bin/pre-commit install",
     "features": {
         "ghcr.io/devcontainers/features/node:1": {
-            "version": "21"
+            "version": "20"
         }
     },
     "customizations": {
