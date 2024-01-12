@@ -47,7 +47,8 @@ def test_process_view_get_request(client, setup_users):
     response = client.get(url)
     assert response.status_code == 400
     assert response.json() == {
-        "error": "No text provided - please enter some text before using AI features."
+        "error": "No text provided - please enter some text before using AI features. "
+        "\nInvalid prompt provided."
     }
 
 
@@ -61,12 +62,15 @@ def test_process_view_post_without_text(client, setup_users):
     response = client.post(url, data={})
     assert response.status_code == 400
     assert response.json() == {
-        "error": "No text provided - please enter some text before using AI features."
+        "error": "No text provided - please enter some text before using AI features. "
+        "\nInvalid prompt provided."
     }
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("prompt", [None, "NOT-A-UUID", str(uuid.uuid4())])
+@pytest.mark.parametrize(
+    "prompt", [None, "NOT-A-UUID", str(uuid.uuid1()), str(uuid.uuid4())]
+)
 def test_process_view_with_bad_prompt_id(client, setup_users, prompt):
     url = reverse("wagtail_ai:process")
 

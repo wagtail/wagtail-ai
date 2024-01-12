@@ -1,6 +1,5 @@
 import logging
 import os
-import uuid
 
 from django import forms
 from django.http import JsonResponse
@@ -10,6 +9,7 @@ from wagtail.admin.ui.tables import UpdatedAtColumn
 from wagtail.admin.viewsets.model import ModelViewSet
 
 from . import ai, types
+from .forms import PromptForm
 from .models import Prompt
 
 logger = logging.getLogger(__name__)
@@ -74,33 +74,19 @@ def _append_handler(*, prompt: Prompt, text: str) -> str:
     return message
 
 
-def _is_prompt_id_valid(prompt_id: str) -> bool:
-    try:
-        uuid_object = uuid.UUID(prompt_id)
-    except ValueError:
-        return False
-    else:
-        return uuid_object.version == 4
-
-
 @csrf_exempt
 def process(request) -> JsonResponse:
-    text = request.POST.get("text", "").strip()
+    prompt_form = PromptForm(request.POST)
 
-    if not text:
-        error = _("No text provided - please enter some text before using AI features.")
-        return JsonResponse({"error": error}, status=400)
-
-    invalid_prompt_error = _("Invalid prompt provided.")
-    prompt_id = request.POST.get("prompt", "").strip()
-
-    if not _is_prompt_id_valid(prompt_id):
-        return JsonResponse({"error": invalid_prompt_error}, status=400)
+    if not prompt_form.is_valid():
+        return JsonResponse(
+            {"error": prompt_form.errors_for_json_response()}, status=400
+        )
 
     try:
-        prompt = Prompt.objects.get(uuid=prompt_id)
+        prompt = Prompt.objects.get(uuid=prompt_form.cleaned_data["prompt"])
     except Prompt.DoesNotExist:
-        return JsonResponse({"error": invalid_prompt_error}, status=400)
+        return JsonResponse({"error": _("Invalid prompt provided.")}, status=400)
 
     handlers = {
         Prompt.Method.REPLACE: _replace_handler,
@@ -110,7 +96,7 @@ def process(request) -> JsonResponse:
     handler = handlers[Prompt.Method(prompt.method)]
 
     try:
-        response = handler(prompt=prompt, text=text)
+        response = handler(prompt=prompt, text=prompt_form.cleaned_data["text"])
     except AIHandlerException as e:
         return JsonResponse({"error": str(e)}, status=400)
     except Exception:
