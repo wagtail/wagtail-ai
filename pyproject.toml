@@ -36,7 +36,7 @@ llm = [
 ]
 testing = [
     "dj-database-url==2.1.0",
-    "pre-commit>=3.4.0",
+    "pre-commit>=3.6.0",
     "django-types>=0.18.0",
     "pytest>=7.4.2",
     "pytest-django>=4.5.2",
@@ -55,7 +55,17 @@ docs = [
 Home = "https://github.com/wagtail/wagtail-ai"
 
 [tool.ruff]
-select = ["F", "E", "C90", "I", "B", "DJ", "RUF", "TRY", "C4"]
+select = [
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "C90", # mccabe
+    "DJ",  # flake8-django
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "RUF", # ruff-specific rules
+    "TRY", # tryceratops
+]
 ignore = ["TRY003", "E501", "RUF012"]
 
 [tool.flit.module]

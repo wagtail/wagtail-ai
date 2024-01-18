@@ -1,4 +1,5 @@
-from typing import NotRequired, Required, Sequence, TypedDict
+from collections.abc import Sequence
+from typing import NotRequired, Required, TypedDict
 
 
 class PromptDict(TypedDict):

@@ -19,9 +19,9 @@ def test_prompt_model(setup_prompt_object, test_prompt_values):
 def test_get_prompts_returns_default_prompts():
     prompts = get_prompts()
 
-    assert set((p["label"], p["prompt"]) for p in prompts) == set(  # noqa: C401
+    assert {(p["label"], p["prompt"]) for p in prompts} == {
         (p["label"], p["prompt"]) for p in DEFAULT_PROMPTS
-    )
+    }
 
 
 def find_prompt_by_label(prompts, label):
@@ -59,7 +59,7 @@ def test_editing_default_prompts():
 def test_get_prompts_returns_new_prompts_and_default_prompts(setup_prompt_object):
     prompt_object = setup_prompt_object
     prompts = get_prompts()
-    assert set(p["label"] for p in prompts) == set(  # noqa: C401
+    assert {p["label"] for p in prompts} == set(
         [p["label"] for p in DEFAULT_PROMPTS] + [prompt_object.label]
     )
 
