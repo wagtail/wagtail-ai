@@ -65,7 +65,7 @@ flit install -s
 Frontend assets (React components, admin scripts, custom CSS) are bundled using Webpack. A Node.js environment is required to install and run the dependencies required to build these assets. We recommend [`nvm`](https://github.com/nvm-sh/nvm#install--update-script) for installing and using Node.js locally:
 
 ```shell
-nvm install 21
+nvm install 20
 npm ci
 ```
 
