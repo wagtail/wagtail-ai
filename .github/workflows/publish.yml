@@ -7,7 +7,7 @@ on:
     types: [published]
 
 jobs:
-  build_and_publish:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read # to fetch code (actions/checkout)
