@@ -5,24 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [next] - 2023-11-29
+## [2.0.0] - 2024-01-19
 
 ### Added
 
-- New setting for specifying AI backends, with a new default backend using [https://github.com/simonw/llm](`llm`) (Tomasz Knapik)
+- New setting for specifying AI backends, with a new default backend using [`llm`](https://github.com/simonw/llm) (Tomasz Knapik)
+- Support for many different LLMs such as GPT-4, local models, Mistral and Claude using [`llm` plugins`](https://llm.datasette.io/en/stable/plugins/directory.html) (Tomasz Knapik)
 - Customisable text splitting backends (Tomasz Knapik)
-- More complete documentation (Tomasz Knapik)
+- [More complete documentation](https://wagtail-ai.readthedocs.io/) (Tomasz Knapik)
+- Custom prompts can now be managed through Wagtail admin (Ben Morse)
 
 ### Changed
 
-- Backends are now specified with the `WAGTAIL_AI` setting. Support for `WAGTAIL_AI_BACKENDS` has been removed. (Tomasz Knapik)
 - Removed Langchain dependency. Text splitting is now customisable and defaults to a vendorised version of Langchain's text splitter. (Tomasz Knapik)
 - Various developer experience improvements. (Tomasz Knapik, Dan Braghis)
+- Minimum supported versions increased to Wagtail 5.2, Django 4.2 and Python 3.11 (Dan Braghis)
+- Improved how prompts are passed to the admin (Ian Meigh)
+
+### Upgrade Considerations
+
+#### Prompts managed in Wagtail admin
+
+The `WAGTAIL_AI_PROMPTS` setting is no longer used. Prompts are now managed through the Wagtail admin under Settings -> Prompts.
+
+Any custom prompts should be migrated to this new model, the `WAGTAIL_AI_PROMPTS` setting can then be removed.
 
 ### New Contributors/Thanks
 
 - [@tm-kn](https://github.com/tm-kn) - AI backends/text splitting restructure
 - [@zerolabl](https://github.com/zerolab) - support with developer tooling
+- [@Morsey187](https://github.com/Morsey187) - frontend refinements and admin prompt management
+- [@ianmeigh](https://github.com/ianmeigh) - improvements to admin integration
 
 ## [1.1.0] - 2023-03-10
 
