@@ -2,7 +2,7 @@
 
 1. Install the package along with the relevant client libraries for the default [AI Backend](ai-backends.md):
    ```bash
-   python -m pip install wagtail-ai[llm]
+   python -m pip install wagtail-ai
    ```
 2. Add `wagtail_ai` to your `INSTALLED_APPS`
     ```
