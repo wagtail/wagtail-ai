@@ -27,13 +27,11 @@ dynamic = ["version"]
 dependencies = [
     "Django>=4.2",
     "Wagtail>=5.2",
+    "llm>=0.12",
 ]
 requires-python = ">=3.11"
 
 [project.optional-dependencies]
-llm = [
-    "llm>=0.12",
-]
 testing = [
     "dj-database-url==2.1.0",
     "pre-commit>=3.6.0",
