@@ -39,11 +39,11 @@ Here is an estimated cost breakdown for the `correction` prompt on a 1000-word p
 
 ### Then:
 
-- **Input tokens :** (35 + 1000) x 1.3 = 1405 tokens.
+- **Input tokens :** (35 + 1000) x 1.3 = 1345.5 tokens.
 - **Output tokens :** 1000 x 1.3 = 1300
-- **Input tokens cost :** 1405 / 1000 * $0.0005 = $0.0007025
+- **Input tokens cost :** 1345.5 / 1000 * $0.0005 = $0.00067275
 - **Output tokens cost :** 1300 / 1000 * $0.0015 = $0.00195
-- **Total cost :** $0.0026525
+- **Total cost :** $0.00262275
 
 ## Links
 
