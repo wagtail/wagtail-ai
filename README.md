@@ -21,13 +21,29 @@ https://user-images.githubusercontent.com/27112/223072938-8cb5ccff-4835-489a-8be
 
 ## Requirements & Costs
 
-Wagtail AI supports [many different LLMs](https://wagtail-ai.readthedocs.io/latest/ai-backends/), with OpenAI models available by default.
+Wagtail AI supports [many different LLMs](https://wagtail-ai.readthedocs.io/latest/ai-backends/), with OpenAI models
+available by default. To use these, you'll need an OpenAI account and an API key. There'll also be some cost involved.
 
-To use these, you'll need an OpenAI account and an API key. There'll also be some cost involved. For the OpenAI API used here, OpenAI charges $0.002 for 1,000 tokens (a word is about 1.3 tokens). Every token sent to the API, and every token we get back counts, so you can expect using 'correction' on 1,000 word paragraph to cost roughly:
+For the OpenAI API used here (`gpt-3.5-turbo`), the [cost](https://openai.com/pricing) is
 
-* (1,000 * 1.3) + (35 * 1.3) (for the initial prompt) tokens sent to the API
-* \+ (1,000 * 1.3) tokens received from the API
-* = 2,645 tokens = $0.0053
+- $0.0005 per 1000 tokens for input tokens (prompt)
+- $0.0015 per 1000 tokens for output tokens (answer)
+
+Here is an estimated cost breakdown for the `correction` prompt on a 1000-word paragraph.
+
+### We assume that:
+
+- Prompt is 30 words and the existing paragraph is 1000 words (Input)
+- Each word is 1.3 tokens (Tokens multiplier)
+- We get back 1000 words back (Output)
+
+### Then:
+
+- **Input tokens :** (35 + 1000) x 1.3 = 1405 tokens.
+- **Output tokens :** 1000 x 1.3 = 1300
+- **Input tokens cost :** 1405 / 1000 * $0.0005 = $0.0007025
+- **Output tokens cost :** 1300 / 1000 * $0.0015 = $0.00195
+- **Total cost :** $0.0026525
 
 ## Links
 
