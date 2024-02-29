@@ -8,16 +8,6 @@ from wagtail_factories import ImageFactory
 
 pytestmark = pytest.mark.django_db
 
-MOCK_API_KEY = "MOCK-API-KEY"
-
-
-@pytest.fixture(autouse=True)
-def stub_image_title_signal(monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setattr(
-        "wagtail_ai.ai.openai.OpenAIBackend.get_openai_api_key",
-        lambda self: MOCK_API_KEY,
-    )
-
 
 @pytest.fixture
 def mock_post(monkeypatch: pytest.MonkeyPatch):
@@ -26,7 +16,13 @@ def mock_post(monkeypatch: pytest.MonkeyPatch):
     return mock
 
 
-def test_describe_image(mock_post):
+def test_describe_image(mock_post, monkeypatch):
+    MOCK_API_KEY = "MOCK-API-KEY"
+    monkeypatch.setattr(
+        "wagtail_ai.ai.openai.OpenAIBackend.get_openai_api_key",
+        lambda self: MOCK_API_KEY,
+    )
+
     mock_post.return_value.json.return_value = {
         "choices": [{"message": {"content": "nothing"}}],
     }

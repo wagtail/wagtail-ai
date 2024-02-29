@@ -11,7 +11,7 @@ from ..text_splitters.langchain import LangchainRecursiveCharacterTextSplitter
 from ..text_splitters.length import NaiveTextSplitterCalculator
 from ..types import TextSplitterLengthCalculatorProtocol, TextSplitterProtocol
 from ..utils import deprecation
-from .base import AIBackend, BaseAIBackendConfigSettings
+from .base import AIBackend, BackendFeature, BaseAIBackendConfigSettings
 
 
 class TextSplittingSettingsDict(TypedDict):
@@ -161,3 +161,10 @@ def get_ai_backend(alias: str) -> AIBackend:
     )
 
     return ai_backend_cls(config=config)
+
+
+def get_ai_backend_with_feature(feature: BackendFeature):
+    for alias in get_ai_backends_settings().keys():
+        backend = get_ai_backend(alias)
+        if feature in backend.config.features:
+            return backend

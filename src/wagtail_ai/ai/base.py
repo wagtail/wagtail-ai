@@ -27,6 +27,7 @@ from ..types import (
 
 class BackendFeature(Enum):
     TEXT_COMPLETION = 1
+    IMAGE_DESCRIPTION = 2
 
 
 class BaseAIBackendConfigSettings(TypedDict):

@@ -2,11 +2,14 @@ import logging
 import os
 
 from django import forms
+from django.core.exceptions import ImproperlyConfigured
 from django.http import JsonResponse
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from wagtail.admin.ui.tables import UpdatedAtColumn
 from wagtail.admin.viewsets.model import ModelViewSet
+
+from wagtail_ai.ai.base import BackendFeature
 
 from . import ai, types
 from .forms import PromptForm
@@ -43,8 +46,15 @@ def _process_backend_request(
     return response
 
 
+def require_backend(feature):
+    ai_backend = ai.get_ai_backend_with_feature(feature)
+    if ai_backend is None:
+        raise ImproperlyConfigured(f"No AI backend configured with feature {feature!r}")
+    return ai_backend
+
+
 def _replace_handler(*, prompt: Prompt, text: str) -> str:
-    ai_backend = ai.get_ai_backend(alias="default")  # TODO update
+    ai_backend = require_backend(BackendFeature.TEXT_COMPLETION)
     splitter = ai_backend.get_text_splitter()
     texts = splitter.split_text(text)
 
@@ -60,7 +70,7 @@ def _replace_handler(*, prompt: Prompt, text: str) -> str:
 
 
 def _append_handler(*, prompt: Prompt, text: str) -> str:
-    ai_backend = ai.get_ai_backend(alias="default")  # TODO update
+    ai_backend = require_backend(BackendFeature.TEXT_COMPLETION)
     length_calculator = ai_backend.get_splitter_length_calculator()
     if length_calculator.get_splitter_length(text) > ai_backend.config.token_limit:
         raise AIHandlerException("Cannot run completion on text this long")
