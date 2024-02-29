@@ -4,7 +4,7 @@ from django.db.models.signals import post_save
 from wagtail.images import get_image_model
 from wagtail.images.models import AbstractImage
 
-from .ai.openai import DescribeImageError, DescribeImageOpenAI
+from .ai.openai import DescribeImageError, OpenAIBackend
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ def generate_image_title(sender, instance: "AbstractImage", **kwargs) -> None:
     if not kwargs["created"]:
         return
 
-    backend = DescribeImageOpenAI()
+    backend = OpenAIBackend()
 
     rendition = instance.get_rendition("max-1000x1000")
 

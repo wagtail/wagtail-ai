@@ -3,7 +3,7 @@ from unittest.mock import ANY, Mock
 
 import pytest
 from wagtail.images.models import Image
-from wagtail_ai.ai.openai import DescribeImageOpenAI
+from wagtail_ai.ai.openai import OpenAIBackend
 from wagtail_factories import ImageFactory
 
 pytestmark = pytest.mark.django_db
@@ -14,7 +14,7 @@ MOCK_API_KEY = "MOCK-API-KEY"
 @pytest.fixture(autouse=True)
 def stub_image_title_signal(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(
-        "wagtail_ai.ai.openai.DescribeImageOpenAI.get_openai_api_key",
+        "wagtail_ai.ai.openai.OpenAIBackend.get_openai_api_key",
         lambda self: MOCK_API_KEY,
     )
 
@@ -31,7 +31,7 @@ def test_describe_image(mock_post):
         "choices": [{"message": {"content": "nothing"}}],
     }
     image = cast(Image, ImageFactory())
-    backend = DescribeImageOpenAI()
+    backend = OpenAIBackend()
     prompt = "what do you see?"
 
     description = backend.describe_image(image_file=image.file, prompt=prompt)
