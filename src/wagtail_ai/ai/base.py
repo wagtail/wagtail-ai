@@ -1,9 +1,11 @@
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
+from enum import Enum
 from typing import (
     Any,
     ClassVar,
     Generic,
+    Iterable,
     NotRequired,
     Protocol,
     Required,
@@ -23,9 +25,14 @@ from ..types import (
 )
 
 
+class BackendFeature(Enum):
+    TEXT_COMPLETION = 1
+
+
 class BaseAIBackendConfigSettings(TypedDict):
     MODEL_ID: Required[str]
     TOKEN_LIMIT: NotRequired[int | None]
+    FEATURES: NotRequired[Iterable[BackendFeature | str]]
 
 
 AIBackendConfigSettings = TypeVar(
@@ -45,6 +52,7 @@ class BaseAIBackendConfig(ConfigClassProtocol[AIBackendConfigSettings]):
     token_limit: int
     text_splitter_class: type[TextSplitterProtocol]
     text_splitter_length_calculator_class: type[TextSplitterLengthCalculatorProtocol]
+    features: set[BackendFeature]
 
     @classmethod
     def from_settings(
@@ -61,9 +69,15 @@ class BaseAIBackendConfig(ConfigClassProtocol[AIBackendConfigSettings]):
             model_id=config["MODEL_ID"], custom_value=config.get("TOKEN_LIMIT")
         )
 
+        features = {
+            feature if isinstance(feature, BackendFeature) else BackendFeature[feature]
+            for feature in config.get("FEATURES", [BackendFeature.TEXT_COMPLETION])
+        }
+
         return cls(
             model_id=config["MODEL_ID"],
             token_limit=token_limit,
+            features=features,
             text_splitter_class=text_splitter_class,
             text_splitter_length_calculator_class=text_splitter_length_calculator_class,
             **kwargs,
