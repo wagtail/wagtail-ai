@@ -4,10 +4,10 @@ import os
 import requests
 from django.core.files import File
 
-from .base import DescribeImageBackend, DescribeImageError
+from .base import AIBackend, DescribeImageError
 
 
-class DescribeImageOpenAI(DescribeImageBackend):
+class OpenAIBackend(AIBackend):
     timeout_seconds: int | None = None
     openai_api_key: str | None = None
 
