@@ -44,7 +44,7 @@ def _process_backend_request(
 
 
 def _replace_handler(*, prompt: Prompt, text: str) -> str:
-    ai_backend = ai.get_ai_backend(alias="default")  # TODO update
+    ai_backend = ai.get_backend()
     splitter = ai_backend.get_text_splitter()
     texts = splitter.split_text(text)
 
@@ -60,7 +60,7 @@ def _replace_handler(*, prompt: Prompt, text: str) -> str:
 
 
 def _append_handler(*, prompt: Prompt, text: str) -> str:
-    ai_backend = ai.get_ai_backend(alias="default")  # TODO update
+    ai_backend = ai.get_backend()
     length_calculator = ai_backend.get_splitter_length_calculator()
     if length_calculator.get_splitter_length(text) > ai_backend.config.token_limit:
         raise AIHandlerException("Cannot run completion on text this long")

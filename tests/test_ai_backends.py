@@ -5,7 +5,13 @@ from test_utils.settings import (
     custom_ai_backend_class,
     custom_ai_backend_settings,
 )
-from wagtail_ai.ai import InvalidAIBackendError, get_ai_backend
+from wagtail_ai.ai import (
+    BackendNotFound,
+    InvalidAIBackendError,
+    get_ai_backend,
+    get_backend,
+)
+from wagtail_ai.ai.base import BackendFeature
 from wagtail_ai.ai.echo import EchoBackend
 
 
@@ -90,3 +96,36 @@ def test_prompt_with_context_iterator():
         "like",
         "trains.",
     ]
+
+
+def test_get_backend_with_feature(settings):
+    settings.WAGTAIL_AI = {
+        "BACKENDS": {
+            "default": {
+                "CLASS": "wagtail_ai.ai.echo.EchoBackend",
+                "CONFIG": {"MODEL_ID": "default", "TOKEN_LIMIT": 123123},
+            },
+            "images": {
+                "CLASS": "wagtail_ai.ai.echo.EchoBackend",
+                "CONFIG": {"MODEL_ID": "images", "TOKEN_LIMIT": 123123},
+            },
+        },
+        "IMAGE_DESCRIPTION_BACKEND": "images",
+    }
+    assert get_backend().config.model_id == "default"
+    assert get_backend(BackendFeature.TEXT_COMPLETION).config.model_id == "default"
+    assert get_backend(BackendFeature.IMAGE_DESCRIPTION).config.model_id == "images"
+
+
+def test_get_backend_not_found(settings):
+    settings.WAGTAIL_AI = {
+        "BACKENDS": {
+            "default": {
+                "CLASS": "wagtail_ai.ai.echo.EchoBackend",
+                "CONFIG": {"MODEL_ID": "default", "TOKEN_LIMIT": 123123},
+            },
+        },
+    }
+    with pytest.raises(BackendNotFound) as exception:
+        get_backend(BackendFeature.IMAGE_DESCRIPTION)
+    assert exception.match(r"No backend found for IMAGE_DESCRIPTION")

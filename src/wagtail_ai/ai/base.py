@@ -1,5 +1,6 @@
 from abc import ABCMeta
 from dataclasses import dataclass
+from enum import Enum
 from typing import (
     Any,
     ClassVar,
@@ -21,6 +22,11 @@ from ..types import (
     TextSplitterLengthCalculatorProtocol,
     TextSplitterProtocol,
 )
+
+
+class BackendFeature(Enum):
+    TEXT_COMPLETION = "TEXT_COMPLETION"
+    IMAGE_DESCRIPTION = "IMAGE_DESCRIPTION"
 
 
 class BaseAIBackendConfigSettings(TypedDict):
