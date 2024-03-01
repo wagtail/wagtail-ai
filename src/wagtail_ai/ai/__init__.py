@@ -11,7 +11,7 @@ from ..text_splitters.langchain import LangchainRecursiveCharacterTextSplitter
 from ..text_splitters.length import NaiveTextSplitterCalculator
 from ..types import TextSplitterLengthCalculatorProtocol, TextSplitterProtocol
 from ..utils import deprecation
-from .base import AIBackend, BaseAIBackendConfigSettings
+from .base import AIBackend, BackendFeature, BaseAIBackendConfigSettings
 
 
 class TextSplittingSettingsDict(TypedDict):
@@ -161,3 +161,22 @@ def get_ai_backend(alias: str) -> AIBackend:
     )
 
     return ai_backend_cls(config=config)
+
+
+class BackendNotFound(Exception):
+    pass
+
+
+def get_backend(feature: BackendFeature = BackendFeature.TEXT_COMPLETION) -> AIBackend:
+    match feature:
+        case BackendFeature.TEXT_COMPLETION:
+            alias = "default"
+        case BackendFeature.IMAGE_DESCRIPTION:
+            alias = settings.WAGTAIL_AI.get("IMAGE_DESCRIPTION_BACKEND")
+        case _:
+            alias = None
+
+    if alias is None:
+        raise BackendNotFound(f"No backend found for {feature.name}")
+
+    return get_ai_backend(alias)
