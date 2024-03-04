@@ -1,34 +1,45 @@
 import base64
 import os
+from dataclasses import dataclass
+from typing import Any, NotRequired, Self
 
 import requests
 from django.core.files import File
 
-from .base import AIBackend, DescribeImageError
+from .base import AIBackend, BaseAIBackendConfig, BaseAIBackendConfigSettings
 
 
-class OpenAIBackend(AIBackend):
-    timeout_seconds: int | None = None
-    openai_api_key: str | None = None
+class OpenAIBackendConfigSettingsDict(BaseAIBackendConfigSettings):
+    TIMEOUT_SECONDS: NotRequired[int | None]
 
-    def __init__(
-        self, *, timeout_seconds: int | None = 15, openai_api_key: str | None = None
-    ) -> None:
-        self.timeout_seconds = timeout_seconds
-        self.openai_api_key = openai_api_key
+
+@dataclass(kw_only=True)
+class OpenAIBackendConfig(BaseAIBackendConfig[OpenAIBackendConfigSettingsDict]):
+    timeout_seconds: int
+
+    @classmethod
+    def from_settings(
+        cls, config: OpenAIBackendConfigSettingsDict, **kwargs: Any
+    ) -> Self:
+        timeout_seconds = config.get("TIMEOUT_SECONDS")
+        if timeout_seconds is None:
+            timeout_seconds = 15
+        kwargs.setdefault("timeout_seconds", timeout_seconds)
+
+        return super().from_settings(config, **kwargs)
+
+
+class OpenAIBackend(AIBackend[OpenAIBackendConfig]):
+    config_cls = OpenAIBackendConfig
 
     def describe_image(self, *, image_file: File, prompt: str) -> str:
         if not prompt:
             raise ValueError("Prompt must not be empty.")
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.get_openai_api_key()}",
-        }
         with image_file.open() as f:
             base64_image = base64.b64encode(f.read()).decode("utf-8")
-        payload = {
-            "model": "gpt-4-vision-preview",
-            "messages": [
+
+        response = self.chat_completions(
+            messages=[
                 {
                     "role": "user",
                     "content": [
@@ -43,31 +54,32 @@ class OpenAIBackend(AIBackend):
                             },
                         },
                     ],
-                }
+                },
             ],
-            "max_tokens": 300,
+        )
+        return response["choices"][0]["message"]["content"]
+
+    def chat_completions(self, messages: list[dict[str, Any]]):
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.get_openai_api_key()}",
+        }
+        payload = {
+            "model": self.config.model_id,
+            "messages": messages,
+            "max_tokens": self.config.token_limit,
         }
         response = requests.post(
             "https://api.openai.com/v1/chat/completions",
             headers=headers,
             json=payload,
-            timeout=self.timeout_seconds,
+            timeout=self.config.timeout_seconds,
         )
 
-        try:
-            response.raise_for_status()
-            json_response = response.json()
-        except requests.RequestException as e:
-            raise DescribeImageError(e) from e
-
-        try:
-            return json_response["choices"][0]["message"]["content"]
-        except (KeyError, IndexError) as e:
-            raise DescribeImageError(e) from e
+        response.raise_for_status()
+        return response.json()
 
     def get_openai_api_key(self) -> str:
-        if self.openai_api_key is not None:
-            return self.openai_api_key
         env_key = os.environ.get("OPENAI_API_KEY")
         if env_key is None:
             raise RuntimeError("OPENAI_API_KEY environment variable is not set.")

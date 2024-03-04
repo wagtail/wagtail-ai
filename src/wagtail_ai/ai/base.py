@@ -125,7 +125,3 @@ class AIBackend(Generic[AIBackendConfig], metaclass=ABCMeta):
 
     def describe_image(self, *, image_file: File, prompt: str) -> str:
         raise NotImplementedError("This backend does not support generating alt tags")
-
-
-class DescribeImageError(Exception):
-    pass

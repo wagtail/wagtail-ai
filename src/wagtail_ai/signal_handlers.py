@@ -6,7 +6,6 @@ from wagtail.images.models import AbstractImage
 
 from .ai import BackendNotFound, get_backend
 from .ai.base import BackendFeature
-from .ai.openai import DescribeImageError
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +34,7 @@ def generate_image_title(sender, instance: "AbstractImage", **kwargs) -> None:
 
     try:
         description = backend.describe_image(image_file=rendition.file, prompt=prompt)
-    except DescribeImageError:
+    except Exception:
         logger.exception("There was an issue describing the image.")
         return
 
