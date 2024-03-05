@@ -6,52 +6,8 @@ import {
   RichUtils,
 } from 'draft-js';
 
-import type { Prompt, WagtailAiConfiguration } from './custom';
-
-class APIRequestError extends Error {}
-
-export const getAIConfiguration = (): WagtailAiConfiguration => {
-  const configurationElement =
-    document.querySelector<HTMLScriptElement>('#wagtail-ai-config');
-  if (!configurationElement || !configurationElement.textContent) {
-    throw new Error('No wagtail-ai configuration found.');
-  }
-
-  try {
-    return JSON.parse(configurationElement.textContent);
-  } catch (err) {
-    throw new SyntaxError(
-      `Error parsing wagtail-ai configuration: ${err.message}`,
-    );
-  }
-};
-
-const fetchAIResponse = async (
-  text: string,
-  prompt: Prompt,
-  signal: AbortSignal,
-): Promise<string> => {
-  const formData = new FormData();
-  formData.append('text', text);
-  formData.append('prompt', prompt.uuid);
-  try {
-    const aiProcessUrl = getAIConfiguration().aiProcessUrl;
-
-    const res = await fetch(aiProcessUrl, {
-      method: 'POST',
-      body: formData,
-      signal: signal,
-    });
-    const json = await res.json();
-    if (res.ok) {
-      return json.message;
-    } else {
-      throw new APIRequestError(json.error);
-    }
-  } catch (err) {
-    throw new APIRequestError(err.message);
-  }
-};
+import type { Prompt } from './custom';
+import { fetchAIResponse } from './api';
 
 const getAllSelection = (content: ContentState): SelectionState => {
   const blockMap = content.getBlockMap();

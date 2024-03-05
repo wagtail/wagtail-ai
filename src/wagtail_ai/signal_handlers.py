@@ -55,4 +55,4 @@ def register_signals():
     )
 
 
-register_signals()
+# register_signals()

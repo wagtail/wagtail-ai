@@ -1,6 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from wagtail.admin.staticfiles import versioned_static
+from wagtail.images.forms import BaseImageForm
 
 
 class PromptTextField(forms.CharField):
@@ -18,7 +20,17 @@ class PromptUUIDField(forms.UUIDField):
     }
 
 
-class PromptForm(forms.Form):
+class ApiForm(forms.Form):
+    def errors_for_json_response(self) -> str:
+        errors_for_response = []
+        for _field, errors in self.errors.get_json_data().items():
+            for error in errors:
+                errors_for_response.append(error["message"])
+
+        return " \n".join(errors_for_response)
+
+
+class PromptForm(ApiForm):
     text = PromptTextField()
     prompt = PromptUUIDField()
 
@@ -31,10 +43,19 @@ class PromptForm(forms.Form):
 
         return prompt_uuid
 
-    def errors_for_json_response(self) -> str:
-        errors_for_response = []
-        for _field, errors in self.errors.get_json_data().items():
-            for error in errors:
-                errors_for_response.append(error["message"])
 
-        return " \n".join(errors_for_response)
+class DescribeImageApiForm(ApiForm):
+    image_id = forms.CharField()
+
+
+class DescribeImageForm(BaseImageForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            widget = self.fields["title"].widget
+            widget.attrs["data-wagtail-ai-image-id"] = str(self.instance.pk)
+            widget.template_name = "wagtail_ai/widgets/image_title.html"
+
+    class Media:
+        js = [versioned_static("wagtail_ai/image-description.js")]
+        css = {"all": [versioned_static("wagtail_ai/image-description.css")]}

@@ -1,0 +1,16 @@
+.wagtail-ai-image-title {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0.3125rem;
+}
+
+.wagtail-ai-button {
+  background: white;
+  border: 1px solid var(--w-color-border-field-default);
+  border-radius: 0.3125rem;
+}
+
+.wagtail-ai-button:hover {
+  border-color: var(--w-color-border-field-hover);
+}

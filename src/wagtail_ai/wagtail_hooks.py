@@ -9,7 +9,7 @@ from wagtail import hooks
 from wagtail.admin.rich_text.editors.draftail.features import ControlFeature
 
 from .models import Prompt
-from .views import process, prompt_viewset
+from .views import describe_image, process, prompt_viewset
 
 
 @hooks.register("register_admin_urls")  # type: ignore
@@ -24,6 +24,11 @@ def register_admin_urls():
             "process/",
             process,
             name="process",
+        ),
+        path(
+            "describe_image/",
+            describe_image,
+            name="describe_image",
         ),
     ]
 
@@ -80,17 +85,17 @@ def get_prompts():
     return [_serialize_prompt(prompt) for prompt in Prompt.objects.all()]
 
 
-@hooks.register("insert_editor_js")  # type: ignore
+@hooks.register("insert_global_admin_js")  # type: ignore
 def ai_editor_js():
-    prompt_json = get_prompts()
-    process_url = reverse("wagtail_ai:process")
+    config = {
+        "aiPrompts": get_prompts(),
+        "urls": {
+            "TEXT_COMPLETION": reverse("wagtail_ai:process"),
+            "DESCRIBE_IMAGE": reverse("wagtail_ai:describe_image"),
+        },
+    }
 
-    wagtail_ai_config = json_script(
-        {"aiPrompts": prompt_json, "aiProcessUrl": process_url},
-        "wagtail-ai-config",
-    )
-
-    return mark_safe(wagtail_ai_config)
+    return mark_safe(json_script(config, "wagtail-ai-config"))
 
 
 @hooks.register("register_admin_viewset")  # type: ignore

@@ -4,12 +4,8 @@ import { ToolbarButton } from 'draftail';
 import { createPortal } from 'react-dom';
 import { useOutsideAlerter } from './hooks';
 import WandIcon from './WandIcon';
-import {
-  handleAppend,
-  handleReplace,
-  processAction,
-  getAIConfiguration,
-} from './utils';
+import { handleAppend, handleReplace, processAction } from './utils';
+import { getAIConfiguration } from './api';
 
 import type { ControlComponentProps } from 'draftail';
 import type { Prompt } from './custom';

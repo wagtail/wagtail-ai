@@ -3,13 +3,15 @@ import os
 
 from django import forms
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from wagtail.admin.ui.tables import UpdatedAtColumn
 from wagtail.admin.viewsets.model import ModelViewSet
+from wagtail.images.permissions import get_image_model
 
 from . import ai, types
-from .forms import PromptForm
+from .forms import DescribeImageApiForm, PromptForm
 from .models import Prompt
 
 logger = logging.getLogger(__name__)
@@ -75,7 +77,7 @@ def _append_handler(*, prompt: Prompt, text: str) -> str:
 
 
 @csrf_exempt
-def process(request) -> JsonResponse:
+def process(request) -> JsonResponse:  # TODO rename
     prompt_form = PromptForm(request.POST)
 
     if not prompt_form.is_valid():
@@ -104,6 +106,20 @@ def process(request) -> JsonResponse:
         return JsonResponse({"error": _("An unexpected error occurred.")}, status=500)
 
     return JsonResponse({"message": response})
+
+
+@csrf_exempt  # TODO remove this
+def describe_image(request) -> JsonResponse:
+    form = DescribeImageApiForm(request.POST)
+    if not form.is_valid():
+        return JsonResponse({"error": form.errors_for_json_response()}, status=400)
+
+    # TODO check if user has permission for image
+
+    model = get_image_model()
+    image = get_object_or_404(model, pk=form.cleaned_data["image_id"])
+
+    return JsonResponse({"message": f"you asked about {image}?"})
 
 
 class PromptEditForm(forms.ModelForm):
