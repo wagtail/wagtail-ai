@@ -32,6 +32,8 @@ class OpenAIBackendConfig(BaseAIBackendConfig[OpenAIBackendConfigSettingsDict]):
 class OpenAIBackend(AIBackend[OpenAIBackendConfig]):
     config_cls = OpenAIBackendConfig
 
+    # TODO implement prompt_with_context
+
     def describe_image(self, *, image_file: File, prompt: str) -> str:
         if not prompt:
             raise ValueError("Prompt must not be empty.")

@@ -9,7 +9,7 @@ from wagtail import hooks
 from wagtail.admin.rich_text.editors.draftail.features import ControlFeature
 
 from .models import Prompt
-from .views import describe_image, process, prompt_viewset
+from .views import describe_image, prompt_viewset, text_completion
 
 
 @hooks.register("register_admin_urls")  # type: ignore
@@ -21,9 +21,9 @@ def register_admin_urls():
             name="javascript_catalog",
         ),
         path(
-            "process/",
-            process,
-            name="process",
+            "text_completion/",
+            text_completion,
+            name="text_completion",
         ),
         path(
             "describe_image/",
@@ -55,8 +55,8 @@ def register_ai_feature(features):
             {
                 "type": feature_name,
             },
-            js=["wagtail_ai/wagtail-ai.js"],
-            css={"all": ["wagtail_ai/main.css"]},
+            js=["wagtail_ai/draftail.js"],
+            css={"all": ["wagtail_ai/draftail.css"]},
         ),
     )
 
@@ -90,7 +90,7 @@ def ai_editor_js():
     config = {
         "aiPrompts": get_prompts(),
         "urls": {
-            "TEXT_COMPLETION": reverse("wagtail_ai:process"),
+            "TEXT_COMPLETION": reverse("wagtail_ai:text_completion"),
             "DESCRIBE_IMAGE": reverse("wagtail_ai:describe_image"),
         },
     }

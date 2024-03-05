@@ -53,9 +53,9 @@ class DescribeImageForm(BaseImageForm):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
             widget = self.fields["title"].widget
-            widget.attrs["data-wagtail-ai-image-id"] = str(self.instance.pk)
+            widget.attrs["data-wagtailai-image-id"] = str(self.instance.pk)
             widget.template_name = "wagtail_ai/widgets/image_title.html"
 
     class Media:
-        js = [versioned_static("wagtail_ai/image-description.js")]
-        css = {"all": [versioned_static("wagtail_ai/image-description.css")]}
+        js = [versioned_static("wagtail_ai/image_description.js")]
+        css = {"all": [versioned_static("wagtail_ai/image_description.css")]}

@@ -84,7 +84,7 @@ def ErrorJsonResponse(error_message, status=500):
 
 
 @csrf_exempt
-def process(request) -> JsonResponse:  # TODO rename
+def text_completion(request) -> JsonResponse:
     prompt_form = PromptForm(request.POST)
 
     if not prompt_form.is_valid():
@@ -113,7 +113,6 @@ def process(request) -> JsonResponse:  # TODO rename
     return JsonResponse({"message": response})
 
 
-@csrf_exempt  # TODO remove this
 def describe_image(request) -> JsonResponse:
     form = DescribeImageApiForm(request.POST)
     if not form.is_valid():
@@ -132,9 +131,9 @@ def describe_image(request) -> JsonResponse:
             "No backend is configured for image description", status=400
         )
 
-    rendition = image.get_rendition("max-1000x1000")
+    rendition = image.get_rendition("max-800x600")
 
-    # TODO: Add support for adding different languages here.
+    # TODO: Make the prompt configurable
     prompt = (
         "Describe this image. Make the description suitable for use as an alt-text."
     )

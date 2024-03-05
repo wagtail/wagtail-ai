@@ -18,18 +18,6 @@ export const getAIConfiguration = (): WagtailAiConfiguration => {
   }
 };
 
-// TODO rename
-export const fetchAIResponse = async (
-  text: string,
-  prompt: Prompt,
-  signal: AbortSignal,
-): Promise<string> => {
-  const formData = new FormData();
-  formData.append('text', text);
-  formData.append('prompt', prompt.uuid);
-  return fetchResponse('TEXT_COMPLETION', formData, signal);
-};
-
 export const fetchResponse = async (
   action: keyof typeof ApiUrlName,
   body: FormData,

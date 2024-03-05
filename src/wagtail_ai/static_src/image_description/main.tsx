@@ -1,5 +1,5 @@
-import './image_description.css';
-import { fetchResponse } from './api';
+import './main.css';
+import { fetchResponse } from '../api';
 
 // TODO find a way to import the same SVG file here and in WandIcon.tsx
 const wandIcon = `<svg
@@ -13,26 +13,44 @@ const wandIcon = `<svg
 </svg>`;
 
 document.addEventListener('wagtail-ai:image-form', (event) => {
-  const form = event.target as HTMLFormElement;
-  const input = form.querySelector('[name*=title]') as HTMLInputElement;
-  const imageId = input.dataset['wagtail-ai-image-id'] as string;
-  const inputContainer = input.parentNode as HTMLDivElement;
-  inputContainer.classList.add('wagtail-ai-image-title'); // TODO better class name
-  const button = document.createElement('button');
-  button.classList.add('wagtail-ai-button'); // TODO better class name
-  button.innerHTML = wandIcon;
-  inputContainer.appendChild(button);
+  const input = event.target as HTMLInputElement;
+  const imageId = input.dataset['wagtailai-image-id']!;
+  const csrfToken = (
+    input.form!.querySelector(
+      'input[name=csrfmiddlewaretoken]',
+    ) as HTMLInputElement
+  ).value;
 
-  button.addEventListener('click', async (event) => {
-    event.preventDefault();
+  const flexWrapper = document.createElement('div');
+  flexWrapper.classList.add('wagtailai-input-wrapper');
+  input.parentNode!.replaceChild(flexWrapper, input);
+  flexWrapper.appendChild(input);
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.classList.add('wagtailai-button');
+  button.innerHTML = wandIcon;
+  flexWrapper.appendChild(button);
+
+  let errorMessage: HTMLElement | null = null;
+
+  button.addEventListener('click', async () => {
+    errorMessage?.parentNode?.removeChild(errorMessage);
     button.disabled = true;
     button.innerText = '…';
 
-    const formData = new FormData();
-    formData.append('image_id', imageId);
-    // TODO error handling
-    const response = await fetchResponse('DESCRIBE_IMAGE', formData);
-    input.value = response;
+    try {
+      const formData = new FormData();
+      formData.append('image_id', imageId);
+      formData.append('csrfmiddlewaretoken', csrfToken);
+      input.value = await fetchResponse('DESCRIBE_IMAGE', formData);
+    } catch (error) {
+      errorMessage = document.createElement('p');
+      errorMessage.classList.add('error-message');
+      errorMessage.textContent = 'Could not generate image description.';
+      flexWrapper.parentNode!.append(errorMessage);
+    }
+
     button.innerHTML = wandIcon;
     button.disabled = false;
   });

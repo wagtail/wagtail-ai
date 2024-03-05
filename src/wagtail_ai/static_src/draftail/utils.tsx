@@ -6,8 +6,19 @@ import {
   RichUtils,
 } from 'draft-js';
 
-import type { Prompt } from './custom';
-import { fetchAIResponse } from './api';
+import type { Prompt } from '../custom';
+import { fetchResponse } from '../api';
+
+export const fetchAIResponse = async (
+  text: string,
+  prompt: Prompt,
+  signal: AbortSignal,
+): Promise<string> => {
+  const formData = new FormData();
+  formData.append('text', text);
+  formData.append('prompt', prompt.uuid);
+  return fetchResponse('TEXT_COMPLETION', formData, signal);
+};
 
 const getAllSelection = (content: ContentState): SelectionState => {
   const blockMap = content.getBlockMap();

@@ -4,8 +4,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: {
-    'wagtail-ai': './src/wagtail_ai/static_src/main.tsx', // TODO rename to draftail
-    'image-description': './src/wagtail_ai/static_src/image_description.tsx',
+    draftail: './src/wagtail_ai/static_src/draftail/main.tsx',
+    image_description: './src/wagtail_ai/static_src/image_description/main.tsx',
   },
   plugins: [new MiniCssExtractPlugin()],
   module: {
