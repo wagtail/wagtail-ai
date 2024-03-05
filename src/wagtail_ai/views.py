@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Type, cast
 
 from django import forms
 from django.http import JsonResponse
@@ -8,9 +9,11 @@ from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from wagtail.admin.ui.tables import UpdatedAtColumn
 from wagtail.admin.viewsets.model import ModelViewSet
+from wagtail.images.models import AbstractImage
 from wagtail.images.permissions import get_image_model
 
 from . import ai, types
+from .ai.base import BackendFeature
 from .forms import DescribeImageApiForm, PromptForm
 from .models import Prompt
 
@@ -76,19 +79,21 @@ def _append_handler(*, prompt: Prompt, text: str) -> str:
     return message
 
 
+def ErrorJsonResponse(error_message, status=500):
+    return JsonResponse({"error": error_message}, status=status)
+
+
 @csrf_exempt
 def process(request) -> JsonResponse:  # TODO rename
     prompt_form = PromptForm(request.POST)
 
     if not prompt_form.is_valid():
-        return JsonResponse(
-            {"error": prompt_form.errors_for_json_response()}, status=400
-        )
+        return ErrorJsonResponse(prompt_form.errors_for_json_response(), status=400)
 
     try:
         prompt = Prompt.objects.get(uuid=prompt_form.cleaned_data["prompt"])
     except Prompt.DoesNotExist:
-        return JsonResponse({"error": _("Invalid prompt provided.")}, status=400)
+        return ErrorJsonResponse(_("Invalid prompt provided."), status=400)
 
     handlers = {
         Prompt.Method.REPLACE: _replace_handler,
@@ -100,10 +105,10 @@ def process(request) -> JsonResponse:  # TODO rename
     try:
         response = handler(prompt=prompt, text=prompt_form.cleaned_data["text"])
     except AIHandlerException as e:
-        return JsonResponse({"error": str(e)}, status=400)
+        return ErrorJsonResponse(str(e), status=400)
     except Exception:
         logger.exception("An unexpected error occurred.")
-        return JsonResponse({"error": _("An unexpected error occurred.")}, status=500)
+        return ErrorJsonResponse(_("An unexpected error occurred."))
 
     return JsonResponse({"message": response})
 
@@ -112,14 +117,44 @@ def process(request) -> JsonResponse:  # TODO rename
 def describe_image(request) -> JsonResponse:
     form = DescribeImageApiForm(request.POST)
     if not form.is_valid():
-        return JsonResponse({"error": form.errors_for_json_response()}, status=400)
+        return ErrorJsonResponse(form.errors_for_json_response(), status=400)
 
     # TODO check if user has permission for image
 
-    model = get_image_model()
+    model = cast(Type[AbstractImage], get_image_model())
     image = get_object_or_404(model, pk=form.cleaned_data["image_id"])
 
-    return JsonResponse({"message": f"you asked about {image}?"})
+    try:
+        backend = ai.get_backend(BackendFeature.IMAGE_DESCRIPTION)
+    except ai.BackendNotFound:
+        # TODO tell the user how to fix this
+        return ErrorJsonResponse(
+            "No backend is configured for image description", status=400
+        )
+
+    rendition = image.get_rendition("max-1000x1000")
+
+    # TODO: Add support for adding different languages here.
+    prompt = (
+        "Describe this image. Make the description suitable for use as an alt-text."
+    )
+
+    character_limit = get_image_model()._meta.get_field("title").max_length
+
+    if character_limit is not None:
+        prompt += f" Make the description less than {character_limit} characters long."
+
+    try:
+        description = backend.describe_image(image_file=rendition.file, prompt=prompt)
+    except Exception:
+        logger.exception("There was an issue describing the image.")
+        return ErrorJsonResponse("There was an issue describing the image.")
+
+    if not description:
+        return ErrorJsonResponse("There was an issue describing the image.")
+
+    description = description[:character_limit]
+    return JsonResponse({"message": description})
 
 
 class PromptEditForm(forms.ModelForm):

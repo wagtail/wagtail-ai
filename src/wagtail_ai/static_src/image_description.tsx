@@ -30,7 +30,10 @@ document.addEventListener('wagtail-ai:image-form', (event) => {
 
     const formData = new FormData();
     formData.append('image_id', imageId);
+    // TODO error handling
     const response = await fetchResponse('DESCRIBE_IMAGE', formData);
-    console.log('response:', response);
+    input.value = response;
+    button.innerHTML = wandIcon;
+    button.disabled = false;
   });
 });
