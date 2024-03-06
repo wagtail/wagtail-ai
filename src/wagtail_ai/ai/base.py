@@ -13,6 +13,7 @@ from typing import (
 )
 
 from django.core.exceptions import ImproperlyConfigured
+from django.core.files import File
 
 from .. import tokens
 from ..types import (
@@ -116,3 +117,13 @@ class AIBackend(Generic[AIBackendConfig], metaclass=ABCMeta):
 
     def get_splitter_length_calculator(self) -> TextSplitterLengthCalculatorProtocol:
         return self.config.text_splitter_length_calculator_class()
+
+
+class DescribeImageError(Exception):
+    pass
+
+
+class DescribeImageBackend(metaclass=ABCMeta):
+    @abstractmethod
+    def describe_image(self, *, image_file: File, prompt: str) -> str:
+        ...
