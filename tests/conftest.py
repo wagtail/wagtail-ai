@@ -1,5 +1,4 @@
 import pytest
-from django.contrib.auth.models import User
 from wagtail_ai.models import Prompt
 
 TEST_PROMPT_LABEL = "Prompt Label"
@@ -26,12 +25,6 @@ def setup_prompt_object(test_prompt_values):
     prompt.delete()
 
 
-@pytest.fixture
-def setup_users():
-    superuser = User.objects.create_superuser(
-        "Superuser", "superuser@email.com", "password"
-    )
-
-    yield superuser
-
-    superuser.delete()
+@pytest.fixture(autouse=True)
+def temporary_media(settings, tmp_path):
+    settings.MEDIA_ROOT = tmp_path / "media"

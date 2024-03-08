@@ -124,4 +124,4 @@ class AIBackend(Generic[AIBackendConfig], metaclass=ABCMeta):
         return self.config.text_splitter_length_calculator_class()
 
     def describe_image(self, *, image_file: File, prompt: str) -> AIResponse:
-        raise NotImplementedError("This backend does not support generating alt tags")
+        raise NotImplementedError("This backend does not support image description")

@@ -3,6 +3,7 @@ import os
 from typing import Type, cast
 
 from django import forms
+from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
@@ -113,35 +114,45 @@ def text_completion(request) -> JsonResponse:
     return JsonResponse({"message": response})
 
 
+def user_has_permission_for_image(user, image):
+    from wagtail.images.permissions import permission_policy
+
+    return permission_policy.user_has_permission_for_instance(user, "choose", image)
+
+
 def describe_image(request) -> JsonResponse:
     form = DescribeImageApiForm(request.POST)
     if not form.is_valid():
         return ErrorJsonResponse(form.errors_for_json_response(), status=400)
 
-    # TODO check if user has permission for image
-
     model = cast(Type[AbstractImage], get_image_model())
     image = get_object_or_404(model, pk=form.cleaned_data["image_id"])
+
+    if not user_has_permission_for_image(request.user, image):
+        return ErrorJsonResponse("Access denied", status=403)
 
     try:
         backend = ai.get_backend(BackendFeature.IMAGE_DESCRIPTION)
     except ai.BackendNotFound:
-        # TODO tell the user how to fix this
         return ErrorJsonResponse(
-            "No backend is configured for image description", status=400
+            "No backend is configured for image description. Please set"
+            " `IMAGE_DESCRIPTION_BACKEND` in `settings.WAGTAIL_AI`.",
+            status=400,
         )
 
     rendition = image.get_rendition("max-800x600")
 
-    # TODO: Make the prompt configurable
-    prompt = (
-        "Describe this image. Make the description suitable for use as an alt-text."
-    )
-
     character_limit = get_image_model()._meta.get_field("title").max_length
+    prompt = getattr(settings, "WAGTAIL_AI", {}).get("IMAGE_DESCRIPTION_PROMPT")
 
-    if character_limit is not None:
-        prompt += f" Make the description less than {character_limit} characters long."
+    if prompt is None:
+        prompt = (
+            "Describe this image. Make the description suitable for use as an alt-text."
+        )
+        if character_limit is not None:
+            prompt += (
+                f" Make the description less than {character_limit} characters long."
+            )
 
     try:
         ai_response = backend.describe_image(image_file=rendition.file, prompt=prompt)
@@ -153,7 +164,9 @@ def describe_image(request) -> JsonResponse:
     if not description:
         return ErrorJsonResponse("There was an issue describing the image.")
 
-    description = description[:character_limit]
+    if character_limit is not None:
+        description = description[:character_limit]
+
     return JsonResponse({"message": description})
 
 
