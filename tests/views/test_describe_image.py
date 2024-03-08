@@ -35,7 +35,19 @@ def test_access_denied(client):
     assert response.json() == {"error": "Access denied"}
 
 
-def test_backend_not_configured(admin_client):
+def test_backend_not_configured(settings, admin_client):
+    settings.WAGTAIL_AI = {
+        "BACKENDS": {
+            "echo": {
+                "CLASS": "wagtail_ai.ai.echo.EchoBackend",
+                "CONFIG": {
+                    "MODEL_ID": "echo",
+                    "TOKEN_LIMIT": 123123,
+                },
+            },
+        },
+    }
+
     image = cast(Image, ImageFactory())
     response = admin_client.post(
         reverse("wagtail_ai:describe_image"), data={"image_id": image.pk}
