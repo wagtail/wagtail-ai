@@ -57,8 +57,7 @@ def test_describe_image(settings, mock_post):
             "openai": {
                 "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
                 "CONFIG": {
-                    "MODEL_ID": "mock model",
-                    "TOKEN_LIMIT": 123123,
+                    "MODEL_ID": "gpt-4",
                 },
             },
         },
@@ -97,8 +96,7 @@ def test_text_completion(settings, mock_post):
             "openai": {
                 "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
                 "CONFIG": {
-                    "MODEL_ID": "mock model",
-                    "TOKEN_LIMIT": 123123,
+                    "MODEL_ID": "gpt-4",
                 },
             },
         },
@@ -135,8 +133,7 @@ def test_text_completion_without_post_prompt(settings, mock_post):
             "openai": {
                 "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
                 "CONFIG": {
-                    "MODEL_ID": "mock model",
-                    "TOKEN_LIMIT": 123123,
+                    "MODEL_ID": "gpt-4",
                 },
             },
         },
@@ -157,3 +154,19 @@ def test_text_completion_without_post_prompt(settings, mock_post):
         {"content": [{"type": "text", "text": pre_prompt}], "role": "system"},
         {"content": [{"type": "text", "text": context}], "role": "user"},
     ]
+
+
+def test_default_token_limit(settings):
+    settings.WAGTAIL_AI = {
+        "BACKENDS": {
+            "openai": {
+                "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
+                "CONFIG": {
+                    "MODEL_ID": "gpt-4",
+                },
+            },
+        },
+    }
+
+    backend = get_ai_backend("openai")
+    assert backend.config.token_limit == 8192

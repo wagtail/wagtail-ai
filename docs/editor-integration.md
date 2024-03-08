@@ -15,3 +15,21 @@ When creating prompts you can provide a label and description to help describe t
 
 - 'Append after existing content' - keep your existing content intact and add the response from the AI to the end (useful for completions/suggestions).
 - 'Replace content' - replace the content in the editor with the response from the AI (useful for corrections, rewrites and translations.)
+
+### Configuring the AI backend
+
+By default, the `"default"` model will be used for text operations in the editor. To use a different model, set `TEXT_COMPLETION_BACKEND` to the name of another model:
+
+```python
+WAGTAIL_AI = {
+    "BACKENDS": {
+        "gpt4": {
+            "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
+            "CONFIG": {
+                "MODEL_ID": "gpt-4",
+            },
+        },
+    },
+    "TEXT_COMPLETION_BACKEND": "gpt4",
+}
+```

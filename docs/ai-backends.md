@@ -2,11 +2,11 @@
 
 Wagtail AI can be configured to use different backends to support different AI services.
 
-Currently the only (and default) backend available in Wagtail AI is the ["LLM" backend](#the-llm-backend).
+The default backend for text completion available in Wagtail AI is the ["LLM" backend](#the-llm-backend). To enable [image description](../images-integration/), you can use the ["OpenAI" backend](#the-openai-backend).
 
 ## The "LLM" backend
 
-This backend uses the ["LLM" library](https://llm.datasette.io/en/stable/) which offers support for many AI services through plugins.
+This backend uses the ["LLM" library](https://llm.datasette.io/en/stable/) which offers support for many AI services through plugins. At the moment it only supports [text completion](../editor-integration/).
 
 By default, it is configured to use OpenAI's `gpt-3.5-turbo` model.
 
@@ -155,3 +155,40 @@ You can find the "LLM" library specific instructions at: https://llm.datasette.i
        }
    }
    ```
+
+## The "OpenAI" backend
+
+Wagtail AI includes a backend for OpenAI that supports both [text completion](../editor-integration/) and [image description](../images-integration/).
+
+To use the OpenAI backend, you need an API key, which must be set in the `OPENAI_API_KEY` environment variable. Then, configure it in your Django project settings:
+
+```python
+WAGTAIL_AI = {
+    "BACKENDS": {
+        "default": {
+            "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
+            "CONFIG": {
+                "MODEL_ID": "gpt-4",
+            },
+        },
+    },
+}
+```
+
+### Specifying another OpenAI model
+
+The OpenAI backend supports the use of custom models. For newer models that are not known to Wagtail AI, you must also specify a token limit:
+
+```python
+WAGTAIL_AI = {
+    "BACKENDS": {
+        "vision": {
+            "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
+            "CONFIG": {
+                "MODEL_ID": "gpt-4-vision-preview",
+                "TOKEN_LIMIT": 300,
+            },
+        },
+    },
+}
+```
