@@ -170,7 +170,7 @@ class BackendNotFound(Exception):
 def get_backend(feature: BackendFeature = BackendFeature.TEXT_COMPLETION) -> AIBackend:
     match feature:
         case BackendFeature.TEXT_COMPLETION:
-            alias = "default"
+            alias = settings.WAGTAIL_AI.get("TEXT_COMPLETION_BACKEND", "default")
         case BackendFeature.IMAGE_DESCRIPTION:
             alias = settings.WAGTAIL_AI.get("IMAGE_DESCRIPTION_BACKEND")
         case _:

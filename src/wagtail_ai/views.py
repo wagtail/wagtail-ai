@@ -144,7 +144,8 @@ def describe_image(request) -> JsonResponse:
         prompt += f" Make the description less than {character_limit} characters long."
 
     try:
-        description = backend.describe_image(image_file=rendition.file, prompt=prompt)
+        ai_response = backend.describe_image(image_file=rendition.file, prompt=prompt)
+        description = ai_response.text()
     except Exception:
         logger.exception("There was an issue describing the image.")
         return ErrorJsonResponse("There was an issue describing the image.")
