@@ -8,8 +8,101 @@
   background: white;
   border: 1px solid var(--w-color-border-field-default);
   border-radius: 0.3125rem;
+  cursor: pointer;
 }
 
 .wagtailai-button:hover {
   border-color: var(--w-color-border-field-hover);
+}
+
+@keyframes wagtailai-button-twinkle {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes wagtailai-button-dazzle {
+  0% {
+    fill: hsl(0, 80%, 40%);
+  } /* Red */
+  8.33% {
+    fill: hsl(30, 80%, 30%);
+  } /* Red-Orange */
+  16.67% {
+    fill: hsl(60, 80%, 30%);
+  } /* Orange */
+  25% {
+    fill: hsl(90, 80%, 20%);
+  } /* Yellow */
+  33.33% {
+    fill: hsl(120, 80%, 30%);
+  } /* Yellow-Green */
+  41.67% {
+    fill: hsl(150, 80%, 30%);
+  } /* Green */
+  50% {
+    fill: hsl(180, 80%, 30%);
+  } /* Green-Cyan */
+  58.33% {
+    fill: hsl(210, 80%, 30%);
+  } /* Cyan */
+  66.67% {
+    fill: hsl(240, 80%, 30%);
+  } /* Cyan-Blue */
+  75% {
+    fill: hsl(270, 80%, 40%);
+  } /* Blue */
+  83.33% {
+    fill: hsl(300, 80%, 40%);
+  } /* Blue-Indigo */
+  91.67% {
+    fill: hsl(330, 80%, 30%);
+  } /* Indigo */
+  100% {
+    fill: hsl(360, 80%, 30%);
+  } /* Back to Red */
+}
+@keyframes wagtailai-button-hover {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-11%);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.wagtailai-button.loading svg {
+  opacity: 0.9;
+}
+.wagtailai-button.loading #wand {
+  transform-origin: center;
+  animation: wagtailai-button-dazzle 2.4s ease infinite;
+}
+.wagtailai-button.loading #star1 {
+  animation: wagtailai-button-hover 1.2s ease infinite,
+    wagtailai-button-twinkle 1.2s ease infinite,
+    wagtailai-button-dazzle 2.4s ease infinite;
+  transform-origin: center;
+  animation-delay: 0.2s, 0s;
+}
+.wagtailai-button.loading #star2 {
+  animation: wagtailai-button-hover 1.2s ease infinite,
+    wagtailai-button-twinkle 1.2s ease infinite,
+    wagtailai-button-dazzle 2.4s ease infinite;
+  transform-origin: center;
+  animation-delay: 0.1s, 0s;
+}
+.wagtailai-button.loading #star3 {
+  animation: wagtailai-button-hover 1.2s ease infinite,
+    wagtailai-button-twinkle 1.2s ease infinite,
+    wagtailai-button-dazzle 2.4s ease infinite;
+  transform-origin: center;
 }
