@@ -1,4 +1,4 @@
-import type { ApiUrlName, Prompt, WagtailAiConfiguration } from './custom';
+import type { ApiUrlName, WagtailAiConfiguration } from './custom';
 
 class APIRequestError extends Error {}
 

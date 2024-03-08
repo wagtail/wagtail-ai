@@ -39,7 +39,7 @@ def test_prompt_model_admin_viewset_edit_view(client, setup_users, setup_prompt_
 
 @pytest.mark.django_db
 def test_process_view_get_request(client, setup_users):
-    url = reverse("wagtail_ai:process")
+    url = reverse("wagtail_ai:text_completion")
 
     superuser = setup_users
     client.force_login(superuser)
@@ -54,7 +54,7 @@ def test_process_view_get_request(client, setup_users):
 
 @pytest.mark.django_db
 def test_process_view_post_without_text(client, setup_users):
-    url = reverse("wagtail_ai:process")
+    url = reverse("wagtail_ai:text_completion")
 
     superuser = setup_users
     client.force_login(superuser)
@@ -72,7 +72,7 @@ def test_process_view_post_without_text(client, setup_users):
     "prompt", [None, "NOT-A-UUID", str(uuid.uuid1()), str(uuid.uuid4())]
 )
 def test_process_view_with_bad_prompt_id(client, setup_users, prompt):
-    url = reverse("wagtail_ai:process")
+    url = reverse("wagtail_ai:text_completion")
 
     superuser = setup_users
     client.force_login(superuser)
@@ -88,7 +88,7 @@ def test_process_view_with_bad_prompt_id(client, setup_users, prompt):
 
 @pytest.mark.django_db
 def test_process_view_with_correct_prompt(client, setup_users, setup_prompt_object):
-    url = reverse("wagtail_ai:process")
+    url = reverse("wagtail_ai:text_completion")
 
     superuser = setup_users
     client.force_login(superuser)

@@ -14,7 +14,7 @@ class DummyTextSplitter(TextSplitterProtocol):
 
     def split_text(self, text: str) -> list[str]:
         # Don't do any splitting.
-        return text.split()
+        return [text]
 
 
 class DummyLengthCalculator(TextSplitterLengthCalculatorProtocol):
