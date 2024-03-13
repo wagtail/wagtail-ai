@@ -1,7 +1,7 @@
 import './main.css';
 import { fetchResponse } from '../api';
 
-import wandIcon from '!!raw-loader!../wand_icon.svg';
+import wandIcon from '../wand_icon.svg';
 
 document.addEventListener('wagtail-ai:image-form', (event) => {
   const input = event.target as HTMLInputElement;
