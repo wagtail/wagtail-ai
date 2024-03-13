@@ -5,16 +5,24 @@ import wandIcon from '../wand_icon.svg';
 
 document.addEventListener('wagtail-ai:image-form', (event) => {
   const input = event.target as HTMLInputElement;
-  const imageId = input.dataset['wagtailai-image-id']!;
-  const csrfToken = (
-    input.form!.querySelector(
-      'input[name=csrfmiddlewaretoken]',
-    ) as HTMLInputElement
-  ).value;
+  const imageId = input.dataset['wagtailai-image-id'];
+  if (!imageId) {
+    throw new Error('The attribute data-wagtailai-image-id is missing.');
+  }
+  if (!input.form) {
+    throw new Error('The input is not part of a form.');
+  }
+  const csrfTokenInput = input.form.querySelector<HTMLInputElement>(
+    'input[name=csrfmiddlewaretoken]',
+  );
+  if (!csrfTokenInput) {
+    throw new Error('Could not find a CSRF token hidden input.');
+  }
 
+  const inputParent = input.parentNode!;
   const flexWrapper = document.createElement('div');
   flexWrapper.classList.add('wagtailai-input-wrapper');
-  input.parentNode!.replaceChild(flexWrapper, input);
+  inputParent.replaceChild(flexWrapper, input);
   flexWrapper.appendChild(input);
 
   const button = document.createElement('button');
@@ -24,7 +32,7 @@ document.addEventListener('wagtail-ai:image-form', (event) => {
   button.innerHTML = wandIcon;
   flexWrapper.appendChild(button);
 
-  let errorMessage: HTMLElement | null = null;
+  let errorMessage: HTMLParagraphElement | null = null;
 
   button.addEventListener('click', async () => {
     errorMessage?.parentNode?.removeChild(errorMessage);
@@ -34,13 +42,13 @@ document.addEventListener('wagtail-ai:image-form', (event) => {
     try {
       const formData = new FormData();
       formData.append('image_id', imageId);
-      formData.append('csrfmiddlewaretoken', csrfToken);
+      formData.append('csrfmiddlewaretoken', csrfTokenInput.value);
       input.value = await fetchResponse('DESCRIBE_IMAGE', formData);
     } catch (error) {
       errorMessage = document.createElement('p');
       errorMessage.classList.add('error-message');
       errorMessage.textContent = 'Could not generate image description.';
-      flexWrapper.parentNode!.append(errorMessage);
+      inputParent.append(errorMessage);
     }
 
     button.classList.remove('loading');

@@ -18,7 +18,7 @@ When creating prompts you can provide a label and description to help describe t
 
 ### Configuring the AI backend
 
-By default, the `"default"` model will be used for text operations in the editor. To use a different model, set `TEXT_COMPLETION_BACKEND` to the name of another model:
+By default, the `"default"` model will be used for text operations in the editor. To use a different model, set `TEXT_COMPLETION_BACKEND` to the name of another backend:
 
 ```python
 WAGTAIL_AI = {

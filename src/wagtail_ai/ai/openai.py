@@ -14,11 +14,13 @@ from .base import AIBackend, BaseAIBackendConfig, BaseAIBackendConfigSettings
 
 class OpenAIBackendConfigSettingsDict(BaseAIBackendConfigSettings):
     TIMEOUT_SECONDS: NotRequired[int | None]
+    OPENAI_API_KEY: NotRequired[str | None]
 
 
 @dataclass(kw_only=True)
 class OpenAIBackendConfig(BaseAIBackendConfig[OpenAIBackendConfigSettingsDict]):
     timeout_seconds: int
+    openai_api_key: str | None
 
     @classmethod
     def from_settings(
@@ -28,6 +30,8 @@ class OpenAIBackendConfig(BaseAIBackendConfig[OpenAIBackendConfigSettingsDict]):
         if timeout_seconds is None:
             timeout_seconds = 15
         kwargs.setdefault("timeout_seconds", timeout_seconds)
+
+        kwargs.setdefault("openai_api_key", config.get("OPENAI_API_KEY"))
 
         return super().from_settings(config, **kwargs)
 
@@ -112,7 +116,13 @@ class OpenAIBackend(AIBackend[OpenAIBackendConfig]):
         return OpenAIResponse(response)
 
     def get_openai_api_key(self) -> str:
-        env_key = os.environ.get("OPENAI_API_KEY")
-        if env_key is None:
-            raise RuntimeError("OPENAI_API_KEY environment variable is not set.")
-        return env_key
+        if config_key := self.config.openai_api_key:
+            return config_key
+
+        if env_key := os.environ.get("OPENAI_API_KEY"):
+            return env_key
+
+        raise RuntimeError(
+            "Cannot find OpenAI API key. Please set the OPENAI_API_KEY environment"
+            " variable or the OPENAI_API_KEY backend config value in Django settings."
+        )

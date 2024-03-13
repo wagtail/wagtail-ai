@@ -54,7 +54,7 @@ class DescribeImageForm(BaseImageForm):
         if self.instance and self.instance.pk:
             widget = self.fields["title"].widget
             widget.attrs["data-wagtailai-image-id"] = str(self.instance.pk)
-            widget.attrs["data-wagtailai-button-title"] = "Describe image using AI"
+            widget.attrs["data-wagtailai-button-title"] = _("Describe image using AI")
             widget.template_name = "wagtail_ai/widgets/image_title.html"
 
     class Media:

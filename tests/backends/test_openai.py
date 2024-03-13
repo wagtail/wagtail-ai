@@ -10,16 +10,13 @@ from wagtail_factories import ImageFactory
 
 pytestmark = pytest.mark.django_db
 
-MOCK_API_KEY = "MOCK-API-KEY"
+MOCK_API_KEY = "openai-api-key-stub"
 MOCK_OUTPUT = "mock ai output"
 
 
 @pytest.fixture(autouse=True)
 def stub_image_title_signal(monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setattr(
-        "wagtail_ai.ai.openai.OpenAIBackend.get_openai_api_key",
-        lambda self: MOCK_API_KEY,
-    )
+    monkeypatch.setenv("OPENAI_API_KEY", MOCK_API_KEY)
 
 
 @pytest.fixture
@@ -170,3 +167,39 @@ def test_default_token_limit(settings):
 
     backend = get_ai_backend("openai")
     assert backend.config.token_limit == 8192
+
+
+def test_api_key_in_environ(settings, monkeypatch: pytest.MonkeyPatch):
+    test_key = "test-key-value"
+    settings.WAGTAIL_AI = {
+        "BACKENDS": {
+            "openai": {
+                "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
+                "CONFIG": {
+                    "MODEL_ID": "gpt-4",
+                },
+            },
+        },
+    }
+    monkeypatch.setenv("OPENAI_API_KEY", test_key)
+
+    backend = cast(OpenAIBackend, get_ai_backend("openai"))
+    assert backend.get_openai_api_key() == test_key
+
+
+def test_api_key_in_settings(settings):
+    test_key = "test-key-value"
+    settings.WAGTAIL_AI = {
+        "BACKENDS": {
+            "openai": {
+                "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
+                "CONFIG": {
+                    "MODEL_ID": "gpt-4",
+                    "OPENAI_API_KEY": test_key,
+                },
+            },
+        },
+    }
+
+    backend = cast(OpenAIBackend, get_ai_backend("openai"))
+    assert backend.get_openai_api_key() == test_key
