@@ -4,15 +4,8 @@
   gap: 0.3125rem;
 }
 
-.wagtailai-button {
-  background: white;
-  border: 1px solid var(--w-color-border-field-default);
-  border-radius: 0.3125rem;
-  cursor: pointer;
-}
-
-.wagtailai-button:hover {
-  border-color: var(--w-color-border-field-hover);
+.wagtailai-button > svg {
+  fill: white;
 }
 
 @keyframes wagtailai-button-twinkle {
@@ -28,43 +21,43 @@
 }
 @keyframes wagtailai-button-dazzle {
   0% {
-    fill: hsl(0, 80%, 40%);
+    fill: hsl(0, 80%, 80%);
   } /* Red */
   8.33% {
-    fill: hsl(30, 80%, 30%);
+    fill: hsl(30, 80%, 70%);
   } /* Red-Orange */
   16.67% {
-    fill: hsl(60, 80%, 30%);
+    fill: hsl(60, 80%, 70%);
   } /* Orange */
   25% {
     fill: hsl(90, 80%, 20%);
   } /* Yellow */
   33.33% {
-    fill: hsl(120, 80%, 30%);
+    fill: hsl(120, 80%, 70%);
   } /* Yellow-Green */
   41.67% {
-    fill: hsl(150, 80%, 30%);
+    fill: hsl(150, 80%, 70%);
   } /* Green */
   50% {
-    fill: hsl(180, 80%, 30%);
+    fill: hsl(180, 80%, 70%);
   } /* Green-Cyan */
   58.33% {
-    fill: hsl(210, 80%, 30%);
+    fill: hsl(210, 80%, 70%);
   } /* Cyan */
   66.67% {
-    fill: hsl(240, 80%, 30%);
+    fill: hsl(240, 80%, 70%);
   } /* Cyan-Blue */
   75% {
-    fill: hsl(270, 80%, 40%);
+    fill: hsl(270, 80%, 80%);
   } /* Blue */
   83.33% {
-    fill: hsl(300, 80%, 40%);
+    fill: hsl(300, 80%, 80%);
   } /* Blue-Indigo */
   91.67% {
-    fill: hsl(330, 80%, 30%);
+    fill: hsl(330, 80%, 70%);
   } /* Indigo */
   100% {
-    fill: hsl(360, 80%, 30%);
+    fill: hsl(360, 80%, 70%);
   } /* Back to Red */
 }
 @keyframes wagtailai-button-hover {

@@ -28,7 +28,7 @@ document.addEventListener('wagtail-ai:image-form', (event) => {
   const button = document.createElement('button');
   button.type = 'button';
   button.title = input.dataset['wagtailaiButtonTitle'] || '';
-  button.classList.add('wagtailai-button');
+  button.classList.add('button', 'wagtailai-button');
   button.innerHTML = wandIcon;
   flexWrapper.appendChild(button);
 
