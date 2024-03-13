@@ -32,6 +32,8 @@ document.addEventListener('wagtail-ai:image-form', (event) => {
   button.innerHTML = wandIcon;
   flexWrapper.appendChild(button);
 
+  const maxLength = input.getAttribute('maxlength');
+
   let errorMessage: HTMLParagraphElement | null = null;
 
   button.addEventListener('click', async () => {
@@ -43,6 +45,9 @@ document.addEventListener('wagtail-ai:image-form', (event) => {
       const formData = new FormData();
       formData.append('image_id', imageId);
       formData.append('csrfmiddlewaretoken', csrfTokenInput.value);
+      if (maxLength) {
+        formData.append('maxlength', maxLength);
+      }
       input.value = await fetchResponse('DESCRIBE_IMAGE', formData);
     } catch (error) {
       errorMessage = document.createElement('p');

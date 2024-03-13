@@ -146,17 +146,15 @@ def describe_image(request) -> JsonResponse:
     )
     rendition = image.get_rendition(rendition_filter)
 
-    character_limit = get_image_model()._meta.get_field("title").max_length
+    maxlength = form.cleaned_data["maxlength"]
     prompt = wagtail_ai_settings.get("IMAGE_DESCRIPTION_PROMPT")
 
     if prompt is None:
         prompt = (
             "Describe this image. Make the description suitable for use as an alt-text."
         )
-        if character_limit is not None:
-            prompt += (
-                f" Make the description less than {character_limit} characters long."
-            )
+        if maxlength is not None:
+            prompt += f" Make the description less than {maxlength} characters long."
 
     try:
         ai_response = backend.describe_image(image_file=rendition.file, prompt=prompt)
@@ -168,8 +166,8 @@ def describe_image(request) -> JsonResponse:
     if not description:
         return ErrorJsonResponse("There was an issue describing the image.")
 
-    if character_limit is not None:
-        description = description[:character_limit]
+    if maxlength is not None:
+        description = description[:maxlength]
 
     return JsonResponse({"message": description})
 

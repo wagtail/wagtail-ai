@@ -46,6 +46,7 @@ class PromptForm(ApiForm):
 
 class DescribeImageApiForm(ApiForm):
     image_id = forms.CharField()
+    maxlength = forms.IntegerField(required=False)
 
 
 class DescribeImageForm(BaseImageForm):
