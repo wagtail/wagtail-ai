@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from typing import cast
 from unittest.mock import ANY, Mock, call
 
@@ -133,3 +134,45 @@ def test_custom_rendition_filter(admin_client, settings):
     assert response.json() == {
         "message": "This is an echo backend: images/example.max-100x100.jpg"
     }
+
+
+@pytest.mark.parametrize(
+    "maxlength,expected_status,error_message",
+    [
+        (100, HTTPStatus.OK, None),
+        (
+            -1,
+            HTTPStatus.BAD_REQUEST,
+            "Ensure this value is greater than or equal to 0.",
+        ),
+        (
+            10000,
+            HTTPStatus.BAD_REQUEST,
+            "Ensure this value is less than or equal to 4096.",
+        ),
+    ],
+)
+def test_maxlength_validation(
+    admin_client, settings, maxlength, expected_status, error_message
+):
+    settings.WAGTAIL_AI = {
+        "BACKENDS": {
+            "echo": {
+                "CLASS": "wagtail_ai.ai.echo.EchoBackend",
+                "CONFIG": {
+                    "MODEL_ID": "echo",
+                    "TOKEN_LIMIT": 123123,
+                },
+            },
+        },
+        "IMAGE_DESCRIPTION_BACKEND": "echo",
+    }
+
+    image = cast(Image, ImageFactory())
+    response = admin_client.post(
+        reverse("wagtail_ai:describe_image"),
+        data={"image_id": image.pk, "maxlength": maxlength},
+    )
+    assert response.status_code == expected_status
+    if error_message is not None:
+        assert response.json() == {"error": error_message}
