@@ -140,10 +140,14 @@ def describe_image(request) -> JsonResponse:
             status=400,
         )
 
-    rendition = image.get_rendition("max-800x600")
+    wagtail_ai_settings = getattr(settings, "WAGTAIL_AI", {})
+    rendition_filter = wagtail_ai_settings.get(
+        "IMAGE_DESCRIPTION_RENDITION_FILTER", "max-800x600"
+    )
+    rendition = image.get_rendition(rendition_filter)
 
     character_limit = get_image_model()._meta.get_field("title").max_length
-    prompt = getattr(settings, "WAGTAIL_AI", {}).get("IMAGE_DESCRIPTION_PROMPT")
+    prompt = wagtail_ai_settings.get("IMAGE_DESCRIPTION_PROMPT")
 
     if prompt is None:
         prompt = (
