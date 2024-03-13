@@ -5,7 +5,7 @@ import wandIcon from '../wand_icon.svg';
 
 document.addEventListener('wagtail-ai:image-form', (event) => {
   const input = event.target as HTMLInputElement;
-  const imageId = input.dataset['wagtailai-image-id'];
+  const imageId = input.dataset['wagtailaiImageId'];
   if (!imageId) {
     throw new Error('The attribute data-wagtailai-image-id is missing.');
   }
@@ -27,7 +27,7 @@ document.addEventListener('wagtail-ai:image-form', (event) => {
 
   const button = document.createElement('button');
   button.type = 'button';
-  button.title = input.dataset['wagtailai-button-title'] || '';
+  button.title = input.dataset['wagtailaiButtonTitle'] || '';
   button.classList.add('wagtailai-button');
   button.innerHTML = wandIcon;
   flexWrapper.appendChild(button);
