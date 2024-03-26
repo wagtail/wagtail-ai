@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, NotRequired, Self
 
 from django.core.exceptions import ImproperlyConfigured
+from django.core.files import File
 
 from .base import (
     AIBackend,
@@ -62,10 +63,18 @@ class EchoBackend(AIBackend[EchoBackendConfig]):
     def prompt_with_context(
         self, *, pre_prompt: str, context: str, post_prompt: str | None = None
     ) -> AIResponse:
+        return self.get_response(
+            ["This", "is", "an", "echo", "backend:", *context.split()]
+        )
+
+    def describe_image(self, *, image_file: File, prompt: str) -> AIResponse:
+        return self.get_response(
+            ["This", "is", "an", "echo", "backend:", image_file.name]
+        )
+
+    def get_response(self, words):
         def response_iterator() -> Generator[str, None, None]:
-            response = ["This", "is", "an", "echo", "backend:"]
-            response += context.split()
-            for word in response:
+            for word in words:
                 if (
                     self.config.max_word_sleep_seconds is not None
                     and self.config.max_word_sleep_seconds > 0

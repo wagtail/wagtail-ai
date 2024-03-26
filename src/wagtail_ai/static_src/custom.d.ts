@@ -1,9 +1,19 @@
 /* eslint-disable no-unused-vars */
 export {};
 
+export interface WagtailAiConfigurationUrls {}
+
+export enum ApiUrlName {
+  TEXT_COMPLETION = 'TEXT_COMPLETION',
+  DESCRIBE_IMAGE = 'DESCRIBE_IMAGE',
+}
+
 export interface WagtailAiConfiguration {
   aiPrompts: Prompt[];
-  aiProcessUrl: string;
+  urls: {
+    [ApiUrlName.TEXT_COMPLETION]: string;
+    [ApiUrlName.DESCRIBE_IMAGE]: string;
+  };
 }
 
 export type Prompt = {

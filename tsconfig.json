@@ -8,8 +8,8 @@
     "strictNullChecks": true,
     "esModuleInterop": true
   },
-  "files": [
-    "src/wagtail_ai/static_src/main.tsx",
-    "src/wagtail_ai/static_src/custom.d.ts"
+  "include": [
+    "src/wagtail_ai/static_src/**/*.ts",
+    "src/wagtail_ai/static_src/**/*.tsx"
   ]
 }

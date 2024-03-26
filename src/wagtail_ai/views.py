@@ -1,15 +1,21 @@
 import logging
 import os
+from typing import Type, cast
 
 from django import forms
+from django.conf import settings
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from wagtail.admin.ui.tables import UpdatedAtColumn
 from wagtail.admin.viewsets.model import ModelViewSet
+from wagtail.images.models import AbstractImage
+from wagtail.images.permissions import get_image_model
 
 from . import ai, types
-from .forms import PromptForm
+from .ai.base import BackendFeature
+from .forms import DescribeImageApiForm, PromptForm
 from .models import Prompt
 
 logger = logging.getLogger(__name__)
@@ -44,7 +50,7 @@ def _process_backend_request(
 
 
 def _replace_handler(*, prompt: Prompt, text: str) -> str:
-    ai_backend = ai.get_ai_backend(alias="default")  # TODO update
+    ai_backend = ai.get_backend()
     splitter = ai_backend.get_text_splitter()
     texts = splitter.split_text(text)
 
@@ -60,7 +66,7 @@ def _replace_handler(*, prompt: Prompt, text: str) -> str:
 
 
 def _append_handler(*, prompt: Prompt, text: str) -> str:
-    ai_backend = ai.get_ai_backend(alias="default")  # TODO update
+    ai_backend = ai.get_backend()
     length_calculator = ai_backend.get_splitter_length_calculator()
     if length_calculator.get_splitter_length(text) > ai_backend.config.token_limit:
         raise AIHandlerException("Cannot run completion on text this long")
@@ -74,19 +80,21 @@ def _append_handler(*, prompt: Prompt, text: str) -> str:
     return message
 
 
+def ErrorJsonResponse(error_message, status=500):
+    return JsonResponse({"error": error_message}, status=status)
+
+
 @csrf_exempt
-def process(request) -> JsonResponse:
+def text_completion(request) -> JsonResponse:
     prompt_form = PromptForm(request.POST)
 
     if not prompt_form.is_valid():
-        return JsonResponse(
-            {"error": prompt_form.errors_for_json_response()}, status=400
-        )
+        return ErrorJsonResponse(prompt_form.errors_for_json_response(), status=400)
 
     try:
         prompt = Prompt.objects.get(uuid=prompt_form.cleaned_data["prompt"])
     except Prompt.DoesNotExist:
-        return JsonResponse({"error": _("Invalid prompt provided.")}, status=400)
+        return ErrorJsonResponse(_("Invalid prompt provided."), status=400)
 
     handlers = {
         Prompt.Method.REPLACE: _replace_handler,
@@ -98,12 +106,70 @@ def process(request) -> JsonResponse:
     try:
         response = handler(prompt=prompt, text=prompt_form.cleaned_data["text"])
     except AIHandlerException as e:
-        return JsonResponse({"error": str(e)}, status=400)
+        return ErrorJsonResponse(str(e), status=400)
     except Exception:
         logger.exception("An unexpected error occurred.")
-        return JsonResponse({"error": _("An unexpected error occurred.")}, status=500)
+        return ErrorJsonResponse(_("An unexpected error occurred."))
 
     return JsonResponse({"message": response})
+
+
+def user_has_permission_for_image(user, image):
+    from wagtail.images.permissions import permission_policy
+
+    return permission_policy.user_has_permission_for_instance(user, "choose", image)
+
+
+def describe_image(request) -> JsonResponse:
+    form = DescribeImageApiForm(request.POST)
+    if not form.is_valid():
+        return ErrorJsonResponse(form.errors_for_json_response(), status=400)
+
+    model = cast(Type[AbstractImage], get_image_model())
+    image = get_object_or_404(model, pk=form.cleaned_data["image_id"])
+
+    if not user_has_permission_for_image(request.user, image):
+        return ErrorJsonResponse("Access denied", status=403)
+
+    try:
+        backend = ai.get_backend(BackendFeature.IMAGE_DESCRIPTION)
+    except ai.BackendNotFound:
+        return ErrorJsonResponse(
+            "No backend is configured for image description. Please set"
+            " `IMAGE_DESCRIPTION_BACKEND` in `settings.WAGTAIL_AI`.",
+            status=400,
+        )
+
+    wagtail_ai_settings = getattr(settings, "WAGTAIL_AI", {})
+    rendition_filter = wagtail_ai_settings.get(
+        "IMAGE_DESCRIPTION_RENDITION_FILTER", "max-800x600"
+    )
+    rendition = image.get_rendition(rendition_filter)
+
+    maxlength = form.cleaned_data["maxlength"]
+    prompt = wagtail_ai_settings.get("IMAGE_DESCRIPTION_PROMPT")
+
+    if prompt is None:
+        prompt = (
+            "Describe this image. Make the description suitable for use as an alt-text."
+        )
+        if maxlength is not None:
+            prompt += f" Make the description less than {maxlength} characters long."
+
+    try:
+        ai_response = backend.describe_image(image_file=rendition.file, prompt=prompt)
+        description = ai_response.text()
+    except Exception:
+        logger.exception("There was an issue describing the image.")
+        return ErrorJsonResponse("There was an issue describing the image.")
+
+    if not description:
+        return ErrorJsonResponse("There was an issue describing the image.")
+
+    if maxlength is not None:
+        description = description[:maxlength]
+
+    return JsonResponse({"message": description})
 
 
 class PromptEditForm(forms.ModelForm):

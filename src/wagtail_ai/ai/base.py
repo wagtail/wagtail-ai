@@ -1,5 +1,6 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 from dataclasses import dataclass
+from enum import Enum
 from typing import (
     Any,
     ClassVar,
@@ -13,6 +14,7 @@ from typing import (
 )
 
 from django.core.exceptions import ImproperlyConfigured
+from django.core.files import File
 
 from .. import tokens
 from ..types import (
@@ -20,6 +22,11 @@ from ..types import (
     TextSplitterLengthCalculatorProtocol,
     TextSplitterProtocol,
 )
+
+
+class BackendFeature(Enum):
+    TEXT_COMPLETION = "TEXT_COMPLETION"
+    IMAGE_DESCRIPTION = "IMAGE_DESCRIPTION"
 
 
 class BaseAIBackendConfigSettings(TypedDict):
@@ -99,14 +106,13 @@ class AIBackend(Generic[AIBackendConfig], metaclass=ABCMeta):
     ) -> None:
         self.config = config
 
-    @abstractmethod
     def prompt_with_context(
         self, *, pre_prompt: str, context: str, post_prompt: str | None = None
     ) -> AIResponse:
         """
         Given a prompt and a context, return a response.
         """
-        ...
+        raise NotImplementedError("This backend does not support text completion")
 
     def get_text_splitter(self) -> TextSplitterProtocol:
         return self.config.text_splitter_class(
@@ -116,3 +122,6 @@ class AIBackend(Generic[AIBackendConfig], metaclass=ABCMeta):
 
     def get_splitter_length_calculator(self) -> TextSplitterLengthCalculatorProtocol:
         return self.config.text_splitter_length_calculator_class()
+
+    def describe_image(self, *, image_file: File, prompt: str) -> AIResponse:
+        raise NotImplementedError("This backend does not support image description")

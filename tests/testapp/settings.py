@@ -165,9 +165,18 @@ if os.environ.get("WAGTAIL_AI_DEFAULT_BACKEND") == "chatgpt":
                 "CONFIG": {
                     "MODEL_ID": "gpt-3.5-turbo",
                 },
-            }
-        }
+            },
+            "vision": {
+                "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
+                "CONFIG": {
+                    "MODEL_ID": "gpt-4-vision-preview",
+                    "TOKEN_LIMIT": 300,
+                },
+            },
+        },
+        "IMAGE_DESCRIPTION_BACKEND": "vision",
     }
+
 else:
     WAGTAIL_AI = {
         "BACKENDS": {
@@ -180,7 +189,10 @@ else:
                 },
             },
         },
+        "IMAGE_DESCRIPTION_BACKEND": "default",
     }
+
+WAGTAILIMAGES_IMAGE_FORM_BASE = "wagtail_ai.forms.DescribeImageForm"
 
 
 LOGGING = {

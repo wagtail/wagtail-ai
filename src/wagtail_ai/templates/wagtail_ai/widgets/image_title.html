@@ -1,0 +1,6 @@
+{% include "django/forms/widgets/input.html" %}
+<script>
+document.querySelector('input[name={{ widget.name }}]').dispatchEvent(
+    new CustomEvent('wagtail-ai:image-form', { bubbles: true })
+);
+</script>

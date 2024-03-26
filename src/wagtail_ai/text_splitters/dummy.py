@@ -12,9 +12,9 @@ class DummyTextSplitter(TextSplitterProtocol):
     ) -> None:
         pass
 
-    def split_text(self, text: str) -> str:
+    def split_text(self, text: str) -> list[str]:
         # Don't do any splitting.
-        return text
+        return [text]
 
 
 class DummyLengthCalculator(TextSplitterLengthCalculatorProtocol):
