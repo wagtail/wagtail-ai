@@ -15,9 +15,18 @@ Right now, it can:
 * Finish what you've started - write some text and tell Wagtail AI to finish it off for you
 * Correct your spelling/grammar
 * Let you add your own custom prompts
+* Automatically generate alt-tags for your uploaded images
 * Work with multiple LLM providers including local models, OpenAI, Mistral, Claude and many others
 
+## Demos
+
+### Rich-text integration
+
 https://user-images.githubusercontent.com/27112/223072938-8cb5ccff-4835-489a-8be4-cca85001885e.mp4
+
+### Alt-text generation
+
+https://github.com/wagtail/wagtail-ai/assets/27617/5ffd5493-b39c-4d38-bed8-fdd243920eb5
 
 ## Requirements & Costs
 
