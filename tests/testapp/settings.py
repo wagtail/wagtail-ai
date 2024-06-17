@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 SECRET_KEY = "c6u0-9c!7nilj_ysatsda0(f@e_2mws2f!6m0n^o*4#*q#kzp)"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -140,6 +140,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/stable/howto/static-files/
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": os.environ.get(
+            "STATICFILES_STORAGE",
+            "django.contrib.staticfiles.storage.StaticFilesStorage",
+        ),
+    },
+}
+
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
@@ -147,7 +159,7 @@ STATICFILES_FINDERS = [
 
 STATICFILES_DIRS = []
 
-STATIC_ROOT = os.path.join(BASE_DIR, "test-static")
+STATIC_ROOT = os.environ.get("STATIC_ROOT", os.path.join(BASE_DIR, "test-static"))
 STATIC_URL = "/static/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "test-media")

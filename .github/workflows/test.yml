@@ -60,6 +60,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - name: Install Node dependencies
+        run: npm ci
+      - name: Build static files
+        run: ./node_modules/.bin/webpack --mode production
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v5
         with:
@@ -103,6 +111,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - name: Install Node dependencies
+        run: npm ci
+      - name: Build static files
+        run: ./node_modules/.bin/webpack --mode production
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v5
         with:

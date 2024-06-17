@@ -1,3 +1,5 @@
+from functools import cached_property
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -58,6 +60,13 @@ class DescribeImageForm(BaseImageForm):
             widget.attrs["data-wagtailai-button-title"] = _("Describe image using AI")
             widget.template_name = "wagtail_ai/widgets/image_title.html"
 
-    class Media:
-        js = [versioned_static("wagtail_ai/image_description.js")]
-        css = {"all": [versioned_static("wagtail_ai/image_description.css")]}
+    @cached_property
+    def media(self):
+        return super().media + forms.Media(
+            js=[
+                versioned_static("wagtail_ai/image_description.js"),
+            ],
+            css={
+                "all": [versioned_static("wagtail_ai/image_description.css")],
+            },
+        )
