@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { EditorState } from 'draft-js';
 import { ToolbarButton } from 'draftail';
 import { createPortal } from 'react-dom';
@@ -31,9 +31,30 @@ function LoadingOverlay({
 }) {
   const loadingMessage =
     LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)];
+  const [height, setHeight] = useState<number>(0);
+
+  useEffect(() => {
+    const editor = document.querySelector('.Draftail-Editor')?.parentElement;
+    if (editor) {
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          setHeight(entry.contentRect.height);
+        }
+      });
+
+      resizeObserver.observe(editor);
+
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, []);
 
   return (
-    <div className="Draftail-AI-LoadingOverlay">
+    <div
+      className="Draftail-AI-LoadingOverlay"
+      style={{ height: height ? `${height}px` : '100%' }}
+    >
       <span>
         <svg className="icon icon-spinner c-spinner" aria-hidden="true">
           <use href="#icon-spinner" />
