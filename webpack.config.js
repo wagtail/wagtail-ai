@@ -50,6 +50,7 @@ module.exports = {
     'gettext': 'gettext',
     'draftail': 'Draftail',
     'draft-js': 'DraftJS',
+    '@hotwired/stimulus': 'StimulusModule',
   },
   output: {
     path: path.resolve(__dirname, 'src/wagtail_ai/static/wagtail_ai'),
