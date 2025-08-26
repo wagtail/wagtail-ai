@@ -1,3 +1,5 @@
+import { Application, Controller } from '@hotwired/stimulus';
+
 /* eslint-disable no-unused-vars */
 export {};
 
@@ -23,6 +25,11 @@ export type Prompt = {
   prompt: string;
   method: string;
 };
+
+export interface WagtailApplication extends Application {
+  queryController: (name: string) => Controller | null;
+  queryControllerAll: (name: string) => Controller[];
+}
 
 // Allows SVG files to be imported and used in TypeScript
 declare module '*.svg' {
@@ -54,6 +61,9 @@ declare global {
   interface Window {
     WAGTAIL_AI_PROCESS_URL: string;
     WAGTAIL_AI_PROMPTS: [Prompt];
+    wagtail: {
+      app: WagtailApplication;
+    };
   }
 
   const wagtailConfig: WagtailConfig;
