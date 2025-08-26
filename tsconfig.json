@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
     "jsx": "react",
-    "lib": ["es2015", "dom"],
+    "lib": ["es2023", "dom"],
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "target": "es2023",
+    "moduleResolution": "node"
   },
   "include": [
     "src/wagtail_ai/static_src/**/*.ts",
