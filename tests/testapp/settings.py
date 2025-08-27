@@ -175,13 +175,13 @@ if os.environ.get("WAGTAIL_AI_DEFAULT_BACKEND") == "chatgpt":
             "default": {
                 "CLASS": "wagtail_ai.ai.llm.LLMBackend",
                 "CONFIG": {
-                    "MODEL_ID": "gpt-3.5-turbo",
+                    "MODEL_ID": "gpt-4.1-mini",
                 },
             },
             "vision": {
                 "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
                 "CONFIG": {
-                    "MODEL_ID": "gpt-4-vision-preview",
+                    "MODEL_ID": "gpt-4.1-mini",
                     "TOKEN_LIMIT": 300,
                 },
             },

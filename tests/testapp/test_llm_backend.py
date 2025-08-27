@@ -53,15 +53,15 @@ def test_get_configured_backend_instance(llm_backend_class):
     new_value={
         "CLASS": "wagtail_ai.ai.llm.LLMBackend",
         "CONFIG": {
-            "MODEL_ID": "gpt-3.5-turbo",
+            "MODEL_ID": "gpt-4.1-mini",
             "INIT_KWARGS": {"key": "random-api-key"},  # type: ignore
         },
     }
 )
 def test_llm_custom_init_kwargs(llm_backend_class):
     backend = get_ai_backend("default")
-    assert backend.config.model_id == "gpt-3.5-turbo"
-    assert backend.config.token_limit == 4096
+    assert backend.config.model_id == "gpt-4.1-mini"
+    assert backend.config.token_limit == 32768
     assert backend.config.init_kwargs == {"key": "random-api-key"}
     llm_model = backend.get_llm_model()  # type: ignore
     assert llm_model.key == "random-api-key"
@@ -72,7 +72,7 @@ def test_llm_custom_init_kwargs(llm_backend_class):
     new_value={
         "CLASS": "wagtail_ai.ai.llm.LLMBackend",
         "CONFIG": {
-            "MODEL_ID": "gpt-3.5-turbo",
+            "MODEL_ID": "gpt-4.1-mini",
             "PROMPT_KWARGS": {  # type: ignore
                 "system": "This is a test system prompt."
             },
