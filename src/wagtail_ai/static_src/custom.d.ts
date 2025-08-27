@@ -20,6 +20,7 @@ export interface WagtailAiConfiguration {
 
 export type Prompt = {
   uuid: string;
+  default_prompt_id: number | null;
   label: string;
   description: string;
   prompt: string;
