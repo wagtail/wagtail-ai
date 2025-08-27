@@ -103,3 +103,8 @@ def ai_editor_js():
 @hooks.register("register_admin_viewset")  # type: ignore
 def register_viewset():
     return prompt_viewset
+
+
+@hooks.register("register_icons")  # type: ignore
+def register_icons(icons):
+    return [*icons, "wagtail_ai/icons/wand.svg"]
