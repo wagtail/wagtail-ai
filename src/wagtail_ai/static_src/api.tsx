@@ -1,6 +1,6 @@
 import type { ApiUrlName, WagtailAiConfiguration } from './custom';
 
-class APIRequestError extends Error {}
+export class APIRequestError extends Error {}
 
 export const getAIConfiguration = (): WagtailAiConfiguration => {
   const configurationElement =
