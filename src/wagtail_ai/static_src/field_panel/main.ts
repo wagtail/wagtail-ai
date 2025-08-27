@@ -64,6 +64,7 @@ class PromptController extends Controller<HTMLButtonElement> {
       ...event?.detail,
       ...event?.params,
     };
+    const icon = this.element.querySelector('svg use');
     const data = new FormData();
     let text = this.input.value;
     if (useContent) {
@@ -73,6 +74,7 @@ class PromptController extends Controller<HTMLButtonElement> {
     data.append('text', text);
     data.append('prompt', promptId!);
     this.input.readOnly = true;
+    icon?.setAttribute('href', '#icon-wand-animated');
 
     let result = '';
     try {
@@ -86,6 +88,7 @@ class PromptController extends Controller<HTMLButtonElement> {
       }
     }
 
+    icon?.setAttribute('href', '#icon-wand');
     this.input.readOnly = false;
     if (!result) return;
 
