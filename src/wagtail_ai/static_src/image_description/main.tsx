@@ -4,11 +4,13 @@ import { fetchResponse } from '../api';
 import { Controller } from '@hotwired/stimulus';
 
 class DescribeController extends Controller<HTMLInputElement> {
+  static classes = ['loading'];
   static targets = ['button', 'error', 'input'];
   static values = {
     imageId: String,
   };
 
+  declare loadingClass: string;
   declare buttonTarget: HTMLButtonElement;
   declare errorTarget: HTMLParagraphElement;
   declare inputTarget: HTMLInputElement;
@@ -17,7 +19,7 @@ class DescribeController extends Controller<HTMLInputElement> {
   async describe() {
     this.errorTarget.hidden = true;
     this.buttonTarget.disabled = true;
-    this.buttonTarget.classList.add('loading');
+    this.element.classList.add(this.loadingClass);
 
     try {
       const formData = new FormData();
@@ -31,7 +33,7 @@ class DescribeController extends Controller<HTMLInputElement> {
       this.errorTarget.hidden = false;
     }
 
-    this.buttonTarget.classList.remove('loading');
+    this.element.classList.remove(this.loadingClass);
     this.buttonTarget.disabled = false;
   }
 }

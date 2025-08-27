@@ -12,10 +12,15 @@
 .wai-image-description__icon {
   width: 1rem;
   height: 1rem;
+  display: none;
 }
 
-.wagtailai-button > svg {
-  fill: white;
+.wai-image-description:not(.wai-image-description--loading) .icon-wand {
+  display: block;
+}
+
+.wai-image-description--loading .icon-wand-animated {
+  display: block;
 }
 
 @keyframes wagtailai-button-twinkle {
@@ -82,14 +87,15 @@
   }
 }
 
-.wagtailai-button.loading svg {
+.icon-wand-animated {
   opacity: 0.9;
 }
-.wagtailai-button.loading #wand {
+
+#wai-wand-stick {
   transform-origin: center;
   animation: wagtailai-button-dazzle 2.4s ease infinite;
 }
-.wagtailai-button.loading #star1 {
+#wai-wand-star1 {
   animation:
     wagtailai-button-hover 1.2s ease infinite,
     wagtailai-button-twinkle 1.2s ease infinite,
@@ -97,7 +103,7 @@
   transform-origin: center;
   animation-delay: 0.2s, 0s;
 }
-.wagtailai-button.loading #star2 {
+#wai-wand-star2 {
   animation:
     wagtailai-button-hover 1.2s ease infinite,
     wagtailai-button-twinkle 1.2s ease infinite,
@@ -105,7 +111,7 @@
   transform-origin: center;
   animation-delay: 0.1s, 0s;
 }
-.wagtailai-button.loading #star3 {
+#wai-wand-star3 {
   animation:
     wagtailai-button-hover 1.2s ease infinite,
     wagtailai-button-twinkle 1.2s ease infinite,
