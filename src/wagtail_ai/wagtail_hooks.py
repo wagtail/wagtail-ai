@@ -2,11 +2,12 @@ import uuid
 from typing import NotRequired, Required, TypedDict
 
 from django.urls import include, path, reverse
-from django.utils.html import json_script
+from django.utils.html import format_html, json_script
 from django.utils.safestring import mark_safe
 from django.views.i18n import JavaScriptCatalog
 from wagtail import hooks
 from wagtail.admin.rich_text.editors.draftail.features import ControlFeature
+from wagtail.admin.staticfiles import versioned_static
 
 from .models import Prompt
 from .views import describe_image, prompt_viewset, text_completion
@@ -85,6 +86,13 @@ def _serialize_prompt(prompt: Prompt) -> PromptDict:
 
 def get_prompts():
     return [_serialize_prompt(prompt) for prompt in Prompt.objects.all()]
+
+
+@hooks.register("insert_global_admin_css")  # type: ignore
+def ai_admin_css():
+    return format_html(
+        '<link rel="stylesheet" href="{}">', versioned_static("wagtail_ai/main.css")
+    )
 
 
 @hooks.register("insert_global_admin_js")  # type: ignore

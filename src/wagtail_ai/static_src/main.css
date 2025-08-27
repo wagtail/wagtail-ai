@@ -1,0 +1,95 @@
+@keyframes wai-button-twinkle {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes wai-button-dazzle {
+  0% {
+    fill: hsl(0, 80%, 80%);
+  } /* Red */
+  8.33% {
+    fill: hsl(30, 80%, 70%);
+  } /* Red-Orange */
+  16.67% {
+    fill: hsl(60, 80%, 70%);
+  } /* Orange */
+  25% {
+    fill: hsl(90, 80%, 20%);
+  } /* Yellow */
+  33.33% {
+    fill: hsl(120, 80%, 70%);
+  } /* Yellow-Green */
+  41.67% {
+    fill: hsl(150, 80%, 70%);
+  } /* Green */
+  50% {
+    fill: hsl(180, 80%, 70%);
+  } /* Green-Cyan */
+  58.33% {
+    fill: hsl(210, 80%, 70%);
+  } /* Cyan */
+  66.67% {
+    fill: hsl(240, 80%, 70%);
+  } /* Cyan-Blue */
+  75% {
+    fill: hsl(270, 80%, 80%);
+  } /* Blue */
+  83.33% {
+    fill: hsl(300, 80%, 80%);
+  } /* Blue-Indigo */
+  91.67% {
+    fill: hsl(330, 80%, 70%);
+  } /* Indigo */
+  100% {
+    fill: hsl(360, 80%, 70%);
+  } /* Back to Red */
+}
+@keyframes wai-button-hover {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-11%);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+use[href='#icon-wand-animated'] {
+  opacity: 0.9;
+}
+
+#wai-wand-stick {
+  transform-origin: center;
+  animation: wai-button-dazzle 2.4s ease infinite;
+}
+#wai-wand-star1 {
+  animation:
+    wai-button-hover 1.2s ease infinite,
+    wai-button-twinkle 1.2s ease infinite,
+    wai-button-dazzle 2.4s ease infinite;
+  transform-origin: center;
+  animation-delay: 0.2s, 0s;
+}
+#wai-wand-star2 {
+  animation:
+    wai-button-hover 1.2s ease infinite,
+    wai-button-twinkle 1.2s ease infinite,
+    wai-button-dazzle 2.4s ease infinite;
+  transform-origin: center;
+  animation-delay: 0.1s, 0s;
+}
+#wai-wand-star3 {
+  animation:
+    wai-button-hover 1.2s ease infinite,
+    wai-button-twinkle 1.2s ease infinite,
+    wai-button-dazzle 2.4s ease infinite;
+  transform-origin: center;
+}

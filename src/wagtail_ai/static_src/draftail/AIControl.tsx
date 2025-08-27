@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { EditorState } from 'draft-js';
-import { ToolbarButton } from 'draftail';
+import { Icon, ToolbarButton } from 'draftail';
 import { createPortal } from 'react-dom';
 import { useOutsideAlerter } from './hooks';
-import WandIcon from './WandIcon';
 import { handleAppend, handleReplace, processAction } from './utils';
 import { getAIConfiguration } from '../api';
 
@@ -149,7 +148,7 @@ function AIControl({ getEditorState, onChange }: ControlComponentProps) {
       <ToolbarButton
         name="AI Tools"
         title="AI prompts"
-        icon={WandIcon}
+        icon={<Icon icon={isLoading ? '#icon-wand-animated' : '#icon-wand'} />}
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       />
       <span ref={aIControlRef} />
