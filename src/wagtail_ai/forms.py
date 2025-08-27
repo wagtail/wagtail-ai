@@ -1,5 +1,4 @@
 from functools import cached_property
-from typing import Type, cast
 
 from django import forms
 from django.core.exceptions import ValidationError
@@ -52,14 +51,27 @@ class DescribeImageApiForm(ApiForm):
     maxlength = forms.IntegerField(required=False, min_value=0, max_value=4096)
 
 
+class ImageDescriptionWidget(forms.TextInput):
+    template_name = "wagtail_ai/widgets/image_description.html"
+
+    def __init__(self, *args, image_id, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.attrs["data-wai-describe-target"] = "input"
+        self.image_id = image_id
+
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        context["image_id"] = self.image_id
+        return context
+
+
 class DescribeImageForm(BaseImageForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
-            widget = cast(Type[forms.TextInput], self.fields["title"].widget)
-            widget.attrs["data-wagtailai-image-id"] = str(self.instance.pk)
-            widget.attrs["data-wagtailai-button-title"] = _("Describe image using AI")
-            widget.template_name = "wagtail_ai/widgets/image_title.html"
+            self.fields["title"].widget = ImageDescriptionWidget(
+                image_id=self.instance.pk
+            )
 
     @cached_property
     def media(self):  # type: ignore
