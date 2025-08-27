@@ -57,6 +57,9 @@ declare global {
       /* eslint-disable-next-line camelcase */
       display_name: string;
     }[];
+
+    CSRF_HEADER_NAME: string;
+    CSRF_TOKEN: string;
   }
 
   interface Window {

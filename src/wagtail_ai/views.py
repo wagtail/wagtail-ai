@@ -7,7 +7,6 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
-from django.views.decorators.csrf import csrf_exempt
 from wagtail.admin.ui.tables import UpdatedAtColumn
 from wagtail.admin.viewsets.model import ModelViewSet
 from wagtail.images.models import AbstractImage
@@ -84,7 +83,6 @@ def ErrorJsonResponse(error_message, status=500):
     return JsonResponse({"error": error_message}, status=status)
 
 
-@csrf_exempt
 def text_completion(request) -> JsonResponse:
     prompt_form = PromptForm(request.POST)
 

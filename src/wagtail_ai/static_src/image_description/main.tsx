@@ -12,12 +12,6 @@ document.addEventListener('wagtail-ai:image-form', (event) => {
   if (!input.form) {
     throw new Error('The input is not part of a form.');
   }
-  const csrfTokenInput = input.form.querySelector<HTMLInputElement>(
-    'input[name=csrfmiddlewaretoken]',
-  );
-  if (!csrfTokenInput) {
-    throw new Error('Could not find a CSRF token hidden input.');
-  }
 
   const inputParent = input.parentNode!;
   const flexWrapper = document.createElement('div');
@@ -44,7 +38,6 @@ document.addEventListener('wagtail-ai:image-form', (event) => {
     try {
       const formData = new FormData();
       formData.append('image_id', imageId);
-      formData.append('csrfmiddlewaretoken', csrfTokenInput.value);
       if (maxLength) {
         formData.append('maxlength', maxLength);
       }
