@@ -29,3 +29,15 @@ def setup_prompt_object(test_prompt_values):
 @pytest.fixture(autouse=True)
 def temporary_media(settings, tmp_path):
     settings.MEDIA_ROOT = tmp_path / "media"
+
+
+@pytest.fixture
+def get_soup():
+    from bs4 import BeautifulSoup
+
+    def _get_soup(markup: str | bytes):
+        # Use an empty string_containers argument so that <script>, <style>, and
+        # <template> tags do not have their text ignored.
+        return BeautifulSoup(markup, "html.parser", string_containers={})
+
+    return _get_soup
