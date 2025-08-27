@@ -1,0 +1,29 @@
+import pytest
+from bs4 import BeautifulSoup, Tag
+from django.urls import reverse
+
+pytestmark = pytest.mark.django_db
+
+
+def test_search_description_uses_ai_field_panel(admin_client, get_soup):
+    url = reverse("wagtailadmin_pages:edit", args=[2])
+    response = admin_client.get(url)
+    assert response.status_code == 200
+    soup: BeautifulSoup = get_soup(response.content)
+    input = soup.select_one('[name="search_description"]')
+    assert input is not None
+
+    # Input must be controlled by the FieldPanelController
+    panel = input.find_parent(attrs={"data-controller": "wai-field-panel"})
+    assert isinstance(panel, Tag)
+
+    # There must be a template for the dropdown to be rendered by the controller
+    template = panel.select_one('template[data-wai-field-panel-target="dropdown"]')
+    assert template is not None
+    dropdown = template.select_one('[data-controller~="w-dropdown"]')
+    assert dropdown is not None
+
+    # Ensure CSS classes are applied
+    assert "wai-dropdown" in dropdown["class"]
+    toggle = dropdown.select_one(".wai-dropdown__toggle")
+    assert toggle is not None
