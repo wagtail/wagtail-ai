@@ -25,7 +25,14 @@ export const fetchResponse = async (
 ): Promise<string> => {
   try {
     const urls = getAIConfiguration().urls;
-    const res = await fetch(urls[action], { method: 'POST', body, signal });
+    const res = await fetch(urls[action], {
+      method: 'POST',
+      headers: {
+        [wagtailConfig.CSRF_HEADER_NAME]: wagtailConfig.CSRF_TOKEN,
+      },
+      body,
+      signal,
+    });
     const json = await res.json();
     if (res.ok) {
       return json.message;
