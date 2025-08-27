@@ -1,0 +1,13 @@
+{% load i18n wagtailadmin_tags %}
+
+<div class="wai-image-description" data-controller="wai-describe" data-wai-describe-image-id-value="{{ image_id }}">
+    <div class="wai-image-description__wrapper">
+        {% include "django/forms/widgets/input.html" %}
+        <button data-controller="w-tooltip" data-w-tooltip-content-value="{% translate 'Describe image using AI' %}" data-wai-describe-target="button" type="button" class="wai-image-description__button button" data-action="click->wai-describe#describe">
+            {% icon name="wand" classname="wai-image-description__icon" %}
+        </button>
+    </div>
+    <p class="error-message" data-wai-describe-target="error" hidden>
+        {% translate "An error occurred while generating the description. Please try again." %}
+    </p>
+</div>
