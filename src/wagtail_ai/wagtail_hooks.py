@@ -107,4 +107,8 @@ def register_viewset():
 
 @hooks.register("register_icons")  # type: ignore
 def register_icons(icons):
-    return [*icons, "wagtail_ai/icons/wand.svg"]
+    return [
+        *icons,
+        "wagtail_ai/icons/wand.svg",
+        "wagtail_ai/icons/wand-animated.svg",
+    ]
