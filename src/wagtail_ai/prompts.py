@@ -34,4 +34,13 @@ DEFAULT_PROMPTS: Sequence[PromptDict] = [
         ),
         "method": "append",
     },
+    {
+        "default_prompt_id": 3,  # A unique ID used to identify and manage default prompts
+        "label": "AI Description",
+        "description": "Generate a description by summarizing the page content",
+        "prompt": (
+            "Create an SEO-friendly meta description of the following web page content:"
+        ),
+        "method": "append",
+    },
 ]
