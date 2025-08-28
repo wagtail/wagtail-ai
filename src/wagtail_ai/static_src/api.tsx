@@ -23,23 +23,19 @@ export const fetchResponse = async (
   body: FormData,
   signal?: AbortSignal,
 ): Promise<string> => {
-  try {
-    const urls = getAIConfiguration().urls;
-    const res = await fetch(urls[action], {
-      method: 'POST',
-      headers: {
-        [wagtailConfig.CSRF_HEADER_NAME]: wagtailConfig.CSRF_TOKEN,
-      },
-      body,
-      signal,
-    });
-    const json = await res.json();
-    if (res.ok) {
-      return json.message;
-    } else {
-      throw new APIRequestError(json.error);
-    }
-  } catch (err) {
-    throw new APIRequestError(err.message);
+  const urls = getAIConfiguration().urls;
+  const res = await fetch(urls[action], {
+    method: 'POST',
+    headers: {
+      [wagtailConfig.CSRF_HEADER_NAME]: wagtailConfig.CSRF_TOKEN,
+    },
+    body,
+    signal,
+  });
+  const json = await res.json();
+  if (res.ok) {
+    return json.message;
+  } else {
+    throw new APIRequestError(json.error);
   }
 };

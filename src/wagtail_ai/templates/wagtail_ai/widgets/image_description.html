@@ -14,7 +14,10 @@
             {% icon name="wand-animated" classname="wai-image-description__icon" %}
         </button>
     </div>
-    <p class="error-message" data-wai-describe-target="error" hidden>
-        {% translate "An error occurred while generating the description. Please try again." %}
-    </p>
+    <div data-wai-describe-target="error"></div>
+    <template data-wai-describe-target="errorTemplate">
+        <p class="error-message">
+            {% translate "An error occurred while generating the description. Please try again." %}
+        </p>
+    </template>
 </div>

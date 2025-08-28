@@ -35,7 +35,7 @@ def test_access_denied(client):
         reverse("wagtail_ai:describe_image"), data={"image_id": image.pk}
     )
     assert response.status_code == 403
-    assert response.json() == {"error": "Access denied"}
+    assert response.json() == {"error": "Access denied."}
 
 
 def test_backend_not_configured(settings, admin_client):
