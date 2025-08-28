@@ -1,11 +1,11 @@
 import './main.css';
-import { fetchResponse } from '../api';
+import { fetchResponse, APIRequestError } from '../api';
 
 import { Controller } from '@hotwired/stimulus';
 
 class DescribeController extends Controller<HTMLElement | HTMLInputElement> {
   static classes = ['loading'];
-  static targets = ['button', 'error', 'input'];
+  static targets = ['button', 'error', 'errorTemplate', 'input'];
   static values = {
     file: String,
     imageId: String,
@@ -14,6 +14,7 @@ class DescribeController extends Controller<HTMLElement | HTMLInputElement> {
   declare loadingClass: string;
   declare buttonTarget: HTMLButtonElement;
   declare errorTarget: HTMLParagraphElement;
+  declare errorTemplateTarget: HTMLTemplateElement;
   declare inputTarget: HTMLInputElement;
   declare hasFileValue: boolean;
   declare fileValue: string;
@@ -33,7 +34,7 @@ class DescribeController extends Controller<HTMLElement | HTMLInputElement> {
   }
 
   async describe() {
-    this.errorTarget.hidden = true;
+    this.errorTarget.innerHTML = '';
     this.buttonTarget.disabled = true;
     this.element.classList.add(this.loadingClass);
 
@@ -51,7 +52,14 @@ class DescribeController extends Controller<HTMLElement | HTMLInputElement> {
       }
       this.inputTarget.value = await fetchResponse('DESCRIBE_IMAGE', formData);
     } catch (error) {
-      this.errorTarget.hidden = false;
+      const errorMessage =
+        this.errorTemplateTarget.content.firstElementChild!.cloneNode(true);
+      if (error instanceof APIRequestError) {
+        // Error message from the API is user-friendly,
+        // show that instead of the generic one from the template.
+        errorMessage.textContent = error.message;
+      }
+      this.errorTarget.appendChild(errorMessage);
     }
 
     this.element.classList.remove(this.loadingClass);
