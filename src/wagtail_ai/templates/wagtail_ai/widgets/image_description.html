@@ -1,6 +1,12 @@
 {% load i18n wagtailadmin_tags %}
 
-<div class="wai-image-description" data-controller="wai-describe" data-wai-describe-image-id-value="{{ image_id }}" data-wai-describe-loading-class="wai-image-description--loading">
+<div
+    class="wai-image-description"
+    data-controller="wai-describe"
+    {% if file_selector %}data-wai-describe-file-value="{{ file_selector }}"{% endif %}
+    {% if image_id %}data-wai-describe-image-id-value="{{ image_id }}"{% endif %}
+    data-wai-describe-loading-class="wai-image-description--loading"
+>
     <div class="wai-image-description__wrapper">
         {% include "django/forms/widgets/input.html" %}
         <button data-controller="w-tooltip" data-w-tooltip-content-value="{% translate 'Describe image using AI' %}" data-wai-describe-target="button" type="button" class="wai-image-description__button button" data-action="click->wai-describe#describe">
