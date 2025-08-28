@@ -88,6 +88,7 @@ class DescribeImageForm(BaseImageForm):
             widget_kwargs["image_id"] = self.instance.pk
 
         self.fields["title"].widget = ImageDescriptionWidget(**widget_kwargs)
+        self.fields["description"].widget = ImageDescriptionWidget(**widget_kwargs)
 
     @cached_property
     def media(self):  # type: ignore
