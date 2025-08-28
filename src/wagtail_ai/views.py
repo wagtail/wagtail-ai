@@ -119,15 +119,13 @@ def user_has_permission_for_image(user, image):
 
 
 def describe_image(request) -> JsonResponse:
-    form = DescribeImageApiForm(request.POST)
+    form = DescribeImageApiForm(request.POST, request.FILES)
     if not form.is_valid():
         return ErrorJsonResponse(form.errors_for_json_response(), status=400)
 
     model = cast(Type[AbstractImage], get_image_model())
-    image = get_object_or_404(model, pk=form.cleaned_data["image_id"])
-
-    if not user_has_permission_for_image(request.user, image):
-        return ErrorJsonResponse("Access denied", status=403)
+    image_file = form.cleaned_data["file"]
+    image_id = form.cleaned_data["image_id"]
 
     try:
         backend = ai.get_backend(BackendFeature.IMAGE_DESCRIPTION)
@@ -139,10 +137,15 @@ def describe_image(request) -> JsonResponse:
         )
 
     wagtail_ai_settings = getattr(settings, "WAGTAIL_AI", {})
-    rendition_filter = wagtail_ai_settings.get(
-        "IMAGE_DESCRIPTION_RENDITION_FILTER", "max-800x600"
-    )
-    rendition = image.get_rendition(rendition_filter)
+    if not image_file:
+        image = get_object_or_404(model, pk=image_id)
+        if not user_has_permission_for_image(request.user, image):
+            return ErrorJsonResponse("Access denied", status=403)
+        rendition_filter = wagtail_ai_settings.get(
+            "IMAGE_DESCRIPTION_RENDITION_FILTER", "max-800x600"
+        )
+        rendition = image.get_rendition(rendition_filter)
+        image_file = rendition.file
 
     maxlength = form.cleaned_data["maxlength"]
     prompt = wagtail_ai_settings.get("IMAGE_DESCRIPTION_PROMPT")
@@ -155,7 +158,7 @@ def describe_image(request) -> JsonResponse:
             prompt += f" Make the description less than {maxlength} characters long."
 
     try:
-        ai_response = backend.describe_image(image_file=rendition.file, prompt=prompt)
+        ai_response = backend.describe_image(image_file=image_file, prompt=prompt)
         description = ai_response.text()
     except Exception:
         logger.exception("There was an issue describing the image.")
