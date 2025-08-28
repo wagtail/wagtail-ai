@@ -5,7 +5,6 @@ from typing import Type, cast
 from django import forms
 from django.conf import settings
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from wagtail.admin.ui.tables import UpdatedAtColumn
 from wagtail.admin.viewsets.model import ModelViewSet
@@ -118,7 +117,7 @@ def user_has_permission_for_image(user, image):
     return permission_policy.user_has_permission_for_instance(user, "choose", image)
 
 
-def describe_image(request) -> JsonResponse:
+def describe_image(request) -> JsonResponse:  # noqa: C901
     form = DescribeImageApiForm(request.POST, request.FILES)
     if not form.is_valid():
         return ErrorJsonResponse(form.errors_for_json_response(), status=400)
@@ -138,9 +137,12 @@ def describe_image(request) -> JsonResponse:
 
     wagtail_ai_settings = getattr(settings, "WAGTAIL_AI", {})
     if not image_file:
-        image = get_object_or_404(model, pk=image_id)
+        try:
+            image = model._default_manager.get(pk=image_id)
+        except model.DoesNotExist:
+            return ErrorJsonResponse(_("Image not found."), status=404)
         if not user_has_permission_for_image(request.user, image):
-            return ErrorJsonResponse("Access denied", status=403)
+            return ErrorJsonResponse(_("Access denied."), status=403)
         rendition_filter = wagtail_ai_settings.get(
             "IMAGE_DESCRIPTION_RENDITION_FILTER", "max-800x600"
         )
@@ -162,10 +164,10 @@ def describe_image(request) -> JsonResponse:
         description = ai_response.text()
     except Exception:
         logger.exception("There was an issue describing the image.")
-        return ErrorJsonResponse("There was an issue describing the image.")
+        return ErrorJsonResponse(_("There was an issue describing the image."))
 
     if not description:
-        return ErrorJsonResponse("There was an issue describing the image.")
+        return ErrorJsonResponse(_("There was an issue describing the image."))
 
     if maxlength is not None:
         description = description[:maxlength]
