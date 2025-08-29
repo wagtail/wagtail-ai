@@ -1,29 +1,13 @@
-import type { ApiUrlName, WagtailAiConfiguration } from './custom';
+import type { ApiUrlName } from './custom';
 
 export class APIRequestError extends Error {}
-
-export const getAIConfiguration = (): WagtailAiConfiguration => {
-  const configurationElement =
-    document.querySelector<HTMLScriptElement>('#wagtail-ai-config');
-  if (!configurationElement || !configurationElement.textContent) {
-    throw new Error('No wagtail-ai configuration found.');
-  }
-
-  try {
-    return JSON.parse(configurationElement.textContent);
-  } catch (err) {
-    throw new SyntaxError(
-      `Error parsing wagtail-ai configuration: ${err.message}`,
-    );
-  }
-};
 
 export const fetchResponse = async (
   action: keyof typeof ApiUrlName,
   body: FormData,
   signal?: AbortSignal,
 ): Promise<string> => {
-  const urls = getAIConfiguration().urls;
+  const urls = window.wagtailAI.config.urls;
   const res = await fetch(urls[action], {
     method: 'POST',
     headers: {

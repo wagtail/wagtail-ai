@@ -3,7 +3,6 @@ from typing import NotRequired, Required, TypedDict
 
 from django.urls import include, path, reverse
 from django.utils.html import format_html, json_script
-from django.utils.safestring import mark_safe
 from django.views.i18n import JavaScriptCatalog
 from wagtail import hooks
 from wagtail.admin.rich_text.editors.draftail.features import ControlFeature
@@ -96,7 +95,7 @@ def ai_admin_css():
 
 
 @hooks.register("insert_global_admin_js")  # type: ignore
-def ai_editor_js():
+def ai_admin_js():
     config = {
         "aiPrompts": get_prompts(),
         "urls": {
@@ -105,7 +104,11 @@ def ai_editor_js():
         },
     }
 
-    return mark_safe(json_script(config, "wagtail-ai-config"))
+    return format_html(
+        '{}<script src="{}"></script>',
+        json_script(config, "wagtail-ai-config"),
+        versioned_static("wagtail_ai/main.js"),
+    )
 
 
 @hooks.register("register_admin_viewset")  # type: ignore

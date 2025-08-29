@@ -68,6 +68,9 @@ declare global {
     wagtail: {
       app: WagtailApplication;
     };
+    wagtailAI: {
+      config: WagtailAiConfiguration;
+    };
   }
 
   const wagtailConfig: WagtailConfig;
