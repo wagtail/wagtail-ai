@@ -1,9 +1,9 @@
 import os
 from collections.abc import Mapping
+from dataclasses import dataclass
 from typing import Any, NotRequired, Self
 
 import llm
-from llm.models import dataclass
 
 from ..types import AIResponse
 from .base import AIBackend, BaseAIBackendConfig, BaseAIBackendConfigSettings
