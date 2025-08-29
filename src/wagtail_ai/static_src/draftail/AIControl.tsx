@@ -4,7 +4,6 @@ import { Icon, ToolbarButton } from 'draftail';
 import { createPortal } from 'react-dom';
 import { useOutsideAlerter } from './hooks';
 import { handleAppend, handleReplace, processAction } from './utils';
-import { getAIConfiguration } from '../api';
 
 import type { ControlComponentProps } from 'draftail';
 import type { Prompt } from '../custom';
@@ -93,7 +92,7 @@ function ToolbarDropdown({
 }
 
 function AIControl({ getEditorState, onChange }: ControlComponentProps) {
-  const aiPrompts = getAIConfiguration().aiPrompts;
+  const aiPrompts = window.wagtailAI.config.aiPrompts;
   const editorState = getEditorState() as EditorState;
   const [isLoading, setIsLoading] = useState<Boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState<Boolean>(false);
