@@ -82,7 +82,7 @@ def test_llm_custom_init_kwargs(llm_backend_class):
 def test_llm_prompt_with_custom_kwargs(mocker):
     backend = get_ai_backend("default")
     assert backend.config.prompt_kwargs == {"system": "This is a test system prompt."}
-    prompt_mock = mocker.patch("wagtail_ai.ai.llm.llm.models.Model.prompt")
+    prompt_mock = mocker.patch("wagtail_ai.ai.llm.llm.models._Model.prompt")
     backend.prompt_with_context(pre_prompt="test pre prompt", context="test context")
     prompt_mock.assert_called_once_with(
         os.linesep.join(["test pre prompt", "test context"]),
