@@ -27,7 +27,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Set up Python 3.11
@@ -40,10 +40,8 @@ jobs:
         run: |
           python -m pip install flit
           python -m flit install --symlink
-      - uses: pre-commit/action@v3.0.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: jakebailey/pyright-action@v1
+      - uses: pre-commit/action@v3.0.1
+      - uses: jakebailey/pyright-action@v2
         with:
           version: 1.1.337
 
@@ -59,7 +57,7 @@ jobs:
         experimental: [false]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -82,11 +80,11 @@ jobs:
         env:
           TOXENV: python${{ matrix.python }}-django${{ matrix.django }}-wagtail${{ matrix.wagtail }}-sqlite-${{ matrix.backend }}
       - name: ⬆️ Upload coverage data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: coverage-data
+          name: coverage-data-${{ github.job }}-${{ strategy.job-index }}
           path: .coverage.*
-          if-no-files-found: ignore
+          include-hidden-files: true
           retention-days: 1
 
   test-postgres:
@@ -110,7 +108,7 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -134,11 +132,11 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/wagtail_ai
           TOXENV: python${{ matrix.python }}-django${{ matrix.django }}-wagtail${{ matrix.wagtail }}-postgres-${{ matrix.backend }}
       - name: ⬆️ Upload coverage data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: coverage-data
+          name: coverage-data-${{ github.job }}-${{ strategy.job-index }}
           path: .coverage.*
-          if-no-files-found: ignore
+          include-hidden-files: true
           retention-days: 1
 
   coverage:
@@ -148,7 +146,7 @@ jobs:
       - test-postgres
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
           # Use latest Python, so it understands all syntax.
@@ -157,9 +155,10 @@ jobs:
       - run: python -Im pip install --upgrade coverage
 
       - name: ⬇️ Download coverage data
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v5
         with:
-          name: coverage-data
+          pattern: coverage-data-*
+          merge-multiple: true
 
       - name: ＋ Combine coverage
         run: |
@@ -169,7 +168,7 @@ jobs:
           echo "## Coverage summary" >> $GITHUB_STEP_SUMMARY
           python -Im coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
       - name: 📈 Upload HTML report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: html-report
           path: htmlcov
