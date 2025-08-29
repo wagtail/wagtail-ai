@@ -1,5 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
-import { APIRequestError, fetchResponse, getAIConfiguration } from '../api';
+import { APIRequestError, fetchResponse } from '../api';
 import './main.css';
 
 export enum DefaultPrompt {
@@ -125,7 +125,7 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
       true,
     ) as HTMLElement;
     const content = root.querySelector('[data-w-dropdown-target="content"]')!;
-    getAIConfiguration().aiPrompts.forEach((prompt) => {
+    window.wagtailAI.config.aiPrompts.forEach((prompt) => {
       const useContent = prompt.default_prompt_id === DefaultPrompt.DESCRIPTION;
       content.insertAdjacentHTML(
         'beforeend',
