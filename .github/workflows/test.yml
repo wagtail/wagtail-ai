@@ -53,7 +53,6 @@ jobs:
       matrix:
         python: ['3.11', '3.12', '3.13']
         backend: ['base', 'llm']
-        experimental: [false]
 
     steps:
       - uses: actions/checkout@v5
@@ -95,7 +94,6 @@ jobs:
       matrix:
         python: ['3.11', '3.12', '3.13']
         backend: ['base', 'llm']
-        experimental: [false]
 
     services:
       postgres:
