@@ -245,3 +245,5 @@ LOGGING = {
 }
 
 FORMS_URLFIELD_ASSUME_HTTPS = True
+
+WAGTAILADMIN_BASE_URL = "http://testserver"
