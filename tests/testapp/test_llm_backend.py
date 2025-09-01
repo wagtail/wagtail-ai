@@ -3,6 +3,7 @@ import re
 
 import pytest
 from test_utils.settings import custom_ai_backend_class, custom_ai_backend_settings
+
 from wagtail_ai.ai import InvalidAIBackendError, get_ai_backend
 
 try:

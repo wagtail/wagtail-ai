@@ -41,8 +41,7 @@ AIBackendConfigSettings = TypeVar(
 
 class ConfigClassProtocol(Protocol[AIBackendConfigSettings]):
     @classmethod
-    def from_settings(cls, config: AIBackendConfigSettings, **kwargs: Any) -> Self:
-        ...
+    def from_settings(cls, config: AIBackendConfigSettings, **kwargs: Any) -> Self: ...
 
 
 @dataclass(kw_only=True)

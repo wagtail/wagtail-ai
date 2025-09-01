@@ -1,4 +1,5 @@
 import pytest
+
 from wagtail_ai.models import Prompt
 
 TEST_PROMPT_LABEL = "Prompt Label"
