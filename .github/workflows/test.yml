@@ -51,8 +51,8 @@ jobs:
     strategy:
       matrix:
         python: ['3.11', '3.12']
-        django: ['4.2']
-        wagtail: ['5.2']
+        django: ['4.2', '5.2']
+        wagtail: ['6.3', '7.0', '7.1']
         backend: ['base', 'llm']
         experimental: [false]
 
@@ -93,8 +93,8 @@ jobs:
     strategy:
       matrix:
         python: ['3.11', '3.12']
-        django: ['4.2']
-        wagtail: ['5.2']
+        django: ['4.2', '5.2']
+        wagtail: ['6.3', '7.0', '7.1']
         backend: ['base', 'llm']
         experimental: [false]
 
