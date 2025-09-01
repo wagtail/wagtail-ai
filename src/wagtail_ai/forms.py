@@ -79,6 +79,17 @@ class ImageDescriptionWidget(forms.TextInput):
         context["file_selector"] = self.file_selector
         return context
 
+    @cached_property
+    def media(self):  # type: ignore
+        return forms.Media(
+            js=[
+                versioned_static("wagtail_ai/image_description.js"),
+            ],
+            css={
+                "all": [versioned_static("wagtail_ai/image_description.css")],
+            },
+        )
+
 
 class DescribeImageForm(BaseImageForm):
     def __init__(self, *args, **kwargs):
@@ -89,14 +100,3 @@ class DescribeImageForm(BaseImageForm):
 
         self.fields["title"].widget = ImageDescriptionWidget(**widget_kwargs)
         self.fields["description"].widget = ImageDescriptionWidget(**widget_kwargs)
-
-    @cached_property
-    def media(self):  # type: ignore
-        return super().media + forms.Media(
-            js=[
-                versioned_static("wagtail_ai/image_description.js"),
-            ],
-            css={
-                "all": [versioned_static("wagtail_ai/image_description.css")],
-            },
-        )
