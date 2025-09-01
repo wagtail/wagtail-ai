@@ -52,7 +52,7 @@ docs = [
 [project.urls]
 Home = "https://github.com/wagtail/wagtail-ai"
 
-[tool.ruff]
+[tool.ruff.lint]
 select = [
     "B",   # flake8-bugbear
     "C4",  # flake8-comprehensions
