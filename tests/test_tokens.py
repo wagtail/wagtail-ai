@@ -1,4 +1,5 @@
 import pytest
+
 from wagtail_ai import tokens
 
 

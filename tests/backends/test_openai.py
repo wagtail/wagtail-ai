@@ -3,10 +3,11 @@ from unittest.mock import ANY, Mock
 
 import pytest
 from wagtail.images.models import Image
+from wagtail_factories import ImageFactory
+
 from wagtail_ai.ai import get_ai_backend, get_backend
 from wagtail_ai.ai.base import BackendFeature
 from wagtail_ai.ai.openai import OpenAIBackend
-from wagtail_factories import ImageFactory
 
 pytestmark = pytest.mark.django_db
 

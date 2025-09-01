@@ -1,5 +1,6 @@
 import pytest
 from django.core.exceptions import ValidationError
+
 from wagtail_ai.models import Prompt
 from wagtail_ai.prompts import DEFAULT_PROMPTS
 from wagtail_ai.wagtail_hooks import get_prompts

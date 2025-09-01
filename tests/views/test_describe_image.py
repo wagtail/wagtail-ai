@@ -6,8 +6,9 @@ import pytest
 from django.contrib.auth.models import Permission, User
 from django.urls import reverse
 from wagtail.images.models import Image
-from wagtail_ai.ai import echo
 from wagtail_factories import ImageFactory
+
+from wagtail_ai.ai import echo
 
 pytestmark = pytest.mark.django_db
 

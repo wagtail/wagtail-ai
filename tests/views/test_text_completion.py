@@ -2,6 +2,7 @@ import uuid
 
 import pytest
 from django.urls import reverse
+
 from wagtail_ai.views import PromptEditForm, prompt_viewset
 
 pytestmark = pytest.mark.django_db

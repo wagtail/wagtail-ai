@@ -3,6 +3,7 @@ from typing import Any, Literal, cast
 
 from django.conf import settings
 from django.test import override_settings
+
 from wagtail_ai.ai import AIBackendSettingsDict, TextSplittingSettingsDict
 
 DEFAULT_ALIAS = "default"

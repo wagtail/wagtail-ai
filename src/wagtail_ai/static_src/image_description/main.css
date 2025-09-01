@@ -80,21 +80,24 @@
   animation: wagtailai-button-dazzle 2.4s ease infinite;
 }
 .wagtailai-button.loading #star1 {
-  animation: wagtailai-button-hover 1.2s ease infinite,
+  animation:
+    wagtailai-button-hover 1.2s ease infinite,
     wagtailai-button-twinkle 1.2s ease infinite,
     wagtailai-button-dazzle 2.4s ease infinite;
   transform-origin: center;
   animation-delay: 0.2s, 0s;
 }
 .wagtailai-button.loading #star2 {
-  animation: wagtailai-button-hover 1.2s ease infinite,
+  animation:
+    wagtailai-button-hover 1.2s ease infinite,
     wagtailai-button-twinkle 1.2s ease infinite,
     wagtailai-button-dazzle 2.4s ease infinite;
   transform-origin: center;
   animation-delay: 0.1s, 0s;
 }
 .wagtailai-button.loading #star3 {
-  animation: wagtailai-button-hover 1.2s ease infinite,
+  animation:
+    wagtailai-button-hover 1.2s ease infinite,
     wagtailai-button-twinkle 1.2s ease infinite,
     wagtailai-button-dazzle 2.4s ease infinite;
   transform-origin: center;
