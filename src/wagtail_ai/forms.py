@@ -98,5 +98,11 @@ class DescribeImageForm(BaseImageForm):
         if self.instance and self.instance.pk:
             widget_kwargs["image_id"] = self.instance.pk
 
-        self.fields["title"].widget = ImageDescriptionWidget(**widget_kwargs)
-        self.fields["description"].widget = ImageDescriptionWidget(**widget_kwargs)
+        self.fields["title"].widget = ImageDescriptionWidget(
+            **widget_kwargs,
+            attrs=self.fields["title"].widget.attrs,
+        )
+        self.fields["description"].widget = ImageDescriptionWidget(
+            **widget_kwargs,
+            attrs=self.fields["description"].widget.attrs,
+        )

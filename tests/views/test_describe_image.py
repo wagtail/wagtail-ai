@@ -3,6 +3,7 @@ from typing import cast
 from unittest.mock import ANY, Mock, call
 
 import pytest
+from bs4 import BeautifulSoup, Tag
 from django.contrib.auth.models import Permission, User
 from django.urls import reverse
 from wagtail.images.models import Image
@@ -177,3 +178,64 @@ def test_maxlength_validation(
     assert response.status_code == expected_status
     if error_message is not None:
         assert response.json() == {"error": error_message}
+
+
+def test_enabled_on_image_upload(admin_client, get_soup):
+    url = reverse("wagtailimages:add")
+    response = admin_client.get(url)
+    assert response.status_code == 200
+
+    soup: BeautifulSoup = get_soup(response.content)
+    form = soup.select_one("main form")
+    assert form is not None
+
+    title = form.select_one('[name="title"]')
+    assert title is not None
+    assert title.get("data-wai-describe-target") == "input"
+    assert title.get("maxlength") == "255"
+    controller = title.find_parent(attrs={"data-controller": "wai-describe"})
+    assert controller is not None
+    assert isinstance(controller, Tag)
+    assert controller.get("data-wai-describe-file-value") == "#id_file"
+    assert controller.has_attr("data-wai-describe-image-id-value") is False
+
+    description = form.select_one('[name="description"]')
+    assert description is not None
+    assert description.get("data-wai-describe-target") == "input"
+    assert description.get("maxlength") == "255"
+    controller = description.find_parent(attrs={"data-controller": "wai-describe"})
+    assert controller is not None
+    assert isinstance(controller, Tag)
+    assert controller.get("data-wai-describe-file-value") == "#id_file"
+    assert controller.has_attr("data-wai-describe-image-id-value") is False
+
+
+def test_enabled_on_image_edit(admin_client, get_soup):
+    image = cast(Image, ImageFactory())
+    url = reverse("wagtailimages:edit", args=[image.pk])
+    response = admin_client.get(url)
+    assert response.status_code == 200
+
+    soup: BeautifulSoup = get_soup(response.content)
+    form = soup.select_one("main form")
+    assert form is not None
+
+    title = form.select_one('[name="title"]')
+    assert title is not None
+    assert title.get("data-wai-describe-target") == "input"
+    assert title.get("maxlength") == "255"
+    controller = title.find_parent(attrs={"data-controller": "wai-describe"})
+    assert controller is not None
+    assert isinstance(controller, Tag)
+    assert controller.get("data-wai-describe-file-value") == "#id_file"
+    assert controller.get("data-wai-describe-image-id-value") == str(image.pk)
+
+    description = form.select_one('[name="description"]')
+    assert description is not None
+    assert description.get("data-wai-describe-target") == "input"
+    assert description.get("maxlength") == "255"
+    controller = description.find_parent(attrs={"data-controller": "wai-describe"})
+    assert controller is not None
+    assert isinstance(controller, Tag)
+    assert controller.get("data-wai-describe-file-value") == "#id_file"
+    assert controller.get("data-wai-describe-image-id-value") == str(image.pk)
