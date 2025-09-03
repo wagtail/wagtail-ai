@@ -5,11 +5,13 @@ from unittest.mock import ANY, Mock, call
 import pytest
 from bs4 import BeautifulSoup, Tag
 from django.contrib.auth.models import Permission, User
+from django.forms import Textarea
 from django.urls import reverse
 from wagtail.images.models import Image
 from wagtail_factories import ImageFactory
 
 from wagtail_ai.ai import echo
+from wagtail_ai.forms import ImageDescriptionWidgetMixin
 
 pytestmark = pytest.mark.django_db
 
@@ -239,3 +241,25 @@ def test_enabled_on_image_edit(admin_client, get_soup):
     assert isinstance(controller, Tag)
     assert controller.get("data-wai-describe-file-value") == "#id_file"
     assert controller.get("data-wai-describe-image-id-value") == str(image.pk)
+
+
+def test_image_description_widget_with_textarea(get_soup):
+    class ImageDescriptionTextarea(ImageDescriptionWidgetMixin, Textarea):
+        pass
+
+    html = ImageDescriptionTextarea(
+        image_id=123,
+        file_selector="#id_file",
+        attrs={"maxlength": "512"},
+    ).render("description", "A portrait of a Wagtail.")
+    soup: BeautifulSoup = get_soup(html)
+    controller = soup.select_one('[data-controller="wai-describe"]')
+    assert controller is not None
+    assert isinstance(controller, Tag)
+    assert controller.get("data-wai-describe-file-value") == "#id_file"
+    assert controller.get("data-wai-describe-image-id-value") == "123"
+    textarea = controller.select_one('textarea[name="description"]')
+    assert textarea is not None
+    assert textarea.get("data-wai-describe-target") == "input"
+    assert textarea.get("maxlength") == "512"
+    assert textarea.text.strip() == "A portrait of a Wagtail."

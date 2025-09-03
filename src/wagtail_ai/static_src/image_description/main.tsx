@@ -51,6 +51,8 @@ class DescribeController extends Controller<HTMLElement | HTMLInputElement> {
         formData.append('maxlength', maxLength);
       }
       this.inputTarget.value = await fetchResponse('DESCRIBE_IMAGE', formData);
+      // Trigger autosize if available
+      this.inputTarget.dispatchEvent(new Event('input', { bubbles: true }));
     } catch (error) {
       const errorMessage =
         this.errorTemplateTarget.content.firstElementChild!.cloneNode(true);
