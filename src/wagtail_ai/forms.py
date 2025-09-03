@@ -64,7 +64,12 @@ class DescribeImageApiForm(ApiForm):
         return cleaned_data
 
 
-class ImageDescriptionWidget(forms.TextInput):
+class ImageDescriptionWidgetMixin(forms.Widget):
+    """
+    A widget mixin that wraps the widget in a controller for describing images.
+    Can be used with TextInput or Textarea.
+    """
+
     template_name = "wagtail_ai/widgets/image_description.html"
 
     def __init__(self, *args, image_id=None, file_selector=None, **kwargs):
@@ -77,6 +82,7 @@ class ImageDescriptionWidget(forms.TextInput):
         context = super().get_context(name, value, attrs)
         context["image_id"] = self.image_id
         context["file_selector"] = self.file_selector
+        context["original_template_name"] = super().template_name  # type: ignore
         return context
 
     @cached_property
@@ -91,6 +97,10 @@ class ImageDescriptionWidget(forms.TextInput):
         )
 
 
+class ImageDescriptionTextInput(ImageDescriptionWidgetMixin, forms.TextInput):
+    pass
+
+
 class DescribeImageForm(BaseImageForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -98,11 +108,11 @@ class DescribeImageForm(BaseImageForm):
         if self.instance and self.instance.pk:
             widget_kwargs["image_id"] = self.instance.pk
 
-        self.fields["title"].widget = ImageDescriptionWidget(
+        self.fields["title"].widget = ImageDescriptionTextInput(
             **widget_kwargs,
             attrs=self.fields["title"].widget.attrs,
         )
-        self.fields["description"].widget = ImageDescriptionWidget(
+        self.fields["description"].widget = ImageDescriptionTextInput(
             **widget_kwargs,
             attrs=self.fields["description"].widget.attrs,
         )
