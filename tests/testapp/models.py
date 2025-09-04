@@ -3,7 +3,10 @@ from wagtail.admin.panels import FieldPanel
 from wagtail.fields import RichTextField
 from wagtail.models import Page
 
-from wagtail_ai.panels import AIFieldPanel
+from wagtail_ai.panels import AIFieldPanel, AITitleFieldPanel
+
+# Replace the default TitleFieldPanel with an AITitleFieldPanel.
+Page.content_panels[0] = AITitleFieldPanel("title", classname="title")  # type: ignore
 
 # Replace the default `search_description` FieldPanel with an AIFieldPanel.
 if WAGTAIL_VERSION >= (6, 4):  # type: ignore
