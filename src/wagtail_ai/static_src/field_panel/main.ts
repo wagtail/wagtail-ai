@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { html, render } from 'lit-html';
 import { APIRequestError, fetchResponse } from '../api';
 import './main.css';
 import { Prompt } from '../custom';
@@ -141,33 +142,40 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
     );
   }
 
+  getDropdownItemTemplate(prompt: Prompt) {
+    const useContent = [
+      DefaultPrompt.DESCRIPTION,
+      DefaultPrompt.TITLE,
+    ].includes(prompt.default_prompt_id!);
+
+    return html`
+      <button
+        type="button"
+        class="wai-dropdown__item"
+        data-action="click->wai-prompt#prompt"
+        data-wai-prompt-prompt-id-param="${prompt.uuid}"
+        data-wai-prompt-method-param="${prompt.method}"
+        data-wai-prompt-use-content-param="${useContent}"
+      >
+        <div>${prompt.label}</div>
+        <div class="wai-dropdown__description">${prompt.description}</div>
+      </button>
+    `;
+  }
+
   get template() {
     const root = this.dropdownTarget.content.firstElementChild!.cloneNode(
       true,
     ) as HTMLElement;
-    const content = root.querySelector('[data-w-dropdown-target="content"]')!;
-    this.filteredPrompts.forEach((prompt) => {
-      const useContent = [
-        DefaultPrompt.DESCRIPTION,
-        DefaultPrompt.TITLE,
-      ].includes(prompt.default_prompt_id!);
-      content.insertAdjacentHTML(
-        'beforeend',
-        /* html */ `
-        <button
-          type="button"
-          class="wai-dropdown__item"
-          data-action="click->wai-prompt#prompt"
-          data-wai-prompt-prompt-id-param="${prompt.uuid}"
-          data-wai-prompt-method-param="${prompt.method}"
-          data-wai-prompt-use-content-param="${useContent}"
-        >
-          <div>${prompt.label}</div>
-          <div class="wai-dropdown__description">${prompt.description}</div>
-        </button>
-      `,
-      );
-    });
+    const content = root.querySelector<HTMLElement>(
+      '[data-w-dropdown-target="content"]',
+    )!;
+    render(
+      this.filteredPrompts.map((prompt) =>
+        this.getDropdownItemTemplate(prompt),
+      ),
+      content,
+    );
     root.setAttribute(
       'data-controller',
       `wai-prompt ${root.getAttribute('data-controller') || ''}`.trim(),
