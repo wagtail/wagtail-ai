@@ -97,7 +97,10 @@ class PromptController extends Controller<HTMLButtonElement> {
     } else if (method === PromptMethod.REPLACE) {
       this.input.value = result;
     }
+    // Trigger autosize if available
     this.input.dispatchEvent(new Event('input', { bubbles: true }));
+    // Trigger change event so others e.g. TitleFieldPanel can pick up the change
+    this.input.dispatchEvent(new Event('change', { bubbles: true }));
   }
 }
 
