@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 import { APIRequestError, fetchResponse } from '../api';
 import './main.css';
+import { Prompt } from '../custom';
 
 export enum DefaultPrompt {
   CORRECTION = 1,
@@ -106,7 +107,12 @@ class PromptController extends Controller<HTMLButtonElement> {
 
 class FieldPanelController extends Controller<HTMLTemplateElement> {
   static targets = ['dropdown'];
+  static values = {
+    prompts: { type: Array, default: [] },
+  };
   declare dropdownTarget: HTMLTemplateElement;
+  declare promptsValue: DefaultPrompt[];
+  declare filteredPrompts: Prompt[];
   declare input: HTMLElement;
 
   connect() {
@@ -123,12 +129,23 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
     this.dropdownTarget.remove();
   }
 
+  promptsValueChanged() {
+    if (!this.promptsValue.length) {
+      this.filteredPrompts = window.wagtailAI.config.aiPrompts;
+      return;
+    }
+    this.filteredPrompts = window.wagtailAI.config.aiPrompts.filter(
+      ({ default_prompt_id }) =>
+        default_prompt_id && this.promptsValue.includes(default_prompt_id),
+    );
+  }
+
   get template() {
     const root = this.dropdownTarget.content.firstElementChild!.cloneNode(
       true,
     ) as HTMLElement;
     const content = root.querySelector('[data-w-dropdown-target="content"]')!;
-    window.wagtailAI.config.aiPrompts.forEach((prompt) => {
+    this.filteredPrompts.forEach((prompt) => {
       const useContent = prompt.default_prompt_id === DefaultPrompt.DESCRIPTION;
       content.insertAdjacentHTML(
         'beforeend',
