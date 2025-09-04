@@ -1,3 +1,5 @@
+import json
+
 from django import forms
 from django.utils.functional import cached_property, classproperty  # type: ignore
 from wagtail.admin.panels import FieldPanel, Panel, TitleFieldPanel
@@ -5,6 +7,11 @@ from wagtail.admin.staticfiles import versioned_static
 
 
 class AIPanelMixin(Panel):
+    def __init__(self, *args, prompts=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.prompts = prompts or []
+        self.attrs["data-wai-field-panel-prompts-value"] = json.dumps(self.prompts)
+
     @classproperty
     def BASE_ATTRS(cls):
         base = super().BASE_ATTRS
@@ -13,6 +20,11 @@ class AIPanelMixin(Panel):
             **base,
             "data-controller": " ".join(controllers).strip(),
         }
+
+    def clone_kwargs(self):
+        kwargs = super().clone_kwargs()
+        kwargs["prompts"] = self.prompts
+        return kwargs
 
     class BoundPanel(Panel.BoundPanel):
         template_name = "wagtail_ai/panels/field_panel.html"
