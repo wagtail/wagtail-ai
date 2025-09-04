@@ -52,7 +52,6 @@ jobs:
     strategy:
       matrix:
         python: ['3.11', '3.12', '3.13']
-        backend: ['base', 'llm']
 
     steps:
       - uses: actions/checkout@v5
@@ -93,7 +92,6 @@ jobs:
     strategy:
       matrix:
         python: ['3.11', '3.12', '3.13']
-        backend: ['base', 'llm']
 
     services:
       postgres:
