@@ -7,6 +7,7 @@ export enum DefaultPrompt {
   CORRECTION = 1,
   COMPLETION = 2,
   DESCRIPTION = 3,
+  TITLE = 4,
 }
 
 export enum PromptMethod {
@@ -146,7 +147,10 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
     ) as HTMLElement;
     const content = root.querySelector('[data-w-dropdown-target="content"]')!;
     this.filteredPrompts.forEach((prompt) => {
-      const useContent = prompt.default_prompt_id === DefaultPrompt.DESCRIPTION;
+      const useContent = [
+        DefaultPrompt.DESCRIPTION,
+        DefaultPrompt.TITLE,
+      ].includes(prompt.default_prompt_id!);
       content.insertAdjacentHTML(
         'beforeend',
         /* html */ `
