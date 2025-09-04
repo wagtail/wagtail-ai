@@ -9,6 +9,7 @@ class DefaultPrompt(IntEnum):
     CORRECTION = 1
     COMPLETION = 2
     DESCRIPTION = 3
+    TITLE = 4
 
 
 class PromptDict(TypedDict):
@@ -49,6 +50,15 @@ DEFAULT_PROMPTS: Sequence[PromptDict] = [
         "description": "Generate a description by summarizing the page content",
         "prompt": (
             "Create an SEO-friendly meta description of the following web page content:"
+        ),
+        "method": "append",
+    },
+    {
+        "default_prompt_id": DefaultPrompt.TITLE,
+        "label": "AI Title",
+        "description": "Generate a title based on the page content",
+        "prompt": (
+            "Create an SEO-friendly page title for the following web page content:"
         ),
         "method": "append",
     },
