@@ -27,19 +27,78 @@ interface PreviewContent {
   innerHTML: string;
 }
 
-class PromptController extends Controller<HTMLButtonElement> {
+class FieldPanelController extends Controller<HTMLTemplateElement> {
+  static targets = ['dropdown'];
+  static values = {
+    prompts: { type: Array, default: [] },
+  };
+  declare dropdownTarget: HTMLTemplateElement;
+  declare promptsValue: DefaultPrompt[];
+  declare filteredPrompts: Prompt[];
+  declare fieldInput: HTMLElement;
   declare input: HTMLInputElement | HTMLTextAreaElement;
 
   connect() {
-    const input = this.element
-      .closest('[data-field-input]')
-      ?.querySelector<
-        HTMLInputElement | HTMLTextAreaElement
-      >('input, textarea');
+    this.fieldInput = this.element.querySelector('[data-field-input]')!;
+    // If the field has a comment button, insert the dropdown before it to ensure
+    // the tab order is correct. Otherwise just append it to the end of the input.
+    const commentButton = this.element.querySelector('[data-comment-add]');
+    if (commentButton) {
+      this.fieldInput.insertBefore(this.template, commentButton);
+    } else {
+      this.fieldInput.appendChild(this.template);
+    }
+
+    this.dropdownTarget.remove();
+
+    const input = this.fieldInput.querySelector<
+      HTMLInputElement | HTMLTextAreaElement
+    >('input, textarea');
     if (!input) {
       throw new Error('Could not find input or textarea element.');
     }
     this.input = input;
+  }
+
+  get template() {
+    const root = this.dropdownTarget.content.firstElementChild!.cloneNode(
+      true,
+    ) as HTMLElement;
+    const content = root.querySelector('[data-w-dropdown-target="content"]')!;
+    this.filteredPrompts.forEach((prompt) => {
+      const useContent = [
+        DefaultPrompt.DESCRIPTION,
+        DefaultPrompt.TITLE,
+      ].includes(prompt.default_prompt_id!);
+      content.insertAdjacentHTML(
+        'beforeend',
+        /* html */ `
+        <button
+          type="button"
+          class="wai-dropdown__item"
+          data-action="click->wai-field-panel#prompt"
+          data-wai-field-panel-prompt-id-param="${prompt.uuid}"
+          data-wai-field-panel-method-param="${prompt.method}"
+          data-wai-field-panel-use-content-param="${useContent}"
+        >
+          <div>${prompt.label}</div>
+          <div class="wai-dropdown__description">${prompt.description}</div>
+        </button>
+      `,
+      );
+    });
+    return root;
+  }
+
+  promptsValueChanged() {
+    if (!this.promptsValue.length) {
+      this.filteredPrompts = window.wagtailAI.config.aiPrompts;
+      return;
+    }
+    this.filteredPrompts = window.wagtailAI.config.aiPrompts.filter(
+      ({ default_prompt_id }) =>
+        default_prompt_id && this.promptsValue.includes(default_prompt_id),
+    );
   }
 
   async getPreviewContent(): Promise<PreviewContent | null> {
@@ -106,75 +165,4 @@ class PromptController extends Controller<HTMLButtonElement> {
   }
 }
 
-class FieldPanelController extends Controller<HTMLTemplateElement> {
-  static targets = ['dropdown'];
-  static values = {
-    prompts: { type: Array, default: [] },
-  };
-  declare dropdownTarget: HTMLTemplateElement;
-  declare promptsValue: DefaultPrompt[];
-  declare filteredPrompts: Prompt[];
-  declare input: HTMLElement;
-
-  connect() {
-    this.input = this.element.querySelector('[data-field-input]')!;
-    // If the field has a comment button, insert the dropdown before it to ensure
-    // the tab order is correct. Otherwise just append it to the end of the input.
-    const commentButton = this.element.querySelector('[data-comment-add]');
-    if (commentButton) {
-      this.input.insertBefore(this.template, commentButton);
-    } else {
-      this.input.appendChild(this.template);
-    }
-
-    this.dropdownTarget.remove();
-  }
-
-  promptsValueChanged() {
-    if (!this.promptsValue.length) {
-      this.filteredPrompts = window.wagtailAI.config.aiPrompts;
-      return;
-    }
-    this.filteredPrompts = window.wagtailAI.config.aiPrompts.filter(
-      ({ default_prompt_id }) =>
-        default_prompt_id && this.promptsValue.includes(default_prompt_id),
-    );
-  }
-
-  get template() {
-    const root = this.dropdownTarget.content.firstElementChild!.cloneNode(
-      true,
-    ) as HTMLElement;
-    const content = root.querySelector('[data-w-dropdown-target="content"]')!;
-    this.filteredPrompts.forEach((prompt) => {
-      const useContent = [
-        DefaultPrompt.DESCRIPTION,
-        DefaultPrompt.TITLE,
-      ].includes(prompt.default_prompt_id!);
-      content.insertAdjacentHTML(
-        'beforeend',
-        /* html */ `
-        <button
-          type="button"
-          class="wai-dropdown__item"
-          data-action="click->wai-prompt#prompt"
-          data-wai-prompt-prompt-id-param="${prompt.uuid}"
-          data-wai-prompt-method-param="${prompt.method}"
-          data-wai-prompt-use-content-param="${useContent}"
-        >
-          <div>${prompt.label}</div>
-          <div class="wai-dropdown__description">${prompt.description}</div>
-        </button>
-      `,
-      );
-    });
-    root.setAttribute(
-      'data-controller',
-      `wai-prompt ${root.getAttribute('data-controller') || ''}`.trim(),
-    );
-    return root;
-  }
-}
-
-window.wagtail.app.register('wai-prompt', PromptController);
 window.wagtail.app.register('wai-field-panel', FieldPanelController);
