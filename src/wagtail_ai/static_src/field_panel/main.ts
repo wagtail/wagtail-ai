@@ -1,5 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
-import { APIRequestError, fetchResponse } from '../api';
+import { fetchResponse } from '../api';
 import './main.css';
 import { Prompt } from '../custom';
 
@@ -25,19 +25,40 @@ interface PreviewContent {
   innerHTML: string;
 }
 
+enum FieldPanelState {
+  IDLE = 'idle',
+  LOADING = 'loading',
+  ERROR = 'error',
+  SUGGESTING = 'suggesting',
+}
+
 class FieldPanelController extends Controller<HTMLTemplateElement> {
-  static targets = ['dropdownTemplate'];
+  static classes = ['idle', 'loading', 'error', 'suggesting'];
+  static targets = ['dropdown', 'dropdownTemplate', 'prompt', 'suggestion'];
   static values = {
     activePromptId: { type: String, default: '' },
     prompts: { type: Array, default: [] },
+    state: { type: String, default: FieldPanelState.IDLE },
+    suggestion: { type: String, default: '' },
   };
+  declare idleClass: string;
+  declare loadingClass: string;
+  declare errorClass: string;
+  declare suggestingClass: string;
+  declare dropdownTarget: HTMLDivElement;
   declare dropdownTemplateTarget: HTMLTemplateElement;
+  declare promptTargets: HTMLButtonElement[];
+  declare hasSuggestionTarget: boolean;
+  declare suggestionTarget: HTMLDivElement;
   declare activePromptIdValue: string;
   declare promptsValue: DefaultPrompt[];
+  declare stateValue: FieldPanelState;
+  declare suggestionValue: string;
   declare filteredPrompts: Prompt[];
   declare fieldInput: HTMLElement;
   declare input: HTMLInputElement | HTMLTextAreaElement;
   activePrompt: Prompt | null = null;
+  abortController: AbortController | null = null;
 
   connect() {
     this.fieldInput = this.element.querySelector('[data-field-input]')!;
@@ -66,24 +87,49 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
       this.dropdownTemplateTarget.content.firstElementChild!.cloneNode(
         true,
       ) as HTMLElement;
-    const content = root.querySelector('[data-w-dropdown-target="content"]')!;
+    // Insert before other contents of the dropdown
+    // i.e. the intermediary and suggestion containers.
+    const before = root.querySelector(
+      '[data-w-dropdown-target="content"]',
+    )!.firstElementChild!;
+
     this.filteredPrompts.forEach((prompt) => {
-      content.insertAdjacentHTML(
-        'beforeend',
-        /* html */ `
-        <button
-          type="button"
-          class="wai-dropdown__item"
-          data-action="click->wai-field-panel#prompt"
-          data-wai-field-panel-prompt-id-param="${prompt.uuid}"
-        >
-          <div>${prompt.label}</div>
-          <div class="wai-dropdown__description">${prompt.description}</div>
-        </button>
-      `,
+      before.insertAdjacentHTML(
+        'beforebegin',
+        this.getDropdownItemTemplate(prompt),
       );
     });
     return root;
+  }
+
+  getDropdownItemTemplate(prompt: Prompt) {
+    return /* html */ `
+      <button
+        type="button"
+        class="wai-dropdown__item"
+        data-action="click->wai-field-panel#prompt"
+        data-wai-field-panel-target="prompt"
+        data-wai-field-panel-prompt-id-param="${prompt.uuid}"
+      >
+        <div>${prompt.label}</div>
+        <div class="wai-dropdown__description">${prompt.description}</div>
+      </button>
+    `;
+  }
+
+  dropdownTargetConnected() {
+    const controller = window.wagtail.app.getControllerForElementAndIdentifier(
+      this.dropdownTarget,
+      'w-dropdown',
+    );
+    const { tippy } = controller as any;
+    // Set a fixed with via CSS and use a custom theme, so this can later be
+    // incorporated into Wagtail core as a new DropdownController theme.
+    tippy.setProps({
+      arrow: false,
+      maxWidth: 'none',
+      theme: 'assistant',
+    });
   }
 
   promptsValueChanged() {
@@ -124,6 +170,7 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
       ...event?.detail,
       ...event?.params,
     };
+    this.stateValue = FieldPanelState.LOADING;
     this.activePromptIdValue = promptId;
     // The setter above only sets the data attribute, and Stimulus runs the
     // callback asynchronously when the MutationObserver notices the change.
@@ -134,7 +181,6 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
       DefaultPrompt.DESCRIPTION,
       DefaultPrompt.TITLE,
     ].includes(this.activePrompt!.default_prompt_id!);
-    const icon = this.element.querySelector('svg use');
     const data = new FormData();
     let text = this.input.value;
     if (useContent) {
@@ -143,34 +189,96 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
     }
     data.append('text', text);
     data.append('prompt', promptId!);
-    this.input.readOnly = true;
-    icon?.setAttribute('href', '#icon-wand-animated');
 
     let result = '';
     try {
-      result = await fetchResponse('TEXT_COMPLETION', data);
+      this.abortController = new AbortController();
+      result = await fetchResponse(
+        'TEXT_COMPLETION',
+        data,
+        this.abortController!.signal,
+      );
     } catch (error) {
-      console.error(error);
-      if (error instanceof APIRequestError) {
-        alert(error.message);
-      } else {
-        alert('An unknown error occurred. Please try again.');
+      if (this.abortController?.signal.aborted) {
+        this.stateValue = FieldPanelState.IDLE;
+        this.abortController = null;
+        return;
       }
+      this.stateValue = FieldPanelState.ERROR;
+      console.error(error);
     }
-
-    icon?.setAttribute('href', '#icon-wand');
-    this.input.readOnly = false;
     if (!result) return;
 
-    if (this.activePrompt!.method === PromptMethod.APPEND) {
-      this.input.value += result;
+    this.stateValue = FieldPanelState.SUGGESTING;
+    this.suggestionValue = result;
+  }
+
+  stateValueChanged() {
+    const classes = {
+      [FieldPanelState.IDLE]: this.idleClass,
+      [FieldPanelState.LOADING]: this.loadingClass,
+      [FieldPanelState.ERROR]: this.errorClass,
+      [FieldPanelState.SUGGESTING]: this.suggestingClass,
+    };
+    Object.entries(classes).forEach(([state, className]) => {
+      this.element.classList.toggle(className, state === this.stateValue);
+    });
+
+    const icon = this.element.querySelector('svg use');
+    icon?.setAttribute(
+      'href',
+      this.stateValue === FieldPanelState.LOADING
+        ? '#icon-wand-animated'
+        : '#icon-wand',
+    );
+
+    this.togglePrompts();
+    if (this.stateValue === FieldPanelState.IDLE) this.reset();
+  }
+
+  suggestionValueChanged() {
+    if (!this.hasSuggestionTarget) return;
+    this.suggestionTarget.innerText = this.suggestionValue;
+  }
+
+  togglePrompts() {
+    switch (this.stateValue) {
+      case FieldPanelState.LOADING:
+      case FieldPanelState.ERROR:
+        this.promptTargets.forEach((button) => (button.hidden = true));
+        break;
+      case FieldPanelState.SUGGESTING:
+        this.promptTargets.forEach(
+          (button) =>
+            (button.hidden =
+              button.getAttribute('data-wai-field-panel-prompt-id-param') !==
+              this.activePromptIdValue),
+        );
+        break;
+      case FieldPanelState.IDLE:
+      default:
+        this.promptTargets.forEach((button) => (button.hidden = false));
+        break;
+    }
+  }
+
+  useSuggestion() {
+    if (this.activePrompt?.method === PromptMethod.APPEND) {
+      this.input.value += this.suggestionValue;
     } else {
-      this.input.value = result;
+      this.input.value = this.suggestionValue;
     }
     // Trigger autosize if available
     this.input.dispatchEvent(new Event('input', { bubbles: true }));
     // Trigger change event so others e.g. TitleFieldPanel can pick up the change
     this.input.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  reset() {
+    this.stateValue = FieldPanelState.IDLE;
+    this.abortController?.abort('Cancelled by user');
+    this.suggestionValue = '';
+    this.activePromptIdValue = '';
   }
 }
 
