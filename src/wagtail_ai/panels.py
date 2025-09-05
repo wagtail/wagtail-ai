@@ -1,6 +1,7 @@
 import json
 
 from django import forms
+from django.forms.utils import flatatt
 from django.utils.functional import cached_property, classproperty  # type: ignore
 from wagtail.admin.panels import FieldPanel, Panel, TitleFieldPanel
 from wagtail.admin.staticfiles import versioned_static
@@ -11,6 +12,12 @@ class AIPanelMixin(Panel):
         super().__init__(*args, **kwargs)
         self.prompts = prompts or []
         self.attrs["data-wai-field-panel-prompts-value"] = json.dumps(self.prompts)
+        self.attrs["data-wai-field-panel-idle-class"] = "wai-field-panel--idle"
+        self.attrs["data-wai-field-panel-loading-class"] = "wai-field-panel--loading"
+        self.attrs["data-wai-field-panel-error-class"] = "wai-field-panel--error"
+        self.attrs["data-wai-field-panel-suggesting-class"] = (
+            "wai-field-panel--suggesting"
+        )
 
     @classproperty
     def BASE_ATTRS(cls):
@@ -32,7 +39,13 @@ class AIPanelMixin(Panel):
         def get_context_data(self, parent_context=None):
             context = super().get_context_data(parent_context)
             context["original_template_name"] = super().template_name  # type: ignore
+            context["dropdown_attrs"] = flatatt(self.get_dropdown_attrs())  # type: ignore
             return context
+
+        def get_dropdown_attrs(self):
+            return {
+                "data-wai-field-panel-target": "dropdown",
+            }
 
         @cached_property
         def media(self):  # type: ignore

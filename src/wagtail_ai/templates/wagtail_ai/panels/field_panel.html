@@ -2,7 +2,40 @@
 {% include original_template_name %}
 
 <template data-wai-field-panel-target="dropdownTemplate">
-    {% dropdown hide_on_click=True classname="wai-dropdown" toggle_classname="wai-dropdown__toggle" toggle_icon="wand" toggle_aria_label=_("AI Actions") %}
+    {% dropdown classname="wai-dropdown" toggle_classname="wai-dropdown__toggle" toggle_icon="wand" toggle_aria_label=_("AI Actions") toggle_tooltip_offset="[0,0]" attrs=dropdown_attrs %}
         {# Prompt options will be rendered here via JavaScript. #}
+        <div class="wai-dropdown__intermediary">
+            <div>
+                {% icon name="spinner" classname="w-w-8 w-h-8" %}
+                {% icon name="warning" classname="w-w-8 w-h-8" %}
+            </div>
+            <div class="wai-dropdown__loading-message">
+                {% translate "Please wait…" %}
+            </div>
+            <div class="wai-dropdown__error-message">
+                {% translate "An error occurred while processing your request. Please try again." %}
+            </div>
+            <button type="button" class="button button-secondary button-small" data-action="click->wai-field-panel#reset">
+                {% translate "Cancel" %}
+            </button>
+        </div>
+        <div class="wai-dropdown__suggestion">
+            <div class="wai-dropdown__suggestion-heading">
+                {% translate "Suggestion" %}
+            </div>
+            <div class="wai-dropdown__suggestion-text" data-wai-field-panel-target="suggestion">
+            </div>
+            <div class="wai-dropdown__suggestion-actions">
+                <button type="button" class="button button-secondary button-small" data-action="click->wai-field-panel#useSuggestion">
+                    {% translate "Use" %}
+                </button>
+                <button type="button" class="button button-secondary button-small" data-action="click->wai-field-panel#prompt">
+                    {% translate "Regenerate" %}
+                </button>
+                <button type="button" class="button button-secondary button-small" data-action="click->wai-field-panel#reset">
+                    {% translate "Dismiss" %}
+                </button>
+            </div>
+        </div>
     {% enddropdown %}
 </template>
