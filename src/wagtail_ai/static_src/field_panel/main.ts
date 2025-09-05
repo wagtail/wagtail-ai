@@ -27,16 +27,38 @@ interface PreviewContent {
   innerHTML: string;
 }
 
+enum FieldPanelState {
+  IDLE = 'idle',
+  LOADING = 'loading',
+  ERROR = 'error',
+  SUGGESTING = 'suggesting',
+}
+
 class FieldPanelController extends Controller<HTMLTemplateElement> {
-  static targets = ['dropdown'];
+  static classes = ['idle', 'loading', 'error', 'suggesting'];
+  static targets = ['dropdown', 'prompt', 'suggestion'];
   static values = {
+    activePromptId: { type: String, default: '' },
     prompts: { type: Array, default: [] },
+    state: { type: String, default: FieldPanelState.IDLE },
+    suggestion: { type: String, default: '' },
   };
+  declare idleClass: string;
+  declare loadingClass: string;
+  declare errorClass: string;
+  declare suggestingClass: string;
   declare dropdownTarget: HTMLTemplateElement;
+  declare promptTargets: HTMLButtonElement[];
+  declare hasSuggestionTarget: boolean;
+  declare suggestionTarget: HTMLDivElement;
+  declare activePromptIdValue: string;
   declare promptsValue: DefaultPrompt[];
+  declare stateValue: FieldPanelState;
+  declare suggestionValue: string;
   declare filteredPrompts: Prompt[];
   declare fieldInput: HTMLElement;
   declare input: HTMLInputElement | HTMLTextAreaElement;
+  abortController: AbortController | null = null;
 
   connect() {
     this.fieldInput = this.element.querySelector('[data-field-input]')!;
@@ -64,30 +86,37 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
     const root = this.dropdownTarget.content.firstElementChild!.cloneNode(
       true,
     ) as HTMLElement;
-    const content = root.querySelector('[data-w-dropdown-target="content"]')!;
+    const before = root.querySelector(
+      '[data-w-dropdown-target="content"]',
+    )!.firstElementChild!;
     this.filteredPrompts.forEach((prompt) => {
-      const useContent = [
-        DefaultPrompt.DESCRIPTION,
-        DefaultPrompt.TITLE,
-      ].includes(prompt.default_prompt_id!);
-      content.insertAdjacentHTML(
-        'beforeend',
-        /* html */ `
-        <button
-          type="button"
-          class="wai-dropdown__item"
-          data-action="click->wai-field-panel#prompt"
-          data-wai-field-panel-prompt-id-param="${prompt.uuid}"
-          data-wai-field-panel-method-param="${prompt.method}"
-          data-wai-field-panel-use-content-param="${useContent}"
-        >
-          <div>${prompt.label}</div>
-          <div class="wai-dropdown__description">${prompt.description}</div>
-        </button>
-      `,
+      before.insertAdjacentHTML(
+        'beforebegin',
+        this.getDropdownItemTemplate(prompt),
       );
     });
     return root;
+  }
+
+  getDropdownItemTemplate(prompt: Prompt) {
+    const useContent = [
+      DefaultPrompt.DESCRIPTION,
+      DefaultPrompt.TITLE,
+    ].includes(prompt.default_prompt_id!);
+    return /* html */ `
+      <button
+        type="button"
+        class="wai-dropdown__item"
+        data-action="click->wai-field-panel#prompt"
+        data-wai-field-panel-target="prompt"
+        data-wai-field-panel-prompt-id-param="${prompt.uuid}"
+        data-wai-field-panel-method-param="${prompt.method}"
+        data-wai-field-panel-use-content-param="${useContent}"
+      >
+        <div>${prompt.label}</div>
+        <div class="wai-dropdown__description">${prompt.description}</div>
+      </button>
+    `;
   }
 
   promptsValueChanged() {
@@ -117,14 +146,13 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
   async prompt(
     event?: CustomEvent<PromptOptions> & { params?: PromptOptions },
   ) {
-    const {
-      promptId,
-      method = PromptMethod.APPEND,
-      useContent = false,
-    } = {
+    const { promptId = this.activePromptIdValue, useContent = false } = {
       ...event?.detail,
       ...event?.params,
     };
+    this.stateValue = FieldPanelState.LOADING;
+    this.activePromptIdValue = promptId!;
+
     const icon = this.element.querySelector('svg use');
     const data = new FormData();
     let text = this.input.value;
@@ -134,13 +162,23 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
     }
     data.append('text', text);
     data.append('prompt', promptId!);
-    this.input.readOnly = true;
     icon?.setAttribute('href', '#icon-wand-animated');
 
     let result = '';
     try {
-      result = await fetchResponse('TEXT_COMPLETION', data);
+      this.abortController = new AbortController();
+      result = await fetchResponse(
+        'TEXT_COMPLETION',
+        data,
+        this.abortController.signal,
+      );
     } catch (error) {
+      if (this.abortController?.signal.aborted) {
+        this.stateValue = FieldPanelState.IDLE;
+        this.abortController = null;
+        return;
+      }
+      this.stateValue = FieldPanelState.ERROR;
       console.error(error);
       if (error instanceof APIRequestError) {
         alert(error.message);
@@ -150,18 +188,71 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
     }
 
     icon?.setAttribute('href', '#icon-wand');
-    this.input.readOnly = false;
     if (!result) return;
 
-    if (method === PromptMethod.APPEND) {
-      this.input.value += result;
-    } else if (method === PromptMethod.REPLACE) {
-      this.input.value = result;
+    this.stateValue = FieldPanelState.SUGGESTING;
+    this.suggestionValue = result;
+  }
+
+  stateValueChanged() {
+    const classes = {
+      [FieldPanelState.IDLE]: this.idleClass,
+      [FieldPanelState.LOADING]: this.loadingClass,
+      [FieldPanelState.ERROR]: this.errorClass,
+      [FieldPanelState.SUGGESTING]: this.suggestingClass,
+    };
+    Object.entries(classes).forEach(([state, className]) => {
+      this.element.classList.toggle(className, state === this.stateValue);
+    });
+
+    switch (this.stateValue) {
+      case FieldPanelState.IDLE:
+        this.reset();
+        break;
+      case FieldPanelState.LOADING:
+        this.hideAllPrompts();
+        break;
+      case FieldPanelState.ERROR:
+        this.hideAllPrompts();
+        break;
+      case FieldPanelState.SUGGESTING:
+        this.hideInactivePrompts();
+        break;
     }
+  }
+
+  suggestionValueChanged() {
+    if (!this.hasSuggestionTarget) return;
+    this.suggestionTarget.innerText = this.suggestionValue;
+  }
+
+  hideAllPrompts() {
+    this.promptTargets.forEach((button) => (button.hidden = true));
+  }
+
+  hideInactivePrompts() {
+    this.promptTargets.forEach(
+      (button) =>
+        (button.hidden =
+          button.getAttribute('data-wai-field-panel-prompt-id-param') !==
+          this.activePromptIdValue),
+    );
+  }
+
+  useSuggestion() {
+    this.input.value = this.suggestionValue;
     // Trigger autosize if available
     this.input.dispatchEvent(new Event('input', { bubbles: true }));
     // Trigger change event so others e.g. TitleFieldPanel can pick up the change
     this.input.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  reset() {
+    this.stateValue = FieldPanelState.IDLE;
+    this.abortController?.abort('Cancelled by user');
+    this.suggestionValue = '';
+    this.activePromptIdValue = '';
+    this.promptTargets.forEach((button) => (button.hidden = false));
   }
 }
 
