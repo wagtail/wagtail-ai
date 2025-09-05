@@ -11,6 +11,18 @@ class AIPanelMixin(Panel):
         super().__init__(*args, **kwargs)
         self.prompts = prompts or []
         self.attrs["data-wai-field-panel-prompts-value"] = json.dumps(self.prompts)
+        self.attrs["data-wai-field-panel-idle-class"] = "wai-field-panel--idle"
+        self.attrs["data-wai-field-panel-loading-class"] = "wai-field-panel--loading"
+        self.attrs["data-wai-field-panel-error-class"] = "wai-field-panel--error"
+        self.attrs["data-wai-field-panel-suggesting-class"] = (
+            "wai-field-panel--suggesting"
+        )
+        self.attrs["data-action"] = " ".join(
+            [
+                "wai-prompt:start->wai-field-panel#renderLoading",
+                "wai-prompt:complete->wai-field-panel#finishLoading",
+            ]
+        )
 
     @classproperty
     def BASE_ATTRS(cls):
