@@ -24,6 +24,7 @@ class DescribeController extends Controller<HTMLElement | HTMLInputElement> {
   fileInput: HTMLInputElement | null = null;
 
   get form() {
+    // To support attaching the controller to elements that aren’t form controls.
     return 'form' in this.element
       ? this.element.form!
       : this.element.closest('form')!;
