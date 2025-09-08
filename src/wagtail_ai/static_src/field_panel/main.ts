@@ -28,11 +28,11 @@ interface PreviewContent {
 }
 
 class FieldPanelController extends Controller<HTMLTemplateElement> {
-  static targets = ['dropdown'];
+  static targets = ['dropdownTemplate'];
   static values = {
     prompts: { type: Array, default: [] },
   };
-  declare dropdownTarget: HTMLTemplateElement;
+  declare dropdownTemplateTarget: HTMLTemplateElement;
   declare promptsValue: DefaultPrompt[];
   declare filteredPrompts: Prompt[];
   declare fieldInput: HTMLElement;
@@ -49,7 +49,7 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
       this.fieldInput.appendChild(this.template);
     }
 
-    this.dropdownTarget.remove();
+    this.dropdownTemplateTarget.remove();
 
     const input = this.fieldInput.querySelector<
       HTMLInputElement | HTMLTextAreaElement
@@ -61,9 +61,10 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
   }
 
   get template() {
-    const root = this.dropdownTarget.content.firstElementChild!.cloneNode(
-      true,
-    ) as HTMLElement;
+    const root =
+      this.dropdownTemplateTarget.content.firstElementChild!.cloneNode(
+        true,
+      ) as HTMLElement;
     const content = root.querySelector('[data-w-dropdown-target="content"]')!;
     this.filteredPrompts.forEach((prompt) => {
       const useContent = [

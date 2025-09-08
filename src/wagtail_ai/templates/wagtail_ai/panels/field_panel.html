@@ -1,7 +1,7 @@
 {% load wagtailadmin_tags i18n %}
 {% include original_template_name %}
 
-<template data-wai-field-panel-target="dropdown">
+<template data-wai-field-panel-target="dropdownTemplate">
     {% dropdown hide_on_click=True classname="wai-dropdown" toggle_classname="wai-dropdown__toggle" toggle_icon="wand" toggle_aria_label=_("AI Actions") %}
         {# Prompt options will be rendered here via JavaScript. #}
     {% enddropdown %}
