@@ -17,8 +17,6 @@ export enum PromptMethod {
 
 interface PromptOptions {
   promptId: string;
-  method: PromptMethod;
-  useContent?: boolean;
 }
 
 interface PreviewContent {
@@ -30,13 +28,16 @@ interface PreviewContent {
 class FieldPanelController extends Controller<HTMLTemplateElement> {
   static targets = ['dropdownTemplate'];
   static values = {
+    activePromptId: { type: String, default: '' },
     prompts: { type: Array, default: [] },
   };
   declare dropdownTemplateTarget: HTMLTemplateElement;
+  declare activePromptIdValue: string;
   declare promptsValue: DefaultPrompt[];
   declare filteredPrompts: Prompt[];
   declare fieldInput: HTMLElement;
   declare input: HTMLInputElement | HTMLTextAreaElement;
+  activePrompt: Prompt | null = null;
 
   connect() {
     this.fieldInput = this.element.querySelector('[data-field-input]')!;
@@ -67,10 +68,6 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
       ) as HTMLElement;
     const content = root.querySelector('[data-w-dropdown-target="content"]')!;
     this.filteredPrompts.forEach((prompt) => {
-      const useContent = [
-        DefaultPrompt.DESCRIPTION,
-        DefaultPrompt.TITLE,
-      ].includes(prompt.default_prompt_id!);
       content.insertAdjacentHTML(
         'beforeend',
         /* html */ `
@@ -79,8 +76,6 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
           class="wai-dropdown__item"
           data-action="click->wai-field-panel#prompt"
           data-wai-field-panel-prompt-id-param="${prompt.uuid}"
-          data-wai-field-panel-method-param="${prompt.method}"
-          data-wai-field-panel-use-content-param="${useContent}"
         >
           <div>${prompt.label}</div>
           <div class="wai-dropdown__description">${prompt.description}</div>
@@ -102,6 +97,13 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
     );
   }
 
+  activePromptIdValueChanged() {
+    this.activePrompt =
+      window.wagtailAI.config.aiPrompts.find(
+        (p) => p.uuid === this.activePromptIdValue,
+      ) ?? null;
+  }
+
   async getPreviewContent(): Promise<PreviewContent | null> {
     const preview: any = window.wagtail.app.queryController('w-preview');
     if (!preview) return null;
@@ -118,14 +120,20 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
   async prompt(
     event?: CustomEvent<PromptOptions> & { params?: PromptOptions },
   ) {
-    const {
-      promptId,
-      method = PromptMethod.APPEND,
-      useContent = false,
-    } = {
+    const { promptId = this.activePromptIdValue } = {
       ...event?.detail,
       ...event?.params,
     };
+    this.activePromptIdValue = promptId;
+    // The setter above only sets the data attribute, and Stimulus runs the
+    // callback asynchronously when the MutationObserver notices the change.
+    // Call the callback manually to ensure `this.activePrompt` is set.
+    this.activePromptIdValueChanged();
+
+    const useContent = [
+      DefaultPrompt.DESCRIPTION,
+      DefaultPrompt.TITLE,
+    ].includes(this.activePrompt!.default_prompt_id!);
     const icon = this.element.querySelector('svg use');
     const data = new FormData();
     let text = this.input.value;
@@ -154,9 +162,9 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
     this.input.readOnly = false;
     if (!result) return;
 
-    if (method === PromptMethod.APPEND) {
+    if (this.activePrompt!.method === PromptMethod.APPEND) {
       this.input.value += result;
-    } else if (method === PromptMethod.REPLACE) {
+    } else {
       this.input.value = result;
     }
     // Trigger autosize if available
