@@ -51,7 +51,7 @@ DEFAULT_PROMPTS: Sequence[PromptDict] = [
         "prompt": (
             "Create an SEO-friendly meta description of the following web page content:"
         ),
-        "method": "append",
+        "method": "replace",
     },
     {
         "default_prompt_id": DefaultPrompt.TITLE,
@@ -60,6 +60,6 @@ DEFAULT_PROMPTS: Sequence[PromptDict] = [
         "prompt": (
             "Create an SEO-friendly page title for the following web page content:"
         ),
-        "method": "append",
+        "method": "replace",
     },
 ]
