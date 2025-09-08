@@ -25,7 +25,9 @@ def test_search_description_uses_ai_field_panel(admin_client, get_soup):
     )
 
     # There must be a template for the dropdown to be rendered by the controller
-    template = panel.select_one('template[data-wai-field-panel-target="dropdown"]')
+    template = panel.select_one(
+        'template[data-wai-field-panel-target="dropdownTemplate"]'
+    )
     assert template is not None
     dropdown = template.select_one('[data-controller~="w-dropdown"]')
     assert dropdown is not None
@@ -52,7 +54,9 @@ def test_title_uses_ai_field_panel(admin_client, get_soup):
     assert "title" in classname
 
     # There must be a template for the dropdown to be rendered by the controller
-    template = panel.select_one('template[data-wai-field-panel-target="dropdown"]')
+    template = panel.select_one(
+        'template[data-wai-field-panel-target="dropdownTemplate"]'
+    )
     assert template is not None
     dropdown = template.select_one('[data-controller~="w-dropdown"]')
     assert dropdown is not None
