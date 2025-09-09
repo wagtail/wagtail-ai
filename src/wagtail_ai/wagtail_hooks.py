@@ -1,6 +1,8 @@
 import uuid
 from typing import NotRequired, Required, TypedDict
 
+from django.forms.utils import flatatt
+from django.template.loader import render_to_string
 from django.urls import include, path, reverse
 from django.utils.html import format_html, json_script
 from django.views.i18n import JavaScriptCatalog
@@ -109,6 +111,17 @@ def ai_admin_js():
         json_script(config, "wagtail-ai-config"),
         versioned_static("wagtail_ai/main.js"),
     )
+
+
+@hooks.register("insert_editor_js")  # type: ignore
+def ai_editor_js():
+    dropdown_attrs = {
+        "data-wai-field-panel-target": "dropdown",
+    }
+    context = {
+        "dropdown_attrs": flatatt(dropdown_attrs),
+    }
+    return render_to_string("wagtail_ai/shared/field_panel_dropdown.html", context)
 
 
 @hooks.register("register_admin_viewset")  # type: ignore

@@ -32,11 +32,25 @@ enum FieldPanelState {
   SUGGESTING = 'suggesting',
 }
 
+/**
+ * Stub for Wagtail's DropdownController.
+ * https://docs.wagtail.org/en/stable/reference/ui/client/classes/controllers_DropdownController.DropdownController.html
+ */
+interface DropdownController extends Controller {
+  tippy: any;
+  toggleTarget: HTMLElement;
+  contentTarget: HTMLElement;
+}
+
 class FieldPanelController extends Controller<HTMLTemplateElement> {
   static classes = ['idle', 'loading', 'error', 'suggesting'];
-  static targets = ['dropdown', 'dropdownTemplate', 'prompt', 'suggestion'];
+  static targets = ['dropdown', 'prompt', 'suggestion'];
   static values = {
     activePromptId: { type: String, default: '' },
+    dropdownTemplate: {
+      type: String,
+      default: '#wai-field-panel-dropdown-template',
+    },
     prompts: { type: Array, default: [] },
     state: { type: String, default: FieldPanelState.IDLE },
     suggestion: { type: String, default: '' },
@@ -45,12 +59,13 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
   declare loadingClass: string;
   declare errorClass: string;
   declare suggestingClass: string;
+  declare hasDropdownTarget: boolean;
   declare dropdownTarget: HTMLDivElement;
-  declare dropdownTemplateTarget: HTMLTemplateElement;
   declare promptTargets: HTMLButtonElement[];
   declare hasSuggestionTarget: boolean;
   declare suggestionTarget: HTMLDivElement;
   declare activePromptIdValue: string;
+  declare dropdownTemplateValue: string;
   declare promptsValue: DefaultPrompt[];
   declare stateValue: FieldPanelState;
   declare suggestionValue: string;
@@ -59,7 +74,7 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
   declare input: HTMLInputElement | HTMLTextAreaElement;
   activePrompt: Prompt | null = null;
   abortController: AbortController | null = null;
-  dropdownController: Controller | null = null;
+  dropdownController: DropdownController | null = null;
 
   connect() {
     this.fieldInput = this.element.querySelector('[data-field-input]')!;
@@ -72,8 +87,6 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
       this.fieldInput.appendChild(this.template);
     }
 
-    this.dropdownTemplateTarget.remove();
-
     const input = this.fieldInput.querySelector<
       HTMLInputElement | HTMLTextAreaElement
     >('input, textarea');
@@ -84,10 +97,15 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
   }
 
   get template() {
-    const root =
-      this.dropdownTemplateTarget.content.firstElementChild!.cloneNode(
-        true,
-      ) as HTMLElement;
+    const template = document.querySelector<HTMLTemplateElement>(
+      this.dropdownTemplateValue,
+    )?.content?.firstElementChild;
+    if (!template) {
+      throw new Error('Could not find dropdown template element.');
+    }
+
+    const root = template!.cloneNode(true) as HTMLElement;
+
     // Insert before other contents of the dropdown
     // i.e. the intermediary and suggestion containers.
     const before = root.querySelector(
@@ -123,8 +141,8 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
       window.wagtail.app.getControllerForElementAndIdentifier(
         this.dropdownTarget,
         'w-dropdown',
-      );
-    const { tippy } = this.dropdownController as any;
+      ) as DropdownController;
+    const { tippy } = this.dropdownController;
     // Set a fixed with via CSS and use a custom theme, so this can later be
     // incorporated into Wagtail core as a new DropdownController theme.
     tippy.setProps({
@@ -226,8 +244,7 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
       this.element.classList.toggle(className, state === this.stateValue);
     });
 
-    const toggleTarget = (this.dropdownController as any)
-      ?.toggleTarget as HTMLButtonElement;
+    const toggleTarget = this.dropdownController?.toggleTarget;
     const icon = toggleTarget?.querySelector('svg use');
     icon?.setAttribute(
       'href',
