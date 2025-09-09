@@ -59,6 +59,7 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
   declare input: HTMLInputElement | HTMLTextAreaElement;
   activePrompt: Prompt | null = null;
   abortController: AbortController | null = null;
+  dropdownController: Controller | null = null;
 
   connect() {
     this.fieldInput = this.element.querySelector('[data-field-input]')!;
@@ -118,11 +119,12 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
   }
 
   dropdownTargetConnected() {
-    const controller = window.wagtail.app.getControllerForElementAndIdentifier(
-      this.dropdownTarget,
-      'w-dropdown',
-    );
-    const { tippy } = controller as any;
+    this.dropdownController =
+      window.wagtail.app.getControllerForElementAndIdentifier(
+        this.dropdownTarget,
+        'w-dropdown',
+      );
+    const { tippy } = this.dropdownController as any;
     // Set a fixed with via CSS and use a custom theme, so this can later be
     // incorporated into Wagtail core as a new DropdownController theme.
     tippy.setProps({
@@ -224,7 +226,9 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
       this.element.classList.toggle(className, state === this.stateValue);
     });
 
-    const icon = this.element.querySelector('svg use');
+    const toggleTarget = (this.dropdownController as any)
+      ?.toggleTarget as HTMLButtonElement;
+    const icon = toggleTarget?.querySelector('svg use');
     icon?.setAttribute(
       'href',
       this.stateValue === FieldPanelState.LOADING
