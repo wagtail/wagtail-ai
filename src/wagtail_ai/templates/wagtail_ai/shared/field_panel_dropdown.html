@@ -1,7 +1,12 @@
 {% load wagtailadmin_tags i18n %}
-{% include original_template_name %}
+{% comment %}
 
-<template data-wai-field-panel-target="dropdownTemplate">
+A global template for the AI field panel dropdown, to be instantiated by each
+field panel instance as needed.
+
+{% endcomment %}
+
+<template id="wai-field-panel-dropdown-template">
     {% dropdown classname="wai-dropdown" toggle_classname="wai-dropdown__toggle" toggle_icon="wand" toggle_aria_label=_("AI Actions") toggle_tooltip_offset="[0,0]" attrs=dropdown_attrs %}
         {# Prompt options will be rendered here via JavaScript. #}
         <div class="wai-dropdown__intermediary">
