@@ -105,19 +105,22 @@
   display: none;
 }
 
-:is(.wai-field-panel--loading, .wai-field-panel--error)
+:is(
+    [data-wai-field-panel-state-value='loading'],
+    [data-wai-field-panel-state-value='error']
+  )
   .wai-dropdown__intermediary {
   display: flex;
 }
 
-.wai-field-panel--loading {
+[data-wai-field-panel-state-value='loading'] {
   .wai-dropdown__loading-message,
   .icon-spinner {
     display: block;
   }
 }
 
-.wai-field-panel--error {
+[data-wai-field-panel-state-value='error'] {
   .wai-dropdown__error-message,
   .icon-warning {
     display: block;
@@ -128,7 +131,7 @@
   }
 }
 
-.wai-field-panel--suggesting {
+[data-wai-field-panel-state-value='suggesting'] {
   .w-dropdown__content {
     padding-bottom: 0;
   }
