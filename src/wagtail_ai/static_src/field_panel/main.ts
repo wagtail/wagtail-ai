@@ -43,7 +43,6 @@ interface DropdownController extends Controller {
 }
 
 class FieldPanelController extends Controller<HTMLTemplateElement> {
-  static classes = ['idle', 'loading', 'error', 'suggesting'];
   static targets = ['dropdown', 'prompt', 'suggestion'];
   static values = {
     activePromptId: { type: String, default: '' },
@@ -55,10 +54,6 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
     state: { type: String, default: FieldPanelState.IDLE },
     suggestion: { type: String, default: '' },
   };
-  declare idleClass: string;
-  declare loadingClass: string;
-  declare errorClass: string;
-  declare suggestingClass: string;
   declare hasDropdownTarget: boolean;
   declare dropdownTarget: HTMLDivElement;
   declare promptTargets: HTMLButtonElement[];
@@ -234,16 +229,6 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
   }
 
   stateValueChanged() {
-    const classes = {
-      [FieldPanelState.IDLE]: this.idleClass,
-      [FieldPanelState.LOADING]: this.loadingClass,
-      [FieldPanelState.ERROR]: this.errorClass,
-      [FieldPanelState.SUGGESTING]: this.suggestingClass,
-    };
-    Object.entries(classes).forEach(([state, className]) => {
-      this.element.classList.toggle(className, state === this.stateValue);
-    });
-
     const toggleTarget = this.dropdownController?.toggleTarget;
     const icon = toggleTarget?.querySelector('svg use');
     icon?.setAttribute(
