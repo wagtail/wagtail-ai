@@ -8,6 +8,8 @@ from wagtail.admin.staticfiles import versioned_static
 from wagtail.images.fields import WagtailImageField
 from wagtail.images.forms import BaseImageForm
 
+from wagtail_ai.models import Prompt
+
 
 class PromptTextField(forms.CharField):
     default_error_messages = {
@@ -40,12 +42,13 @@ class PromptForm(ApiForm):
 
     def clean_prompt(self):
         prompt_uuid = self.cleaned_data["prompt"]
-        if prompt_uuid.version != 4:
+        prompt = Prompt.objects.filter(uuid=prompt_uuid).first()
+        if not prompt:
             raise ValidationError(
                 self.fields["prompt"].error_messages["invalid"], code="invalid"
             )
 
-        return prompt_uuid
+        return prompt
 
 
 class DescribeImageApiForm(ApiForm):
