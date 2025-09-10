@@ -100,6 +100,7 @@ function AIControl({ getEditorState, onChange }: ControlComponentProps) {
         [
           DefaultPrompt.DESCRIPTION,
           DefaultPrompt.TITLE,
+          DefaultPrompt.CONTEXTUAL_ALT_TEXT,
         ] as Array<DefaultPrompt | null>
       ).includes(prompt.default_prompt_id),
   );

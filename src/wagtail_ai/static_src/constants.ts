@@ -3,6 +3,7 @@ export enum DefaultPrompt {
   COMPLETION = 2,
   DESCRIPTION = 3,
   TITLE = 4,
+  CONTEXTUAL_ALT_TEXT = 5,
 }
 
 export enum PromptMethod {
