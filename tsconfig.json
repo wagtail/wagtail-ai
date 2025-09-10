@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
     "jsx": "react",
-    "lib": ["es2023", "dom"],
+    "lib": ["es2024", "dom"],
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
     "esModuleInterop": true,
-    "target": "es2023",
+    "target": "es2024",
     "moduleResolution": "node"
   },
   "include": [
