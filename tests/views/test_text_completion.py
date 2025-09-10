@@ -1,8 +1,13 @@
+import json
 import uuid
+from typing import cast
 
 import pytest
 from django.urls import reverse
+from wagtail.images.models import Image
+from wagtail_factories import ImageFactory
 
+from wagtail_ai.models import Prompt
 from wagtail_ai.views import PromptEditForm, prompt_viewset
 
 pytestmark = pytest.mark.django_db
@@ -80,3 +85,43 @@ def test_process_view_with_correct_prompt(admin_client, setup_prompt_object):
     assert response.status_code == 200
     # correct, the tests default is the echo backend
     assert response.json() == {"message": "This is an echo backend: test"}
+
+
+def test_process_view_with_validation_error_from_validator(admin_client):
+    prompt = Prompt.objects.create(
+        label="Describe image",
+        method=Prompt.Method.REPLACE,
+        prompt="Describe the following image: {image_id}",
+    )
+    url = reverse("wagtail_ai:text_completion")
+
+    response = admin_client.post(
+        url, data={"prompt": str(prompt.uuid), "context": json.dumps({})}
+    )
+    assert response.status_code == 400
+    assert response.json() == {
+        "error": "The prompt requires an image, but none was provided."
+    }
+
+
+def test_process_view_with_context(admin_client):
+    image = cast(Image, ImageFactory())
+    prompt = Prompt.objects.create(
+        label="Describe image",
+        method=Prompt.Method.REPLACE,
+        prompt="Describe the following image: {image_id}",
+    )
+    url = reverse("wagtail_ai:text_completion")
+
+    response = admin_client.post(
+        url,
+        data={
+            "prompt": str(prompt.uuid),
+            "context": json.dumps({"image_id": image.pk}),
+        },
+    )
+    rendition = image.get_rendition("max-800x600").file
+    assert response.status_code == 200
+    assert response.json() == {
+        "message": f"This is an echo backend: Describe the following image: {rendition}"
+    }
