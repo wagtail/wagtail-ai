@@ -31,6 +31,31 @@ interface DropdownController extends Controller {
   contentTarget: HTMLElement;
 }
 
+type ContextHandler = (
+  this: FieldPanelController,
+) => Promise<string | null | undefined>;
+
+export class ContextProvider {
+  static handlers: Record<string, ContextHandler> = {};
+  static register(name: string, handler: ContextHandler) {
+    this.handlers[name] = handler;
+  }
+
+  static async get(controller: FieldPanelController) {
+    const context: Record<string, string> = {};
+    await Promise.allSettled(
+      Object.entries(ContextProvider.handlers).map(async ([key, handler]) => {
+        if (!controller.activePrompt?.prompt.includes(`{${key}}`)) return;
+        const result = await handler.call(controller);
+        if (![null, undefined].includes(result)) context[key] = result;
+      }),
+    );
+    return context;
+  }
+}
+
+type InputType = HTMLInputElement | HTMLTextAreaElement | HTMLDivElement;
+
 class FieldPanelController extends Controller<HTMLTemplateElement> {
   static targets = ['dropdown', 'prompt', 'suggestion'];
   static values = {
@@ -39,6 +64,8 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
       type: String,
       default: '#wai-field-panel-dropdown-template',
     },
+    imageInput: { type: String, default: '' },
+    mainInput: { type: String, default: '' },
     prompts: { type: Array, default: [] },
     state: { type: String, default: FieldPanelState.IDLE },
     suggestion: { type: String, default: '' },
@@ -50,38 +77,78 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
   declare suggestionTarget: HTMLDivElement;
   declare activePromptIdValue: string;
   declare dropdownTemplateValue: string;
+  declare imageInputValue: string;
+  declare mainInputValue: string;
   declare promptsValue: DefaultPrompt[];
   declare stateValue: FieldPanelState;
   declare suggestionValue: string;
   declare filteredPrompts: Prompt[];
   declare fieldInput: HTMLElement;
-  declare input: HTMLInputElement | HTMLTextAreaElement;
+  declare input: InputType;
   activePrompt: Prompt | null = null;
   abortController: AbortController | null = null;
+  imageInput: HTMLInputElement | null = null;
   dropdownController: DropdownController | null = null;
+
+  static defaultHandlers = {
+    async content_html(this: FieldPanelController) {
+      return (await this.getPreviewContent())?.innerHTML;
+    },
+    async content_text(this: FieldPanelController) {
+      return (await this.getPreviewContent())?.innerText;
+    },
+    async form_context_before(this: FieldPanelController) {
+      return this.formContext.before;
+    },
+    async form_context_after(this: FieldPanelController) {
+      return this.formContext.after;
+    },
+    async image_id(this: FieldPanelController) {
+      return this.imageInput?.value;
+    },
+    async input(this: FieldPanelController) {
+      return this.inputValue;
+    },
+    async max_length(this: FieldPanelController) {
+      return this.input.getAttribute('maxlength');
+    },
+  };
+
+  static {
+    Object.entries(this.defaultHandlers).forEach(([name, handler]) => {
+      ContextProvider.register(name, handler);
+    });
+  }
+
+  /**
+   * Convert an array of input elements into a single string,
+   * concatenating their values or inner text.
+   * @param inputs an array of input, textarea, or div elements
+   * @returns {string} The concatenated text from the inputs
+   */
+  static inputsToText = (
+    inputs: Array<HTMLInputElement | HTMLTextAreaElement | HTMLDivElement>,
+  ): string =>
+    inputs
+      .map((input) => ('value' in input ? input.value : input.innerText))
+      .filter((text) => !!text.trim())
+      .join('\n\n');
 
   connect() {
     // If the dropdown target already exists, it's likely already rendered and
     // this controller was reconnected after a block was reordered.
     if (this.hasDropdownTarget) return;
 
-    this.fieldInput = this.element.querySelector('[data-field-input]')!;
+    this.getPreviewContent = this.getPreviewContent.bind(this);
+
     // If the field has a comment button, insert the dropdown before it to ensure
     // the tab order is correct. Otherwise just append it to the end of the input.
-    const commentButton = this.element.querySelector('[data-comment-add]');
+    const commentButton = this.fieldInput.querySelector('[data-comment-add]');
     if (commentButton) {
       this.fieldInput.insertBefore(this.template, commentButton);
     } else {
       this.fieldInput.appendChild(this.template);
     }
-
-    const input = this.fieldInput.querySelector<
-      HTMLInputElement | HTMLTextAreaElement
-    >('input, textarea');
-    if (!input) {
-      throw new Error('Could not find input or textarea element.');
-    }
-    this.input = input;
   }
 
   get template() {
@@ -153,6 +220,91 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
     });
   }
 
+  imageInputValueChanged() {
+    if (!this.imageInputValue) return;
+    const input = this.element.querySelector<HTMLInputElement>(
+      this.imageInputValue,
+    );
+    this.imageInput = input;
+  }
+
+  mainInputValueChanged() {
+    if (this.mainInputValue) {
+      const input = this.element.querySelector<InputType>(this.mainInputValue);
+      if (!input) {
+        throw new Error(
+          `Could not find input element matching selector "${this.mainInputValue}".`,
+        );
+      }
+
+      this.input = input;
+      this.fieldInput = this.input.closest('[data-field-input]')!;
+    } else {
+      this.fieldInput = this.element.querySelector('[data-field-input]')!;
+      const input = this.fieldInput.querySelector<InputType>('input, textarea');
+      if (!input) {
+        throw new Error('Could not find input or textarea element.');
+      }
+      this.input = input;
+    }
+  }
+
+  /**
+   * All text inputs in the form.
+   */
+  get textInputs(): InputType[] {
+    return Array.from(
+      this.form!.querySelectorAll<InputType>(
+        'input[type="text"], textarea, [role="textbox"]',
+      ),
+    ).filter((input) => input !== this.input);
+  }
+
+  /**
+   * Text inputs in the form, grouped by their position
+   * relative to the main input (before/after).
+   */
+  get textInputsContext() {
+    return Object.groupBy(this.textInputs, (element) =>
+      this.input.compareDocumentPosition(element) &
+      Node.DOCUMENT_POSITION_PRECEDING
+        ? 'before'
+        : 'after',
+    ) as { before: InputType[]; after: InputType[] };
+  }
+
+  /**
+   * Get the form context as plain text, grouped by inputs
+   * before and after the main input.
+   */
+  get formContext() {
+    const { inputsToText } = FieldPanelController;
+    const { before, after } = this.textInputsContext;
+    return {
+      before: inputsToText(before),
+      after: inputsToText(after),
+    };
+  }
+
+  get form() {
+    return (
+      ('form' in this.input ? this.input.form : null) ??
+      this.input.closest('form')
+    );
+  }
+
+  get inputValue() {
+    return 'value' in this.input ? this.input.value : this.input.innerText;
+  }
+
+  set inputValue(value: string) {
+    if ('value' in this.input) {
+      this.input.value = value;
+    } else {
+      this.input.innerText = value;
+    }
+  }
+
   promptsValueChanged() {
     if (!this.promptsValue.length) {
       this.filteredPrompts = window.wagtailAI.config.aiPrompts;
@@ -198,17 +350,8 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
     // Call the callback manually to ensure `this.activePrompt` is set.
     this.activePromptIdValueChanged();
 
-    const useContent = [
-      DefaultPrompt.DESCRIPTION,
-      DefaultPrompt.TITLE,
-    ].includes(this.activePrompt!.default_prompt_id!);
     const data = new FormData();
-    let text = this.input.value;
-    if (useContent) {
-      const { innerText = '' } = (await this.getPreviewContent()) || {};
-      text = innerText;
-    }
-    data.append('text', text);
+    data.append('context', JSON.stringify(await ContextProvider.get(this)));
     data.append('prompt', promptId!);
 
     let result = '';
@@ -276,9 +419,9 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
 
   useSuggestion() {
     if (this.activePrompt?.method === PromptMethod.APPEND) {
-      this.input.value += this.suggestionValue;
+      this.inputValue += this.suggestionValue;
     } else {
-      this.input.value = this.suggestionValue;
+      this.inputValue = this.suggestionValue;
     }
     // Trigger autosize if available
     this.input.dispatchEvent(new Event('input', { bubbles: true }));
@@ -295,3 +438,4 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
 }
 
 window.wagtail.app.register('wai-field-panel', FieldPanelController);
+window.wagtailAI.ContextProvider = ContextProvider;

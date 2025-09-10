@@ -49,7 +49,8 @@ DEFAULT_PROMPTS: Sequence[PromptDict] = [
         "label": "AI Description",
         "description": "Generate a description by summarizing the page content",
         "prompt": (
-            "Create an SEO-friendly meta description of the following web page content:"
+            "Create an SEO-friendly meta description of the following web page content:\n\n"
+            "{content_text}"
         ),
         "method": "replace",
     },
@@ -58,7 +59,8 @@ DEFAULT_PROMPTS: Sequence[PromptDict] = [
         "label": "AI Title",
         "description": "Generate a title based on the page content",
         "prompt": (
-            "Create an SEO-friendly page title for the following web page content:"
+            "Create an SEO-friendly page title for the following web page content:\n\n"
+            "{content_text}"
         ),
         "method": "replace",
     },
