@@ -1,5 +1,6 @@
 import { Application, Controller } from '@hotwired/stimulus';
 import { DefaultPrompt, PromptMethod } from './constants';
+import { ContextProvider } from './field_panel/main';
 
 /* eslint-disable no-unused-vars */
 export {};
@@ -71,6 +72,7 @@ declare global {
     };
     wagtailAI: {
       config: WagtailAiConfiguration;
+      ContextProvider: ContextProvider;
     };
   }
 
