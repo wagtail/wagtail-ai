@@ -1,7 +1,7 @@
 /* Allow the dropdown button to be placed alongside the input.
    Use `:has()` to limit the impact only for fields that have the AI dropdown.
 */
-.w-field__input:has(.wai-dropdown) {
+.w-field__input:has(> .wai-dropdown) {
   display: flex;
   align-items: flex-start;
 }
