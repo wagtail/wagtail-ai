@@ -105,6 +105,12 @@ class AIBackend(Generic[AIBackendConfig], metaclass=ABCMeta):
     ) -> None:
         self.config = config
 
+    def prompt(self, prompt: str, context: dict) -> AIResponse:
+        """
+        Given a prompt and a context, return a response.
+        """
+        raise NotImplementedError("This backend does not support text completion")
+
     def prompt_with_context(
         self, *, pre_prompt: str, context: str, post_prompt: str | None = None
     ) -> AIResponse:

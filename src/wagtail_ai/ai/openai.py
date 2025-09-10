@@ -54,6 +54,32 @@ class OpenAIResponse(AIResponse):
 class OpenAIBackend(AIBackend[OpenAIBackendConfig]):
     config_cls = OpenAIBackendConfig
 
+    def prompt(self, prompt, context):
+        files = []
+        for key, value in context.items():
+            if isinstance(value, File):
+                # TODO: check the file type and handle accordingly
+                with value.open() as f:
+                    base64_image = base64.b64encode(f.read()).decode()
+                files.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
+                    }
+                )
+                context[key] = f"[file {len(files)}]"
+
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt.format_map(context)},
+                    *files,
+                ],
+            },
+        ]
+        return self.chat_completions(messages)
+
     def prompt_with_context(
         self, *, pre_prompt: str, context: str, post_prompt: str | None = None
     ) -> OpenAIResponse:

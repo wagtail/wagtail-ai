@@ -60,6 +60,10 @@ class EchoBackendConfig(BaseAIBackendConfig[EchoBackendSettingsDict]):
 class EchoBackend(AIBackend[EchoBackendConfig]):
     config_cls = EchoBackendConfig
 
+    def prompt(self, prompt, context):
+        formatted = prompt.format_map(context).split()
+        return self.get_response(["This", "is", "an", "echo", "backend:", *formatted])
+
     def prompt_with_context(
         self, *, pre_prompt: str, context: str, post_prompt: str | None = None
     ) -> AIResponse:
