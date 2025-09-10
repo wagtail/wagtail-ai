@@ -10,6 +10,7 @@ class DefaultPrompt(IntEnum):
     COMPLETION = 2
     DESCRIPTION = 3
     TITLE = 4
+    CONTEXTUAL_ALT_TEXT = 5
 
 
 class PromptDict(TypedDict):
@@ -62,6 +63,26 @@ DEFAULT_PROMPTS: Sequence[PromptDict] = [
             "Create an SEO-friendly page title for the following web page content:\n\n"
             "{content_text}"
         ),
+        "method": "replace",
+    },
+    {
+        "default_prompt_id": DefaultPrompt.CONTEXTUAL_ALT_TEXT,
+        "label": "Contextual alt text",
+        "description": "Generate an alt text for the image with the relevant context",
+        "prompt": """Generate an alt text (and only the text) for the following image: {image_id}
+
+Make the alt text relevant to the following content shown before the image:
+
+---
+{form_context_before}
+---
+
+and also relevant to the following content shown after the image:
+
+---
+{form_context_after}
+---
+""",
         "method": "replace",
     },
 ]
