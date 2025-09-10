@@ -88,10 +88,7 @@ def text_completion(request) -> JsonResponse:
     if not prompt_form.is_valid():
         return ErrorJsonResponse(prompt_form.errors_for_json_response(), status=400)
 
-    try:
-        prompt = Prompt.objects.get(uuid=prompt_form.cleaned_data["prompt"])
-    except Prompt.DoesNotExist:
-        return ErrorJsonResponse(_("Invalid prompt provided."), status=400)
+    prompt = prompt_form.cleaned_data["prompt"]
 
     handlers = {
         Prompt.Method.REPLACE: _replace_handler,
