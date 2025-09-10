@@ -10,6 +10,8 @@ from wagtail.images.forms import BaseImageForm
 
 from wagtail_ai.models import Prompt
 
+from .context import PromptContext, PromptJSONDecoder
+
 
 class PromptTextField(forms.CharField):
     default_error_messages = {
@@ -37,8 +39,31 @@ class ApiForm(forms.Form):
 
 
 class PromptForm(ApiForm):
-    text = PromptTextField()
+    context = forms.JSONField(required=False, decoder=PromptJSONDecoder)
+    text = PromptTextField(required=False)
     prompt = PromptUUIDField()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        context: PromptContext | None = cleaned_data.get("context")
+        text: str | None = cleaned_data.get("text")
+        prompt: Prompt | None = cleaned_data.get("prompt")
+        # If no context is provided, the form is likely used for features that
+        # assume the input text is to be processed, so text is required.
+        if context is None and not text:
+            self.add_error(
+                "text",
+                ValidationError(
+                    self.fields["text"].error_messages["required"], code="required"
+                ),
+            )
+        elif context is not None and prompt:
+            try:
+                context.clean(prompt.prompt_value)
+            except ValidationError as e:
+                self.add_error("context", e)
+
+        return cleaned_data
 
     def clean_prompt(self):
         prompt_uuid = self.cleaned_data["prompt"]
