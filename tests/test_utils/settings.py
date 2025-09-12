@@ -1,3 +1,4 @@
+from copy import deepcopy
 from functools import wraps
 from typing import Any, Literal, cast
 
@@ -15,7 +16,8 @@ def custom_ai_backend_settings(
     def decorator(func):
         @wraps(func)
         def inner(*args, **kwargs):
-            value = {**settings.WAGTAIL_AI}
+            # Use deepcopy to prevent modifying the original settings in place
+            value = deepcopy(settings.WAGTAIL_AI)
             value["BACKENDS"][alias] = new_value
             return override_settings(WAGTAIL_AI=value)(func)(*args, **kwargs)
 
