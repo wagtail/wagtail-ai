@@ -1,19 +1,8 @@
 import { Controller } from '@hotwired/stimulus';
 import { fetchResponse } from '../api';
 import './main.css';
+import { DefaultPrompt, PromptMethod } from '../constants';
 import { Prompt } from '../custom';
-
-export enum DefaultPrompt {
-  CORRECTION = 1,
-  COMPLETION = 2,
-  DESCRIPTION = 3,
-  TITLE = 4,
-}
-
-export enum PromptMethod {
-  APPEND = 'append',
-  REPLACE = 'replace',
-}
 
 interface PromptOptions {
   promptId: string;
