@@ -1,4 +1,5 @@
 import { Application, Controller } from '@hotwired/stimulus';
+import { DefaultPrompt, PromptMethod } from './constants';
 
 /* eslint-disable no-unused-vars */
 export {};
@@ -20,11 +21,11 @@ export interface WagtailAiConfiguration {
 
 export type Prompt = {
   uuid: string;
-  default_prompt_id: number | null;
+  default_prompt_id: DefaultPrompt | null;
   label: string;
   description: string;
   prompt: string;
-  method: string;
+  method: PromptMethod;
 };
 
 export interface WagtailApplication extends Application {
