@@ -1,6 +1,7 @@
 import json
 from string import Formatter
 from typing import Any, Type, cast
+from urllib.parse import SplitResult, urlsplit
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -60,11 +61,27 @@ class PromptJSONDecoder(json.JSONDecoder):
         super().__init__(*args, object_pairs_hook=object_pairs_hook, **kwargs)
 
 
-def image_id_validator(context) -> File | None:
+def image_id_validator(context) -> File | SplitResult | None:
     """Fetch a Wagtail image by ID and return its rendition file."""
     if "image_id" not in context:
         raise ValidationError(_("The prompt requires an image, but none was provided."))
     image_id = context["image_id"]
+
+    # Check if it's a data URL
+    try:
+        url: SplitResult = urlsplit(image_id)
+    except (AttributeError, ValueError):
+        pass
+    else:
+        if url.scheme == "data":
+            if url.path and url.path.startswith("image/"):
+                # Return the SplitResult instead of opening the URL,
+                # as some backends (e.g. OpenAI) can handle data URLs directly.
+                return url
+            raise ValidationError(
+                _("The provided data URL is not an image."),
+                code="invalid",
+            )
 
     from wagtail.images import get_image_model
 
