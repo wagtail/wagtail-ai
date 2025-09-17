@@ -56,7 +56,7 @@ export class ContextProvider {
 
 type InputType = HTMLInputElement | HTMLTextAreaElement | HTMLDivElement;
 
-class FieldPanelController extends Controller<HTMLTemplateElement> {
+class FieldPanelController extends Controller<HTMLElement> {
   static targets = ['dropdown', 'prompt', 'suggestion'];
   static values = {
     activePromptId: { type: String, default: '' },
@@ -135,9 +135,11 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
       .join('\n\n');
 
   connect() {
+    // If connecting to an input directly, don't render the dropdown until we
+    // reconnect the controller to the field wrapper element.
     // If the dropdown target already exists, it's likely already rendered and
     // this controller was reconnected after a block was reordered.
-    if (this.hasDropdownTarget) return;
+    if (this.#connectedDirectlyToInput || this.hasDropdownTarget) return;
 
     this.getPreviewContent = this.getPreviewContent.bind(this);
 
@@ -149,6 +151,20 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
     } else {
       this.fieldInput.appendChild(this.template);
     }
+  }
+
+  /**
+   * Whether this controller is connected directly to an input element,
+   * rather than a wrapper element such as data-field-wrapper. This may
+   * happen for form fields that are not rendered using Wagtail's Panels API,
+   * so the controller is attached using attributes on the input widget instead.
+   */
+  get #connectedDirectlyToInput() {
+    return (
+      this.element instanceof HTMLInputElement ||
+      this.element instanceof HTMLTextAreaElement ||
+      this.element.isContentEditable
+    );
   }
 
   get template() {
@@ -221,15 +237,62 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
   }
 
   imageInputValueChanged() {
-    if (!this.imageInputValue) return;
-    const input = this.element.querySelector<HTMLInputElement>(
-      this.imageInputValue,
-    );
+    if (this.#connectedDirectlyToInput || !this.imageInputValue) return;
+    const input =
+      // Look within the scope first for more specific elements
+      // (e.g. inside a StructBlock)
+      this.element.querySelector<HTMLInputElement>(this.imageInputValue) ||
+      // Then fall back to the whole form
+      // (e.g. when the controller is connected to a form field that was rendered
+      // without the Panels API).
+      this.form!.querySelector<HTMLInputElement>(this.imageInputValue);
     this.imageInput = input;
   }
 
   mainInputValueChanged() {
-    if (this.mainInputValue) {
+    if (this.#connectedDirectlyToInput) {
+      // If the controller is attached directly to the input element, reconnect
+      // it on the data-field-wrapper element instead, because we need to add
+      // and control elements around the input itself.
+      const fieldWrapper = this.element.closest('[data-field-wrapper]')!;
+      Array.from(this.element.attributes).forEach((attr) => {
+        if (attr.name === 'data-controller') {
+          // Move this controller to the field wrapper element,
+          // alongside any other controllers already attached there.
+          const fieldWrapperControllers = new Set(
+            fieldWrapper.getAttribute('data-controller')?.split(' ') || [],
+          );
+          fieldWrapperControllers.add(this.identifier);
+          fieldWrapper.setAttribute(
+            'data-controller',
+            Array.from(fieldWrapperControllers).join(' '),
+          );
+
+          // Disconnect this controller from the input element,
+          // keeping any other controllers.
+          this.element.setAttribute(
+            'data-controller',
+            attr.value
+              .split(' ')
+              .filter((c) => c !== this.identifier)
+              .join(' '),
+          );
+        }
+
+        // Copy over any data attributes for this controller from the input to
+        // the field wrapper. The cleanup of attributes on the input will be
+        // done in disconnect() below, as there might be other attributes added
+        // to the element that do not yet exist when this method runs.
+        if (attr.name.startsWith(`data-${this.identifier}-`)) {
+          fieldWrapper.setAttribute(attr.name, attr.value);
+        }
+
+        // We don't copy data-action, as we don't currently expect any methods
+        // in this controller to be used as an action on the input.
+      });
+      return;
+    } else if (this.mainInputValue) {
+      // If a selector is provided, use that to find the input.
       const input = this.element.querySelector<InputType>(this.mainInputValue);
       if (!input) {
         throw new Error(
@@ -240,6 +303,8 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
       this.input = input;
       this.fieldInput = this.input.closest('[data-field-input]')!;
     } else {
+      // This controller is likely attached to a panel-like wrapper,
+      // find the field input container and then the input inside it.
       this.fieldInput = this.element.querySelector('[data-field-input]')!;
       const input = this.fieldInput.querySelector<InputType>('input, textarea');
       if (!input) {
@@ -287,6 +352,7 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
   }
 
   get form() {
+    if (!this.input) this.mainInputValueChanged();
     return (
       ('form' in this.input ? this.input.form : null) ??
       this.input.closest('form')
@@ -434,6 +500,19 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
     this.abortController?.abort('Cancelled by user');
     this.suggestionValue = '';
     this.activePromptIdValue = '';
+  }
+
+  disconnect(): void {
+    if (!this.#connectedDirectlyToInput) return;
+    // Clean up any data attributes for this controller added to the input,
+    // as the controller is moved to the field wrapper element.
+    Array.from(this.element.attributes).forEach((attr) => {
+      if (
+        (attr.name === 'data-controller' && !attr.value) ||
+        attr.name.startsWith(`data-${this.identifier}-`)
+      )
+        this.element.removeAttribute(attr.name);
+    });
   }
 }
 
