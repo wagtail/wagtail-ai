@@ -1,3 +1,4 @@
+import json
 from functools import cached_property
 
 from django import forms
@@ -9,6 +10,7 @@ from wagtail.images.fields import WagtailImageField
 from wagtail.images.forms import BaseImageForm
 
 from wagtail_ai.models import Prompt
+from wagtail_ai.prompts import DefaultPrompt
 
 from .context import PromptContext, PromptJSONDecoder
 
@@ -98,29 +100,36 @@ class ImageDescriptionWidgetMixin(forms.Widget):
     Can be used with TextInput or Textarea.
     """
 
-    template_name = "wagtail_ai/widgets/image_description.html"
-
-    def __init__(self, *args, image_id=None, file_selector=None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        image_id=None,
+        file_selector=None,
+        prompts=None,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
-        self.attrs["data-wai-describe-target"] = "input"
-        self.image_id = image_id
-        self.file_selector = file_selector
-
-    def get_context(self, name, value, attrs):
-        context = super().get_context(name, value, attrs)
-        context["image_id"] = self.image_id
-        context["file_selector"] = self.file_selector
-        context["original_template_name"] = super().template_name  # type: ignore
-        return context
+        self.attrs["data-controller"] = " ".join(
+            {
+                *self.attrs.get("data-controller", "").split(),
+                "wai-field-panel",
+            }
+        )
+        if image_id:
+            self.attrs["data-wai-field-panel-image-id"] = image_id
+        self.attrs["data-wai-field-panel-image-input-value"] = file_selector
+        self.attrs["data-wai-field-panel-prompts-value"] = json.dumps(
+            prompts or [DefaultPrompt.IMAGE_DESCRIPTION]
+        )
 
     @cached_property
     def media(self):  # type: ignore
         return forms.Media(
             js=[
-                versioned_static("wagtail_ai/image_description.js"),
+                versioned_static("wagtail_ai/field_panel.js"),
             ],
             css={
-                "all": [versioned_static("wagtail_ai/image_description.css")],
+                "all": [versioned_static("wagtail_ai/field_panel.css")],
             },
         )
 
@@ -138,9 +147,11 @@ class DescribeImageForm(BaseImageForm):
 
         self.fields["title"].widget = ImageDescriptionTextInput(
             **widget_kwargs,
+            prompts=[DefaultPrompt.IMAGE_TITLE],
             attrs=self.fields["title"].widget.attrs,
         )
         self.fields["description"].widget = ImageDescriptionTextInput(
             **widget_kwargs,
+            prompts=[DefaultPrompt.IMAGE_DESCRIPTION],
             attrs=self.fields["description"].widget.attrs,
         )

@@ -104,7 +104,21 @@ class FieldPanelController extends Controller<HTMLElement> {
       return this.formContext.after;
     },
     async image_id(this: FieldPanelController) {
-      return this.imageInput?.value;
+      // Allow the image input to be of type="file"
+      if (this.imageInput?.files?.[0]) {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(this.imageInput!.files![0]);
+        });
+      }
+
+      return (
+        this.imageInput?.value ||
+        // Allow the image ID to be provided directly via a data attribute
+        this.element.getAttribute(`data-${this.identifier}-image-id`)
+      );
     },
     async input(this: FieldPanelController) {
       return this.inputValue;

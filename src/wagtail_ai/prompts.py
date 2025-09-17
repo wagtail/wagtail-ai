@@ -11,6 +11,8 @@ class DefaultPrompt(IntEnum):
     DESCRIPTION = 3
     TITLE = 4
     CONTEXTUAL_ALT_TEXT = 5
+    IMAGE_TITLE = 6
+    IMAGE_DESCRIPTION = 7
 
 
 class PromptDict(TypedDict):
@@ -83,6 +85,26 @@ and also relevant to the following content shown after the image:
 {form_context_after}
 ---
 """,
+        "method": "replace",
+    },
+    {
+        "default_prompt_id": DefaultPrompt.IMAGE_TITLE,
+        "label": "Image title",
+        "description": "Generate a title for the image",
+        "prompt": (
+            "Generate a title (and only the title, no longer than "
+            "{max_length} characters) for the following image: {image_id}"
+        ),
+        "method": "replace",
+    },
+    {
+        "default_prompt_id": DefaultPrompt.IMAGE_DESCRIPTION,
+        "label": "Image description",
+        "description": "Generate a description for the image",
+        "prompt": (
+            "Generate a description (and only the description, no longer than "
+            "{max_length} characters) for the following image: {image_id}"
+        ),
         "method": "replace",
     },
 ]

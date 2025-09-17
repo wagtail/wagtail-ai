@@ -3,7 +3,7 @@ from typing import cast
 from unittest.mock import ANY, Mock, call
 
 import pytest
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup
 from django.contrib.auth.models import Permission, User
 from django.forms import Textarea
 from django.urls import reverse
@@ -12,6 +12,7 @@ from wagtail_factories import ImageFactory
 
 from wagtail_ai.ai import echo
 from wagtail_ai.forms import ImageDescriptionWidgetMixin
+from wagtail_ai.prompts import DefaultPrompt
 
 pytestmark = pytest.mark.django_db
 
@@ -193,23 +194,25 @@ def test_enabled_on_image_upload(admin_client, get_soup):
 
     title = form.select_one('[name="title"]')
     assert title is not None
-    assert title.get("data-wai-describe-target") == "input"
+    assert title.get("data-controller") == "wai-field-panel"
     assert title.get("maxlength") == "255"
-    controller = title.find_parent(attrs={"data-controller": "wai-describe"})
-    assert controller is not None
-    assert isinstance(controller, Tag)
-    assert controller.get("data-wai-describe-file-value") == "#id_file"
-    assert controller.has_attr("data-wai-describe-image-id-value") is False
+    assert title.has_attr("data-wai-field-panel-image-id") is False
+    assert title.get("data-wai-field-panel-image-input-value") == "#id_file"
+    assert (
+        title.get("data-wai-field-panel-prompts-value")
+        == f"[{DefaultPrompt.IMAGE_TITLE}]"
+    )
 
     description = form.select_one('[name="description"]')
     assert description is not None
-    assert description.get("data-wai-describe-target") == "input"
+    assert description.get("data-controller") == "wai-field-panel"
     assert description.get("maxlength") == "255"
-    controller = description.find_parent(attrs={"data-controller": "wai-describe"})
-    assert controller is not None
-    assert isinstance(controller, Tag)
-    assert controller.get("data-wai-describe-file-value") == "#id_file"
-    assert controller.has_attr("data-wai-describe-image-id-value") is False
+    assert title.has_attr("data-wai-field-panel-image-id") is False
+    assert description.get("data-wai-field-panel-image-input-value") == "#id_file"
+    assert (
+        description.get("data-wai-field-panel-prompts-value")
+        == f"[{DefaultPrompt.IMAGE_DESCRIPTION}]"
+    )
 
 
 def test_enabled_on_image_edit(admin_client, get_soup):
@@ -224,23 +227,27 @@ def test_enabled_on_image_edit(admin_client, get_soup):
 
     title = form.select_one('[name="title"]')
     assert title is not None
-    assert title.get("data-wai-describe-target") == "input"
+    assert title.get("data-controller") == "wai-field-panel"
     assert title.get("maxlength") == "255"
-    controller = title.find_parent(attrs={"data-controller": "wai-describe"})
-    assert controller is not None
-    assert isinstance(controller, Tag)
-    assert controller.get("data-wai-describe-file-value") == "#id_file"
-    assert controller.get("data-wai-describe-image-id-value") == str(image.pk)
+    assert title.has_attr("data-wai-field-panel-image-id") is True
+    assert title.get("data-wai-field-panel-image-id") == str(image.pk)
+    assert title.get("data-wai-field-panel-image-input-value") == "#id_file"
+    assert (
+        title.get("data-wai-field-panel-prompts-value")
+        == f"[{DefaultPrompt.IMAGE_TITLE}]"
+    )
 
     description = form.select_one('[name="description"]')
     assert description is not None
-    assert description.get("data-wai-describe-target") == "input"
+    assert description.get("data-controller") == "wai-field-panel"
     assert description.get("maxlength") == "255"
-    controller = description.find_parent(attrs={"data-controller": "wai-describe"})
-    assert controller is not None
-    assert isinstance(controller, Tag)
-    assert controller.get("data-wai-describe-file-value") == "#id_file"
-    assert controller.get("data-wai-describe-image-id-value") == str(image.pk)
+    assert title.has_attr("data-wai-field-panel-image-id") is True
+    assert description.get("data-wai-field-panel-image-id") == str(image.pk)
+    assert description.get("data-wai-field-panel-image-input-value") == "#id_file"
+    assert (
+        description.get("data-wai-field-panel-prompts-value")
+        == f"[{DefaultPrompt.IMAGE_DESCRIPTION}]"
+    )
 
 
 def test_image_description_widget_with_textarea(get_soup):
@@ -253,13 +260,15 @@ def test_image_description_widget_with_textarea(get_soup):
         attrs={"maxlength": "512"},
     ).render("description", "A portrait of a Wagtail.")
     soup: BeautifulSoup = get_soup(html)
-    controller = soup.select_one('[data-controller="wai-describe"]')
-    assert controller is not None
-    assert isinstance(controller, Tag)
-    assert controller.get("data-wai-describe-file-value") == "#id_file"
-    assert controller.get("data-wai-describe-image-id-value") == "123"
-    textarea = controller.select_one('textarea[name="description"]')
+
+    textarea = soup.select_one('textarea[name="description"]')
     assert textarea is not None
-    assert textarea.get("data-wai-describe-target") == "input"
+    assert textarea.get("data-controller") == "wai-field-panel"
     assert textarea.get("maxlength") == "512"
+    assert textarea.get("data-wai-field-panel-image-id") == "123"
+    assert textarea.get("data-wai-field-panel-image-input-value") == "#id_file"
+    assert (
+        textarea.get("data-wai-field-panel-prompts-value")
+        == f"[{DefaultPrompt.IMAGE_DESCRIPTION}]"
+    )
     assert textarea.text.strip() == "A portrait of a Wagtail."
