@@ -72,6 +72,10 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
   dropdownController: DropdownController | null = null;
 
   connect() {
+    // If the dropdown target already exists, it's likely already rendered and
+    // this controller was reconnected after a block was reordered.
+    if (this.hasDropdownTarget) return;
+
     this.fieldInput = this.element.querySelector('[data-field-input]')!;
     // If the field has a comment button, insert the dropdown before it to ensure
     // the tab order is correct. Otherwise just append it to the end of the input.
@@ -132,12 +136,25 @@ class FieldPanelController extends Controller<HTMLTemplateElement> {
   }
 
   dropdownTargetConnected() {
-    this.dropdownController =
-      window.wagtail.app.getControllerForElementAndIdentifier(
-        this.dropdownTarget,
-        'w-dropdown',
-      ) as DropdownController;
-    const { tippy } = this.dropdownController;
+    // Use timeout to wait until the dropdown controller is connected to the
+    // element. Ideally we should listen for an event from the dropdown
+    // controller when it's ready, but it currently doesn't emit any events on
+    // connection.
+    // Alternatively, we could use a Stimulus outlet instead of a target, but
+    // outlets aren't scoped, so we need a unique identifier as the selector,
+    // which we do not have.
+    setTimeout(() => {
+      this.dropdownController =
+        window.wagtail.app.getControllerForElementAndIdentifier(
+          this.dropdownTarget,
+          'w-dropdown',
+        ) as DropdownController;
+      this.setDropdownTheme();
+    });
+  }
+
+  setDropdownTheme() {
+    const { tippy } = this.dropdownController!;
     // Set a fixed with via CSS and use a custom theme, so this can later be
     // incorporated into Wagtail core as a new DropdownController theme.
     tippy.setProps({
