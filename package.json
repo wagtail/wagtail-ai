@@ -34,5 +34,14 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
-  "testEnvironment": "jsdom"
+  "testEnvironment": "jsdom",
+  "browserslist": [
+    "Firefox ESR",
+    "last 2 Chrome versions",
+    "last 2 ChromeAndroid versions",
+    "last 2 Edge versions",
+    "last 1 Firefox version",
+    "iOS >= 17",
+    "Safari >= 16"
+  ]
 }
