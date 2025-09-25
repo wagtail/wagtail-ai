@@ -43,6 +43,11 @@ def test_editing_default_prompts():
     assert default_prompt.prompt is None
     assert prompt_from_get_prompts["prompt"] == default_prompt.prompt_value
 
+    # Saving an empty string should return the default prompt value
+    default_prompt.prompt = ""
+    default_prompt.save()
+    assert default_prompt.prompt_value == DEFAULT_PROMPTS[0]["prompt"]
+
     # Add a prompt value to the default prompt
     default_prompt.prompt = "New Prompt Text"
     default_prompt.save()
