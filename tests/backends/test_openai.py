@@ -1,6 +1,7 @@
 import base64
 from typing import cast
 from unittest.mock import ANY, Mock
+from urllib.parse import urlsplit
 
 import pytest
 from wagtail.images.models import Image
@@ -89,7 +90,7 @@ def test_describe_image(settings, mock_post):
     assert url.startswith("data:image/jpeg;base64,")
 
 
-def test_prompt(settings, mock_post):
+def test_prompt(settings, mock_post, image_data_url):
     settings.WAGTAIL_AI = {
         "BACKENDS": {
             "openai": {
@@ -107,12 +108,19 @@ def test_prompt(settings, mock_post):
     backend = get_ai_backend("openai")
     image = cast(Image, ImageFactory())
 
-    context = {"name": "Gordon", "image": image.file}
+    context = {
+        "name": "Gordon",
+        "image": image.file,
+        "id_card": urlsplit(image_data_url),
+    }
     with image.file.open("rb") as f:
         content = base64.b64encode(f.read()).decode()
 
     response = backend.prompt(
-        prompt="My name is {name}. Here's my photo: {image}",
+        prompt=(
+            "My name is {name}. Here's my photo: {image}. "
+            "Here's a scan of my ID card: {id_card}"
+        ),
         context=context,
     )
     assert context["image"] == "[file 1]"
@@ -128,11 +136,18 @@ def test_prompt(settings, mock_post):
             "content": [
                 {
                     "type": "text",
-                    "text": "My name is Gordon. Here's my photo: [file 1]",
+                    "text": (
+                        "My name is Gordon. Here's my photo: [file 1]. "
+                        "Here's a scan of my ID card: [file 2]"
+                    ),
                 },
                 {
                     "type": "image_url",
                     "image_url": {"url": f"data:image/jpeg;base64,{content}"},
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {"url": image_data_url},
                 },
             ],
             "role": "user",

@@ -41,3 +41,11 @@ def get_soup():
         return BeautifulSoup(markup, "html.parser", string_containers={})
 
     return _get_soup
+
+
+@pytest.fixture
+def image_data_url():
+    return (
+        "data:image/gif;base64,"
+        "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+    )

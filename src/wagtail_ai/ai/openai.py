@@ -3,6 +3,7 @@ import os
 from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import Any, NotRequired, Self
+from urllib.parse import SplitResult
 
 import requests
 from django.core.files import File
@@ -57,14 +58,19 @@ class OpenAIBackend(AIBackend[OpenAIBackendConfig]):
     def prompt(self, prompt, context):
         files = []
         for key, value in context.items():
-            if isinstance(value, File):
-                # TODO: check the file type and handle accordingly
-                with value.open() as f:
-                    base64_image = base64.b64encode(f.read()).decode()
+            if isinstance(value, (File, SplitResult)):
+                if isinstance(value, File):
+                    # TODO: check the file type and handle accordingly
+                    with value.open() as f:
+                        base64_image = base64.b64encode(f.read()).decode()
+                    url = f"data:image/jpeg;base64,{base64_image}"
+                else:
+                    # Assume it's a data URL for an image
+                    url = value.geturl()
                 files.append(
                     {
                         "type": "image_url",
-                        "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"},
+                        "image_url": {"url": url},
                     }
                 )
                 context[key] = f"[file {len(files)}]"
