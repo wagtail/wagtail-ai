@@ -65,6 +65,7 @@ declare global {
   }
 
   interface Window {
+    LanguageModel: any;
     WAGTAIL_AI_PROCESS_URL: string;
     WAGTAIL_AI_PROMPTS: [Prompt];
     wagtail: {
