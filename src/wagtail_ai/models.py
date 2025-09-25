@@ -70,9 +70,9 @@ class Prompt(models.Model, index.Indexed):
         Return the prompt value, otherwise if the prompt is None and belongs
         to the default prompts, map to the default prompt value.
         """
-        if self.prompt is None:
+        if not self.prompt:
             if self.is_default:
                 return self.get_default_prompt_value()
             else:
-                raise ValueError("Prompt value is None and not a default prompt.")
+                raise ValueError("Prompt value is empty and not a default prompt.")
         return self.prompt

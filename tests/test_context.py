@@ -1,5 +1,6 @@
 import json
 from typing import cast
+from urllib.parse import SplitResult
 
 import pytest
 from django.core.exceptions import ValidationError
@@ -47,6 +48,29 @@ def test_image_id_validator(django_assert_num_queries: DjangoAssertNumQueries):
     # Accessing the result again should not hit the database
     with django_assert_num_queries(0):
         assert context["image_id"] == expected
+
+
+@pytest.mark.django_db
+def test_image_id_validator_data_url(
+    image_data_url,
+    django_assert_num_queries: DjangoAssertNumQueries,
+):
+    context = PromptContext(image_id=image_data_url)
+    with django_assert_num_queries(0):
+        context.clean("Describe the following image: {image_id}")
+        assert isinstance(context["image_id"], SplitResult)
+        assert context["image_id"].geturl() == image_data_url
+
+
+@pytest.mark.django_db
+def test_image_id_validator_invalid_data_url(
+    django_assert_num_queries: DjangoAssertNumQueries,
+):
+    data_url = "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=="
+    context = PromptContext(image_id=data_url)
+    with django_assert_num_queries(0), pytest.raises(ValidationError) as exc_info:
+        context.clean("Describe the following image: {image_id}")
+    assert str(exc_info.value.message) == "The provided data URL is not an image."
 
 
 def test_image_id_validator_missing():
