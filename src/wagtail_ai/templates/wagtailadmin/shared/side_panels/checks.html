@@ -1,0 +1,63 @@
+{% extends "wagtailadmin/shared/side_panels/checks.html" %}
+{% load static wagtailadmin_tags %}
+
+{% block issues_section %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'wagtail_ai/content_feedback.css' %}" />
+    <script src="{% static 'wagtail_ai/content_feedback.js' %}"></script>
+
+    <div class="wai-content-feedback" data-controller="wai-feedback">
+        <h2 class="wai-content-feedback__heading">
+            <span>Content feedback</span>
+            <span data-wai-feedback-target="status"></span>
+            <button data-wai-feedback-target="clear" data-action="wai-feedback#clear" class="button button-small button-secondary" hidden>Clear all</button>
+        </h2>
+
+        <button type="button" class="button button-secondary wai-content-feedback__get" data-action="wai-feedback#generate" data-wai-feedback-target="suggest">
+            {% icon name="wand" classname="w-w-4 w-h-4" %}
+            <span>Get content feedback</span>
+        </button>
+
+
+        <div class="wai-spinner" data-wai-feedback-target="spinner" hidden>
+            {% icon name="spinner" classname="w-w-8 w-h-8" %}
+        </div>
+
+        <h3 class="w-font-semibold" hidden>Overall feedback</h3>
+        <ul data-wai-feedback-target="feedback" class="wai-feedback__overall" hidden>
+        </ul>
+        <template data-wai-feedback-target="feedbackItemTemplate">
+            <li class="wai-feedback__overall-item">
+                <p data-template-key="text" class="wai-feedback__overall-item-text"></p>
+                <div class="wai-feedback__actions">
+                    <button data-action="wai-feedback#dismissItem" class="button button-small button-secondary wai-feedback__overall-dismiss" type="button">
+                        Dismiss
+                    </button>
+                </div>
+            </li>
+        </template>
+
+        <h3 class="w-font-semibold" hidden>Suggested improvements</h3>
+        <ul data-wai-feedback-target="suggestions" class="wai-feedback__suggestions" hidden>
+        </ul>
+        <template data-wai-feedback-target="suggestionItemTemplate">
+            <li class="wai-feedback__suggestions-item">
+                <div data-controller="w-tooltip">
+                    <div data-template-key="originalText" hidden></div>
+                    <div data-template-key="suggestedText"></div>
+                    <div data-template-key="explanation" data-w-tooltip-target="content">
+                    </div>
+                </div>
+                <div class="wai-feedback__actions">
+                    <button data-action="wai-feedback#showFeedback" class="button button-small" type="button">
+                        Show
+                    </button>
+                    <button data-action="wai-feedback#dismissItem" class="button button-small button-secondary wai-feedback__suggestions-dismiss" type="button">
+                        Dismiss
+                    </button>
+                </div>
+            </li>
+        </template>
+
+    </div>
+{% endblock %}
