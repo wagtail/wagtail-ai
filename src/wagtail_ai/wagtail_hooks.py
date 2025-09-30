@@ -6,7 +6,6 @@ from django.template.loader import render_to_string
 from django.urls import include, path, reverse
 from django.utils.html import format_html, json_script
 from django.views.i18n import JavaScriptCatalog
-from django_ai_core.contrib.agents.views import AgentExecutionView
 from wagtail import hooks
 from wagtail.admin.rich_text.editors.draftail.features import ControlFeature
 from wagtail.admin.staticfiles import versioned_static
@@ -36,7 +35,7 @@ def register_admin_urls():
         ),
         path(
             "content_feedback/",
-            AgentExecutionView.as_view(agent_slug=ContentFeedbackAgent.slug),
+            ContentFeedbackAgent.as_view(),
             name="content_feedback",
         ),
     ]
