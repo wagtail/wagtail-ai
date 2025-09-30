@@ -42,6 +42,10 @@ class FeedbackController extends Controller {
   static values = {
     temperature: { default: 1.0, type: Number },
     topK: { default: 3, type: Number },
+    url: {
+      default: window.wagtailAI.config.urls.CONTENT_FEEDBACK,
+      type: String,
+    },
   };
 
   static status: Record<FeedbackStatus, string> = {
@@ -54,10 +58,6 @@ class FeedbackController extends Controller {
     type: 'language',
   });
 
-  static get shouldLoad() {
-    return 'LanguageModel' in window;
-  }
-
   declare clearTarget: HTMLElement;
   declare feedbackTarget: HTMLElement;
   declare feedbackItemTemplateTarget: HTMLTemplateElement;
@@ -68,6 +68,7 @@ class FeedbackController extends Controller {
   declare suggestionItemTemplateTarget: HTMLTemplateElement;
   declare temperatureValue: number;
   declare topKValue: number;
+  declare urlValue: string;
   declare form: HTMLFormElement;
   declare walker: TreeWalker;
   targetText = '';
@@ -85,6 +86,7 @@ class FeedbackController extends Controller {
 
   /** Promise of a browser LanguageModel instance. */
   get session() {
+    if (!('LanguageModel' in window)) return null;
     if (this.#session) return this.#session; // Return from cache
     return this.createModel();
   }
@@ -322,6 +324,55 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
     return innerText;
   }
 
+  async prompt(): Promise<FeedbackResult> {
+    const text = await this.getPageContent();
+
+    // If a server endpoint is configured, use that.
+    if (this.urlValue) {
+      try {
+        const response = await fetch(this.urlValue, {
+          method: 'POST',
+          headers: {
+            [wagtailConfig.CSRF_HEADER_NAME]: wagtailConfig.CSRF_TOKEN,
+          },
+          body: JSON.stringify({
+            arguments: {
+              content_text: text,
+              content_language: this.contentLanguageLabel,
+              editor_language: this.editorLanguageLabel,
+            },
+          }),
+        });
+        if (!response.ok) {
+          throw new Error(
+            `Error fetching AI response: ${response.status} ${response.statusText}`,
+          );
+        }
+        return await response.json().then(({ data }) => data);
+      } catch (error) {
+        console.error('Error fetching AI response:', error);
+        throw error;
+      }
+    }
+
+    // Otherwise, use the in-browser model.
+    const session = await this.session;
+    if (!session) {
+      throw new Error('LanguageModel is not available in this browser.');
+    }
+    await session.append([
+      {
+        role: 'user',
+        content: 'Content to analyze and improve:\n\n' + text,
+      },
+    ]);
+    return JSON.parse(
+      await session.prompt(text, {
+        responseConstraint: this.schema,
+      }),
+    );
+  }
+
   async generate() {
     this.clear();
     const label = this.suggestLabel;
@@ -332,20 +383,9 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
       .setAttribute('href', '#icon-wand-animated');
     this.spinnerTarget.hidden = false;
 
-    const text = await this.getPageContent();
-    const session = await this.session;
-    await session.append([
-      {
-        role: 'user',
-        content: 'Content to analyze and improve:\n\n' + text,
-      },
-    ]);
-    let result = await session.prompt(text, {
-      responseConstraint: this.schema,
-    });
     try {
-      const data: FeedbackResult = JSON.parse(result);
-      if (data.quality_score) {
+      const data = await this.prompt();
+      if (data?.quality_score) {
         this.statusTarget.textContent =
           FeedbackController.status[data.quality_score];
         this.feedbackTarget.hidden = false;

@@ -6,10 +6,12 @@ from django.template.loader import render_to_string
 from django.urls import include, path, reverse
 from django.utils.html import format_html, json_script
 from django.views.i18n import JavaScriptCatalog
+from django_ai_core.contrib.agents.views import AgentExecutionView
 from wagtail import hooks
 from wagtail.admin.rich_text.editors.draftail.features import ControlFeature
 from wagtail.admin.staticfiles import versioned_static
 
+from .agents.content_feedback import ContentFeedbackAgent
 from .models import Prompt
 from .views import describe_image, prompt_viewset, text_completion
 
@@ -31,6 +33,11 @@ def register_admin_urls():
             "describe_image/",
             describe_image,
             name="describe_image",
+        ),
+        path(
+            "content_feedback/",
+            AgentExecutionView.as_view(agent_slug=ContentFeedbackAgent.slug),
+            name="content_feedback",
         ),
     ]
 
@@ -103,6 +110,7 @@ def ai_admin_js():
         "urls": {
             "TEXT_COMPLETION": reverse("wagtail_ai:text_completion"),
             "DESCRIBE_IMAGE": reverse("wagtail_ai:describe_image"),
+            "CONTENT_FEEDBACK": reverse("wagtail_ai:content_feedback"),
         },
     }
 
