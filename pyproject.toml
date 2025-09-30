@@ -28,6 +28,7 @@ dynamic = ["version"]
 dependencies = [
     "Django>=4.2",
     "Wagtail>=7.1",
+    "django-ai-core",
     "llm>=0.12",
 ]
 requires-python = ">=3.11"
