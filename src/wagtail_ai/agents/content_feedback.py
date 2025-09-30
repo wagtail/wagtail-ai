@@ -75,12 +75,12 @@ class ContentFeedbackAgent(Agent):
         ),
     ]
 
-    def execute(  # type: ignore
+    def execute(
         self,
         content_text: str,
         content_language: str,
         editor_language: str,
-    ) -> ContentFeedbackSchema:
+    ) -> dict:
         messages = [
             {
                 "role": "system",
