@@ -10,15 +10,15 @@ interface PreviewController extends Controller {
 }
 
 interface ImprovementItem {
-  originalText: string;
-  suggestedText: string;
+  original_text: string;
+  suggested_text: string;
   explanation: string;
 }
 
 interface FeedbackResult {
-  qualityScore: FeedbackStatus;
-  qualitativeFeedback: string[];
-  specificImprovements: ImprovementItem[];
+  quality_score: FeedbackStatus;
+  qualitative_feedback: string[];
+  specific_improvements: ImprovementItem[];
 }
 
 enum FeedbackStatus {
@@ -97,29 +97,29 @@ class FeedbackController extends Controller {
     return {
       type: 'object',
       properties: {
-        qualityScore: {
+        quality_score: {
           type: 'integer',
           enum: [1, 2, 3],
           description:
             'Content quality score (1=needs major improvement, 2=adequate, 3=excellent)',
         },
-        qualitativeFeedback: {
+        qualitative_feedback: {
           type: 'array',
           items: { type: 'string' },
           description: `3-5 bullet points of qualitative feedback in language: "${this.editorLanguageLabel}"`,
           minItems: 3,
           maxItems: 5,
         },
-        specificImprovements: {
+        specific_improvements: {
           type: 'array',
           items: {
             type: 'object',
             properties: {
-              originalText: {
+              original_text: {
                 type: 'string',
                 description: 'The original text that needs improvement',
               },
-              suggestedText: {
+              suggested_text: {
                 type: 'string',
                 description: `The suggested revised text. Translate the text to ${this.contentLanguageLabel} if necessary. The text MUST be in ${this.contentLanguageLabel}.`,
               },
@@ -129,14 +129,18 @@ class FeedbackController extends Controller {
               },
             },
             additionalProperties: false,
-            required: ['originalText', 'suggestedText', 'explanation'],
+            required: ['original_text', 'suggested_text', 'explanation'],
           },
           description: `Specific text improvements with original and suggested versions in ${this.contentLanguageLabel}.`,
           minItems: 1,
         },
       },
       additionalProperties: false,
-      required: ['qualityScore', 'qualitativeFeedback', 'specificImprovements'],
+      required: [
+        'quality_score',
+        'qualitative_feedback',
+        'specific_improvements',
+      ],
     };
   }
 
@@ -261,7 +265,7 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
     const originalText = (event.target as HTMLElement)
       .closest('li')!
       .querySelector<HTMLElement>(
-        '[data-template-key="originalText"]',
+        '[data-template-key="original_text"]',
       )!.innerText;
     // Highlight the original text in the editor using the browser's
     // text fragment feature.
@@ -298,7 +302,7 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
       this.suggestionItemTemplateTarget.content.firstElementChild!.cloneNode(
         true,
       ) as HTMLElement;
-    const data = ['originalText', 'suggestedText', 'explanation'] as const;
+    const data = ['original_text', 'suggested_text', 'explanation'] as const;
     data.forEach((key) => {
       const element = item.querySelector(`[data-template-key="${key}"]`)!;
       element.textContent = suggestion[key];
@@ -341,19 +345,19 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
     });
     try {
       const data: FeedbackResult = JSON.parse(result);
-      if (data.qualityScore) {
+      if (data.quality_score) {
         this.statusTarget.textContent =
-          FeedbackController.status[data.qualityScore];
+          FeedbackController.status[data.quality_score];
         this.feedbackTarget.hidden = false;
         (this.feedbackTarget.previousElementSibling as HTMLElement).hidden =
           false;
-        data.qualitativeFeedback.forEach((feedback) => {
+        data.qualitative_feedback.forEach((feedback) => {
           this.renderFeedback(feedback);
         });
         this.suggestionsTarget.hidden = false;
         (this.suggestionsTarget.previousElementSibling as HTMLElement).hidden =
           false;
-        data.specificImprovements.forEach((suggestion) => {
+        data.specific_improvements.forEach((suggestion) => {
           this.renderSuggestion(suggestion);
         });
       } else {
