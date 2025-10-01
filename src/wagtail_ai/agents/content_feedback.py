@@ -4,7 +4,7 @@ from enum import IntEnum
 from django_ai_core.contrib.agents import Agent, AgentParameter, registry
 from pydantic import BaseModel, Field
 
-from .base import get_llm_service
+from .base import get_agent_settings, get_llm_service
 
 
 class QualityScore(IntEnum):
@@ -61,6 +61,11 @@ class ContentFeedbackAgent(Agent):
             description="The text content to review",
         ),
         AgentParameter(
+            name="content_html",
+            type=str,
+            description="The HTML content to review",
+        ),
+        AgentParameter(
             name="content_language",
             type=str,
             description="The language of the content (e.g., 'en' for English)",
@@ -78,9 +83,11 @@ class ContentFeedbackAgent(Agent):
     def execute(
         self,
         content_text: str,
+        content_html: str,
         content_language: str,
         editor_language: str,
     ) -> dict:
+        settings = get_agent_settings()
         messages = [
             {
                 "role": "system",
@@ -98,11 +105,29 @@ The language rules specified are IMPORTANT. Always ensure the feedback and impro
 
 Return JSON with the provided structure WITHOUT the markdown code block. Start immediately with a {{ character and end with a }} character.""",
             },
-            {
-                "role": "user",
-                "content": f"Content to review:\n\n{content_text}",
-            },
         ]
+
+        if settings.content_feedback_prompt:
+            messages.append(
+                {
+                    "role": "user",
+                    "content": settings.content_feedback_prompt,
+                }
+            )
+
+        match settings.content_feedback_content_type:
+            case settings.ContentFeedbackContentType.TEXT:
+                content = content_text
+            case settings.ContentFeedbackContentType.HTML | _:
+                content = content_html
+
+        messages.append(
+            {
+                "role": "system",
+                "content": f"Content to review:\n\n{content}",
+            }
+        )
+
         client = get_llm_service()
         result = client.completion(
             messages=messages,

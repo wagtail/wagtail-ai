@@ -316,16 +316,16 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
     const previewController = window.wagtail.app.queryController(
       'w-preview',
     ) as PreviewController;
-    const { innerHTML, lang } = await previewController.extractContent();
-    this.contentLanguage = lang;
+    const result = await previewController.extractContent();
+    this.contentLanguage = result.lang;
     this.contentLanguageLabel = FeedbackController.languageNames.of(
       this.contentLanguage,
     );
-    return innerHTML;
+    return result;
   }
 
   async prompt(): Promise<FeedbackResult> {
-    const text = await this.getPageContent();
+    const { innerText: text, innerHTML: html } = await this.getPageContent();
 
     // If a server endpoint is configured, use that.
     if (this.urlValue) {
@@ -338,6 +338,7 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
           body: JSON.stringify({
             arguments: {
               content_text: text,
+              content_html: html,
               content_language: this.contentLanguageLabel,
               editor_language: this.editorLanguageLabel,
             },
