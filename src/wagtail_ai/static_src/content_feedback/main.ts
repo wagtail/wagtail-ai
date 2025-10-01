@@ -20,12 +20,17 @@ enum FeedbackStatus {
   EXCELLENT = 3,
 }
 
+enum FeedbackState {
+  IDLE = 'idle',
+  LOADING = 'loading',
+  ERROR = 'error',
+  SUGGESTING = 'suggesting',
+}
+
 class FeedbackController extends Controller {
   static targets = [
-    'clear',
     'feedback',
     'feedbackItemTemplate',
-    'spinner',
     'status',
     'suggest',
     'suggestions',
@@ -33,6 +38,7 @@ class FeedbackController extends Controller {
   ];
 
   static values = {
+    state: { default: FeedbackState.IDLE, type: String },
     temperature: { default: 1.0, type: Number },
     topK: { default: 3, type: Number },
     url: {
@@ -51,20 +57,20 @@ class FeedbackController extends Controller {
     type: 'language',
   });
 
-  declare clearTarget: HTMLElement;
   declare feedbackTarget: HTMLElement;
   declare feedbackItemTemplateTarget: HTMLTemplateElement;
-  declare spinnerTarget: HTMLElement;
   declare statusTarget: HTMLElement;
   declare suggestTarget: HTMLButtonElement;
   declare suggestionsTarget: HTMLElement;
   declare suggestionItemTemplateTarget: HTMLTemplateElement;
+  declare stateValue: FeedbackState;
   declare temperatureValue: number;
   declare topKValue: number;
   declare urlValue: string;
   declare form: HTMLFormElement;
   declare walker: TreeWalker;
   targetText = '';
+  abortController: AbortController | null = null;
 
   /** A cached LanguageModel instance Promise to avoid recreating it unnecessarily. */
   #session: any = null;
@@ -82,10 +88,6 @@ class FeedbackController extends Controller {
     if (!('LanguageModel' in window)) return null;
     if (this.#session) return this.#session; // Return from cache
     return this.createModel();
-  }
-
-  get suggestLabel() {
-    return this.suggestTarget.lastElementChild!;
   }
 
   get schema() {
@@ -141,6 +143,7 @@ class FeedbackController extends Controller {
 
   connect() {
     this.generate = this.generate.bind(this);
+    this.stateValue = FeedbackState.IDLE;
     this.form = document.querySelector<HTMLFormElement>('[data-edit-form]')!;
     this.walker = this.createWalker();
   }
@@ -213,7 +216,7 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
         m.addEventListener(
           'downloadprogress',
           (event: Event & { loaded: number; total: number }) => {
-            const label = this.suggestLabel;
+            const label = this.suggestTarget.lastElementChild!;
             const { loaded, total } = event;
             if (loaded === total) {
               if (this.suggestTarget.disabled) {
@@ -240,20 +243,17 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
     if (oldValue && oldValue != newValue) this.createModel();
   }
 
-  clear() {
+  reset() {
+    this.stateValue = FeedbackState.IDLE;
+    this.abortController?.abort('Cancelled by user');
     this.statusTarget.textContent = '';
     this.feedbackTarget.innerHTML = '';
-    this.feedbackTarget.hidden = true;
-    (this.feedbackTarget.previousElementSibling as HTMLElement).hidden = true;
     this.suggestionsTarget.innerHTML = '';
-    this.suggestionsTarget.hidden = true;
-    (this.suggestionsTarget.previousElementSibling as HTMLElement).hidden =
-      true;
-    this.clearTarget.hidden = true;
   }
 
   dismissItem(event: Event) {
     (event.target as HTMLElement).closest('li')!.remove();
+    if (!this.element.querySelector('li')) this.reset();
   }
 
   showFeedback(event: Event) {
@@ -333,6 +333,7 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
               editor_language: this.editorLanguageLabel,
             },
           }),
+          signal: this.abortController?.signal,
         });
         if (!response.ok) {
           throw new Error(
@@ -348,9 +349,6 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
 
     // Otherwise, use the in-browser model.
     const session = await this.session;
-    if (!session) {
-      throw new Error('LanguageModel is not available in this browser.');
-    }
     await session.append([
       {
         role: 'user',
@@ -360,51 +358,42 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
     return JSON.parse(
       await session.prompt(innerText, {
         responseConstraint: this.schema,
+        signal: this.abortController?.signal,
       }),
     );
   }
 
   async generate() {
-    this.clear();
-    const label = this.suggestLabel;
-    label.textContent = 'Generating…';
-    this.suggestTarget.disabled = true;
-    this.suggestTarget
-      .querySelector('svg use')!
-      .setAttribute('href', '#icon-wand-animated');
-    this.spinnerTarget.hidden = false;
+    this.reset();
+    this.abortController = new AbortController();
+    this.stateValue = FeedbackState.LOADING;
 
     try {
       const data = await this.prompt();
-      if (data?.quality_score) {
-        this.statusTarget.textContent =
-          FeedbackController.status[data.quality_score];
-        this.feedbackTarget.hidden = false;
-        (this.feedbackTarget.previousElementSibling as HTMLElement).hidden =
-          false;
-        data.qualitative_feedback.forEach((feedback) => {
-          this.renderFeedback(feedback);
-        });
-        this.suggestionsTarget.hidden = false;
-        (this.suggestionsTarget.previousElementSibling as HTMLElement).hidden =
-          false;
-        data.specific_improvements.forEach((suggestion) => {
-          this.renderSuggestion(suggestion);
-        });
-      } else {
-        this.renderFeedback('Invalid response format');
+      if (!data?.quality_score) {
+        throw new Error('Invalid response from AI model');
       }
+
+      this.statusTarget.textContent =
+        FeedbackController.status[data.quality_score];
+      data.qualitative_feedback.forEach((feedback) => {
+        this.renderFeedback(feedback);
+      });
+      data.specific_improvements.forEach((suggestion) => {
+        this.renderSuggestion(suggestion);
+      });
     } catch (error) {
+      if (this.abortController?.signal.aborted) {
+        this.stateValue = FeedbackState.IDLE;
+        this.abortController = null;
+        return;
+      }
       console.error('Error parsing AI response:', error);
+      this.stateValue = FeedbackState.ERROR;
+      return;
     }
 
-    this.spinnerTarget.hidden = true;
-    this.suggestTarget.disabled = false;
-    this.clearTarget.hidden = false;
-    label.textContent = 'Generate suggestions';
-    this.suggestTarget
-      .querySelector('svg use')!
-      .setAttribute('href', '#icon-wand');
+    this.stateValue = FeedbackState.SUGGESTING;
   }
 }
 

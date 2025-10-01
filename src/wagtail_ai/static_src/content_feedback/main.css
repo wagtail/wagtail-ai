@@ -1,29 +1,80 @@
-.wai-content-feedback__heading {
+.wai-feedback__heading {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 1rem;
   font-weight: 700;
-  margin-bottom: 1.25rem 0;
+  margin: 1.25rem 0;
+  min-height: 2rem;
 }
 
-.wai-content-feedback__get {
-  display: flex;
+.wai-feedback__get {
+  display: none;
   align-items: center;
   gap: 0.5rem;
   font-size: 1rem;
   font-weight: 700;
+
+  [data-wai-feedback-state-value='idle'] & {
+    display: flex;
+  }
 }
 
-.wai-spinner {
-  padding: 1rem;
-  display: flex;
+.wai-feedback__intermediary {
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
 }
 
-.wai-feedback__overall,
-.wai-feedback__suggestions {
+.wai-feedback__intermediary,
+.wai-feedback__loading-message,
+.wai-feedback__error-message,
+.wai-feedback__intermediary .icon {
+  display: none;
+}
+
+:is(
+    [data-wai-feedback-state-value='loading'],
+    [data-wai-feedback-state-value='error']
+  )
+  .wai-feedback__intermediary {
+  display: flex;
+}
+
+[data-wai-feedback-state-value='loading'] {
+  .wai-feedback__loading-message,
+  .icon-spinner {
+    display: block;
+  }
+}
+
+[data-wai-feedback-state-value='error'] {
+  .wai-feedback__error-message,
+  .icon-warning {
+    display: block;
+  }
+
+  .icon-warning {
+    color: var(--w-color-text-error);
+  }
+}
+
+.wai-feedback__clear {
+  display: none;
+
+  [data-wai-feedback-state-value='suggesting'] & {
+    display: inline-flex;
+  }
+}
+
+:is(.wai-feedback__overall, .wai-feedback__suggestions):not(:has(li)) {
+  display: none;
+}
+
+.wai-feedback__overall-list,
+.wai-feedback__suggestions-list {
   list-style-type: none;
   padding: 0;
   margin: 0;
