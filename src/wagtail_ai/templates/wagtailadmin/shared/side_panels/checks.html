@@ -8,16 +8,18 @@
 
     <div class="wai-feedback" data-controller="wai-feedback">
         <h2 class="wai-feedback__heading">
-            <span>Content feedback</span>
+            <span>{% translate 'Content feedback' %}</span>
             <span class="wai-feedback__indicator" data-wai-feedback-target="status" data-controller="w-tooltip">
                 {% icon name="radio-full" classname="w-w-4 w-h-4" %}
             </span>
-            <button data-action="wai-feedback#reset" class="button button-small button-secondary wai-feedback__clear">Clear all</button>
+            <button data-action="wai-feedback#reset" class="button button-small button-secondary wai-feedback__clear">
+                {% translate 'Clear all' %}
+            </button>
         </h2>
 
         <button type="button" class="button button-secondary wai-feedback__get" data-action="wai-feedback#generate" data-wai-feedback-target="suggest">
             {% icon name="wand" classname="w-w-4 w-h-4" %}
-            <span>Get content feedback</span>
+            <span>{% translate 'Get content feedback' %}</span>
         </button>
 
         <div class="wai-feedback__intermediary">
@@ -37,7 +39,7 @@
         </div>
 
         <div class="wai-feedback__overall">
-            <h3 class="w-font-semibold">Overall feedback</h3>
+            <h3 class="w-font-semibold">{% translate 'Overall feedback' %}</h3>
             <ul data-wai-feedback-target="feedback" class="wai-feedback__overall-list">
             </ul>
             <template data-wai-feedback-target="feedbackItemTemplate">
@@ -45,7 +47,7 @@
                     <p data-template-key="text" class="wai-feedback__overall-item-text"></p>
                     <div class="wai-feedback__actions">
                         <button data-action="wai-feedback#dismissItem" class="button button-small button-secondary wai-feedback__overall-dismiss" type="button">
-                            Dismiss
+                            {% translate 'Dismiss' %}
                         </button>
                     </div>
                 </li>
@@ -53,7 +55,7 @@
         </div>
 
         <div class="wai-feedback__suggestions">
-            <h3 class="w-font-semibold">Suggested improvements</h3>
+            <h3 class="w-font-semibold">{% translate 'Suggested improvements' %}</h3>
             <ul data-wai-feedback-target="suggestions" class="wai-feedback__suggestions-list">
             </ul>
             <template data-wai-feedback-target="suggestionItemTemplate">
@@ -66,10 +68,10 @@
                     </div>
                     <div class="wai-feedback__actions">
                         <button data-action="wai-feedback#showFeedback" class="button button-small" type="button">
-                            Show
+                            {% translate 'Show' %}
                         </button>
                         <button data-action="wai-feedback#dismissItem" class="button button-small button-secondary wai-feedback__suggestions-dismiss" type="button">
-                            Dismiss
+                            {% translate 'Dismiss' %}
                         </button>
                     </div>
                 </li>
