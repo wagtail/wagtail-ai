@@ -87,10 +87,10 @@ class FieldPanelController extends Controller<HTMLElement> {
 
   static defaultHandlers = {
     async content_html(this: FieldPanelController) {
-      return (await getPreviewContent())?.innerHTML;
+      return (await getPreviewContent())?.innerHTML.trim();
     },
     async content_text(this: FieldPanelController) {
-      return (await getPreviewContent())?.innerText;
+      return (await getPreviewContent())?.innerText.trim();
     },
     async form_context_before(this: FieldPanelController) {
       return this.formContext.before;

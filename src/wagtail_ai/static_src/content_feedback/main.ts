@@ -327,8 +327,8 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
           },
           body: JSON.stringify({
             arguments: {
-              content_text: innerText,
-              content_html: innerHTML,
+              content_text: innerText.trim(),
+              content_html: innerHTML.trim(),
               content_language: this.contentLanguageLabel,
               editor_language: this.editorLanguageLabel,
             },
