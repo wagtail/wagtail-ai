@@ -9,12 +9,13 @@ interface ImprovementItem {
 }
 
 interface FeedbackResult {
-  quality_score: FeedbackStatus;
+  quality_score: FeedbackScore;
   qualitative_feedback: string[];
   specific_improvements: ImprovementItem[];
 }
 
-enum FeedbackStatus {
+enum FeedbackScore {
+  UNKNOWN = 0,
   NEEDS_MAJOR_IMPROVEMENT = 1,
   ADEQUATE = 2,
   EXCELLENT = 3,
@@ -38,6 +39,7 @@ class FeedbackController extends Controller {
   ];
 
   static values = {
+    score: { default: FeedbackScore.UNKNOWN, type: Number },
     state: { default: FeedbackState.IDLE, type: String },
     temperature: { default: 1.0, type: Number },
     topK: { default: 3, type: Number },
@@ -45,12 +47,6 @@ class FeedbackController extends Controller {
       default: window.wagtailAI.config.urls.CONTENT_FEEDBACK,
       type: String,
     },
-  };
-
-  static status: Record<FeedbackStatus, string> = {
-    1: '🔴',
-    2: '🟠',
-    3: '🟢',
   };
 
   static languageNames = new Intl.DisplayNames(['en'], {
@@ -63,6 +59,7 @@ class FeedbackController extends Controller {
   declare suggestTarget: HTMLButtonElement;
   declare suggestionsTarget: HTMLElement;
   declare suggestionItemTemplateTarget: HTMLTemplateElement;
+  declare scoreValue: FeedbackScore;
   declare stateValue: FeedbackState;
   declare temperatureValue: number;
   declare topKValue: number;
@@ -143,6 +140,7 @@ class FeedbackController extends Controller {
 
   connect() {
     this.generate = this.generate.bind(this);
+    this.scoreValue = FeedbackScore.UNKNOWN;
     this.stateValue = FeedbackState.IDLE;
     this.form = document.querySelector<HTMLFormElement>('[data-edit-form]')!;
     this.walker = this.createWalker();
@@ -228,10 +226,30 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
     if (oldValue && oldValue != newValue) this.createModel();
   }
 
+  scoreValueChanged() {
+    // TooltipController won't change the content if the old value is falsy
+    let scoreText = '-';
+
+    switch (this.scoreValue) {
+      case FeedbackScore.NEEDS_MAJOR_IMPROVEMENT:
+        scoreText = gettext('Quality: needs major improvement');
+        break;
+      case FeedbackScore.ADEQUATE:
+        scoreText = gettext('Quality: adequate');
+        break;
+      case FeedbackScore.EXCELLENT:
+        scoreText = gettext('Quality: excellent');
+        break;
+      default:
+        break;
+    }
+    this.statusTarget.setAttribute('data-w-tooltip-content-value', scoreText);
+  }
+
   reset() {
+    this.scoreValue = FeedbackScore.UNKNOWN;
     this.stateValue = FeedbackState.IDLE;
     this.abortController?.abort('Cancelled by user');
-    this.statusTarget.textContent = '';
     this.feedbackTarget.innerHTML = '';
     this.suggestionsTarget.innerHTML = '';
   }
@@ -359,8 +377,7 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
         throw new Error('Invalid response from AI model');
       }
 
-      this.statusTarget.textContent =
-        FeedbackController.status[data.quality_score];
+      this.scoreValue = data.quality_score;
       data.qualitative_feedback.forEach((feedback) => {
         this.renderFeedback(feedback);
       });
