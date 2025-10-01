@@ -2,6 +2,8 @@ import uuid
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+from wagtail.contrib.settings.models import BaseGenericSetting
 from wagtail.search import index
 
 from wagtail_ai.prompts import DEFAULT_PROMPTS
@@ -76,3 +78,49 @@ class Prompt(models.Model, index.Indexed):
             else:
                 raise ValueError("Prompt value is empty and not a default prompt.")
         return self.prompt
+
+
+class AgentSettingsMixin(models.Model):
+    class ContentFeedbackContentType(models.TextChoices):
+        TEXT = "text", _("Plain text")
+        HTML = "html", _("HTML")
+
+    content_feedback_prompt = models.TextField(blank=True)
+    content_feedback_content_type = models.CharField(
+        max_length=64,
+        choices=ContentFeedbackContentType.choices,
+        default=ContentFeedbackContentType.HTML,
+    )
+
+    panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel(
+                    "content_feedback_content_type",
+                    heading=_("Content type"),
+                    help_text=_("The format of the content to review."),
+                ),
+                FieldPanel(
+                    "content_feedback_prompt",
+                    heading=_("Prompt"),
+                    help_text=_(
+                        "Additional instructions to adjust the feedback given "
+                        "by the agent."
+                    ),
+                ),
+            ],
+            heading=_("Content feedback"),
+        ),
+    ]
+
+    class Meta:  # type: ignore
+        abstract = True
+        verbose_name = _("Agents")
+
+
+class AgentSettings(AgentSettingsMixin, BaseGenericSetting):
+    class Meta(AgentSettingsMixin.Meta):  # type: ignore
+        abstract = False
+
+    def __str__(self):
+        return str(self._meta.verbose_name)

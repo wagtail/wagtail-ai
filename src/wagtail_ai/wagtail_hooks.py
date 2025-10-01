@@ -9,6 +9,9 @@ from django.views.i18n import JavaScriptCatalog
 from wagtail import hooks
 from wagtail.admin.rich_text.editors.draftail.features import ControlFeature
 from wagtail.admin.staticfiles import versioned_static
+from wagtail.contrib.settings.models import register_setting
+
+from wagtail_ai.agents.base import get_agent_settings_model
 
 from .agents.content_feedback import ContentFeedbackAgent
 from .models import Prompt
@@ -143,3 +146,6 @@ def register_icons(icons):
         "wagtail_ai/icons/wand.svg",
         "wagtail_ai/icons/wand-animated.svg",
     ]
+
+
+register_setting(get_agent_settings_model(), order=prompt_viewset.menu_order - 1)
