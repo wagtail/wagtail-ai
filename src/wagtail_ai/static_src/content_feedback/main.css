@@ -134,7 +134,7 @@
 
 .wai-feedback__actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 0.5rem;
   width: 100%;
 }
