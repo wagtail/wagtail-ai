@@ -32,8 +32,8 @@ export type Prompt = {
 };
 
 export interface WagtailApplication extends Application {
-  queryController: (name: string) => Controller | null;
-  queryControllerAll: (name: string) => Controller[];
+  queryController: <T extends Controller>(name: string) => T | null;
+  queryControllerAll: <T extends Controller>(name: string) => T[];
 }
 
 // Allows SVG files to be imported and used in TypeScript

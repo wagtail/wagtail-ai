@@ -1,13 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import './main.css';
-
-interface PreviewController extends Controller {
-  extractContent: () => Promise<{
-    innerHTML: string;
-    innerText: string;
-    lang: string;
-  }>;
-}
+import { getPreviewContent } from '../preview';
 
 interface ImprovementItem {
   original_text: string;
@@ -312,20 +305,17 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
     this.suggestionsTarget.appendChild(item);
   }
 
-  async getPageContent() {
-    const previewController = window.wagtail.app.queryController(
-      'w-preview',
-    ) as PreviewController;
-    const result = await previewController.extractContent();
-    this.contentLanguage = result.lang;
+  async prompt(): Promise<FeedbackResult> {
+    const previewContent = await getPreviewContent();
+    if (!previewContent) {
+      throw new Error('Unable to get page content for analysis.');
+    }
+
+    const { innerText, innerHTML, lang } = previewContent;
+    this.contentLanguage = lang;
     this.contentLanguageLabel = FeedbackController.languageNames.of(
       this.contentLanguage,
     );
-    return result;
-  }
-
-  async prompt(): Promise<FeedbackResult> {
-    const { innerText: text, innerHTML: html } = await this.getPageContent();
 
     // If a server endpoint is configured, use that.
     if (this.urlValue) {
@@ -337,8 +327,8 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
           },
           body: JSON.stringify({
             arguments: {
-              content_text: text,
-              content_html: html,
+              content_text: innerText,
+              content_html: innerHTML,
               content_language: this.contentLanguageLabel,
               editor_language: this.editorLanguageLabel,
             },
@@ -364,11 +354,11 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
     await session.append([
       {
         role: 'user',
-        content: 'Content to analyze and improve:\n\n' + text,
+        content: 'Content to analyze and improve:\n\n' + innerText,
       },
     ]);
     return JSON.parse(
-      await session.prompt(text, {
+      await session.prompt(innerText, {
         responseConstraint: this.schema,
       }),
     );
