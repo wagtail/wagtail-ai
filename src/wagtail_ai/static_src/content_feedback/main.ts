@@ -191,23 +191,8 @@ The language rules specified are IMPORTANT. Always ensure the feedback and impro
 
 Return JSON with the provided structure WITHOUT the markdown code block. Start immediately with a { character and end with a } character.`,
       },
-      //       {
-      //         role: 'user',
-      //         content: `Bread is like, you kno, that thing ppl eat all over, it's made of flur and water and stuf, and somtimes yeast or maybe not, but anywy it comes in alot of shapes like round, or long, or just like sliced in bags at the stor. People eat it with butter or sandwhiches or tost or whatever, and some bread is soft but others are hard and cruncy, but basicly it's just bread and peple like it becuz it's food and fills you up.`,
-      //       },
-      //       {
-      //         role: 'assistant',
-      //         content: `Here are some suggestions to improve the content:
-
-      // - **Clarify tone and style**: Remove filler words (“like,” “you kno,” “whatever”) and make the writing more professional and concise.
-      // - **Fix spelling and grammar**: Correct typos such as “flur,” “stuf,” “sandwhiches,” “tost,” “becuz,” and “peple.”
-      // - **Add structure**: Organize into short sentences or bullet points for readability.
-      // - **Enrich details**: Mention different bread types (sourdough, rye, flatbread) and cultural significance.
-      // - **Improve flow**: Transition smoothly between preparation, forms, uses, and why people enjoy it.
-      // - **Refine conclusion**: Replace “it's just bread and people like it becuz it's food” with a more thoughtful closing about bread's role in daily life.`,
-      //       },
     ];
-    // eslint-disable-next-line no-undef
+
     this.#session = window.LanguageModel.create({
       temperature: this.temperatureValue,
       topK: this.topKValue,
