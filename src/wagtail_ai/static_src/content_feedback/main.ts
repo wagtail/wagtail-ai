@@ -68,6 +68,7 @@ class FeedbackController extends Controller {
   declare walker: TreeWalker;
   targetText = '';
   abortController: AbortController | null = null;
+  suggestionFields: Record<string, HTMLElement> = {};
 
   /** A cached LanguageModel instance Promise to avoid recreating it unnecessarily. */
   #session: any = null;
@@ -252,6 +253,7 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
     this.abortController?.abort('Cancelled by user');
     this.feedbackTarget.innerHTML = '';
     this.suggestionsTarget.innerHTML = '';
+    this.suggestionFields = {};
   }
 
   dismissItem(event: Event) {
@@ -259,31 +261,26 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
     if (!this.element.querySelector('li')) this.reset();
   }
 
-  showFeedback(event: Event) {
-    const originalText = (event.target as HTMLElement)
-      .closest('li')!
-      .querySelector<HTMLElement>(
-        '[data-template-key="original_text"]',
-      )!.innerText;
+  showSuggestion(event: Event) {
+    const button = event.target as HTMLElement;
+    const suggestionId = button.getAttribute('data-suggestion-id')!;
+    const field = this.suggestionFields[suggestionId];
+    field?.scrollIntoView({ behavior: 'smooth' });
     // Highlight the original text in the editor using the browser's
     // text fragment feature.
     // Unfortunately, there is no way to remove the highlight once added, other
     // than the user manually right-clicking the highlighted text and choosing
     // "Remove highlight", or by reloading the page.
+    // const originalText = button
+    //   .closest('li')!
+    //   .querySelector<HTMLElement>(
+    //     '[data-template-key="original_text"]',
+    //   )!.innerText;
     // const encoded = encodeURIComponent(originalText).replace(
     // 	/[-&,]/g,
     // 	(c) => '%' + c.charCodeAt(0).toString(16).toUpperCase()
     // );
     // window.location.hash = `#:~:text=${encoded}`;
-    this.walker.currentNode = this.form;
-    this.targetText = originalText;
-    while (this.walker.nextNode()) {
-      const node = this.walker.currentNode as HTMLElement;
-      if (node) {
-        node.scrollIntoView({ behavior: 'smooth' });
-        return;
-      }
-    }
   }
 
   async renderFeedback(feedback: string) {
@@ -295,16 +292,39 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
     this.feedbackTarget.appendChild(item);
   }
 
-  async renderSuggestion(suggestion: ImprovementItem) {
+  async renderSuggestion(suggestion: ImprovementItem, index: number) {
     const item =
       this.suggestionItemTemplateTarget.content.firstElementChild!.cloneNode(
         true,
       ) as HTMLElement;
+
     const data = ['original_text', 'suggested_text', 'explanation'] as const;
     data.forEach((key) => {
       const element = item.querySelector(`[data-template-key="${key}"]`)!;
       element.textContent = suggestion[key];
     });
+
+    // Find the field containing the original text and store it for later use.
+    const suggestionId = `suggestion-${index}`;
+    this.walker.currentNode = this.form;
+    this.targetText = suggestion.original_text;
+    while (this.walker.nextNode()) {
+      const node = this.walker.currentNode as HTMLElement;
+      if (node) {
+        this.suggestionFields[suggestionId] = node;
+        break;
+      }
+    }
+
+    // If we found field for the original text, set the suggestion ID on it.
+    // Otherwise, remove the button.
+    const showButton = item.querySelector<HTMLElement>('[data-suggestion-id]')!;
+    if (this.suggestionFields[suggestionId]) {
+      showButton.setAttribute('data-suggestion-id', suggestionId);
+    } else {
+      showButton.hidden = true;
+    }
+
     this.suggestionsTarget.appendChild(item);
   }
 
@@ -381,8 +401,8 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
       data.qualitative_feedback.forEach((feedback) => {
         this.renderFeedback(feedback);
       });
-      data.specific_improvements.forEach((suggestion) => {
-        this.renderSuggestion(suggestion);
+      data.specific_improvements.forEach((suggestion, index) => {
+        this.renderSuggestion(suggestion, index);
       });
     } catch (error) {
       if (this.abortController?.signal.aborted) {
