@@ -3,15 +3,10 @@ import { fetchResponse } from '../api';
 import './main.css';
 import { DefaultPrompt, PromptMethod } from '../constants';
 import { Prompt } from '../custom';
+import { getPreviewContent } from '../preview';
 
 interface PromptOptions {
   promptId: string;
-}
-
-interface PreviewContent {
-  lang: string;
-  innerText: string;
-  innerHTML: string;
 }
 
 enum FieldPanelState {
@@ -92,10 +87,10 @@ class FieldPanelController extends Controller<HTMLElement> {
 
   static defaultHandlers = {
     async content_html(this: FieldPanelController) {
-      return (await this.getPreviewContent())?.innerHTML;
+      return (await getPreviewContent())?.innerHTML;
     },
     async content_text(this: FieldPanelController) {
-      return (await this.getPreviewContent())?.innerText;
+      return (await getPreviewContent())?.innerText;
     },
     async form_context_before(this: FieldPanelController) {
       return this.formContext.before;
@@ -154,8 +149,6 @@ class FieldPanelController extends Controller<HTMLElement> {
     // If the dropdown target already exists, it's likely already rendered and
     // this controller was reconnected after a block was reordered.
     if (this.#connectedDirectlyToInput || this.hasDropdownTarget) return;
-
-    this.getPreviewContent = this.getPreviewContent.bind(this);
 
     // If the field has a comment button, insert the dropdown before it to ensure
     // the tab order is correct. Otherwise just append it to the end of the input.
@@ -401,19 +394,6 @@ class FieldPanelController extends Controller<HTMLElement> {
       window.wagtailAI.config.aiPrompts.find(
         (p) => p.uuid === this.activePromptIdValue,
       ) ?? null;
-  }
-
-  async getPreviewContent(): Promise<PreviewContent | null> {
-    const preview: any = window.wagtail.app.queryController('w-preview');
-    if (!preview) return null;
-    if (!preview.ready) {
-      // Preview panel likely has not been opened, force it to load the preview.
-      await preview.checkAndUpdatePreview();
-      await new Promise((resolve) => {
-        document.addEventListener('w-preview:loaded', resolve, { once: true });
-      });
-    }
-    return preview.extractContent();
   }
 
   async prompt(
