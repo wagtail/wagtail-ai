@@ -107,8 +107,8 @@ You can run tests using `tox`:
 tox
 ```
 
-or, you can run them for a specific environment `tox -e python3.11-django4.2-wagtail6.3` or specific test
-`tox -e python3.11-django4.2-wagtail6.3-sqlite wagtail-ai.tests.test_file.TestClass.test_method`
+or, you can run them for a specific environment `tox -e python3.11-django4.2-wagtail7.1` or specific test
+`tox -e python3.11-django4.2-wagtail7.1-sqlite wagtail-ai.tests.test_file.TestClass.test_method`
 
 ## Building the documentation
 
