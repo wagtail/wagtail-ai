@@ -11,6 +11,7 @@ export enum ApiUrlName {
   TEXT_COMPLETION = 'TEXT_COMPLETION',
   DESCRIBE_IMAGE = 'DESCRIBE_IMAGE',
   CONTENT_FEEDBACK = 'CONTENT_FEEDBACK',
+  SIMILAR_CONTENT = 'SIMILAR_CONTENT',
 }
 
 export interface WagtailAiConfiguration {
@@ -19,6 +20,7 @@ export interface WagtailAiConfiguration {
     [ApiUrlName.TEXT_COMPLETION]: string;
     [ApiUrlName.DESCRIBE_IMAGE]: string;
     [ApiUrlName.CONTENT_FEEDBACK]: string;
+    [ApiUrlName.SIMILAR_CONTENT]: string;
   };
 }
 

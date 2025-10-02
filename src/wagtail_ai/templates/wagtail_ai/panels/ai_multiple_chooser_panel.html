@@ -1,0 +1,28 @@
+{% extends "wagtailadmin/panels/multiple_chooser_panel.html" %}
+{% load i18n wagtailadmin_tags %}
+
+{% block add_button %}
+    {{ block.super }}
+    <button
+        type="button"
+        class="button button-small button-secondary chooser__choose-button wai-suggest-button"
+        data-wai-multiple-chooser-panel-target="suggestButton"
+        data-action="click->wai-multiple-chooser-panel#suggest">
+        {% icon name=icon|default:"wand" %}{% blocktrans trimmed with label=self.label|lower %}Suggest {{ label }}{% endblocktrans %}
+    </button>
+    {% endblock %}
+
+{% block js_init %}
+    {% with script_id="id_"|add:self.formset.prefix|add:"-CHOOSER_WIDGET" %}
+        {{ chooser_widget_definition|json_script:script_id }}
+    {% endwith %}
+
+    <script>
+        (function() {
+            var panel = new MultipleChooserPanel(JSON.parse("{{options_json|escapejs}}"));
+            // Store a reference to the JS panel component on the panel DOM element
+            var section = document.querySelector("#{{ parent_prefix }}-section");
+            section._panel = panel;
+        })();
+    </script>
+{% endblock %}
