@@ -43,10 +43,7 @@ class FeedbackController extends Controller {
     state: { default: FeedbackState.IDLE, type: String },
     temperature: { default: 1.0, type: Number },
     topK: { default: 3, type: Number },
-    url: {
-      default: window.wagtailAI.config.urls.CONTENT_FEEDBACK,
-      type: String,
-    },
+    url: { default: '', type: String },
   };
 
   static languageNames = new Intl.DisplayNames(['en'], {
