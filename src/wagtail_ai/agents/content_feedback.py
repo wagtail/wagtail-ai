@@ -79,6 +79,7 @@ class ContentFeedbackAgent(Agent):
             ),
         ),
     ]
+    _response_format = ContentFeedbackSchema
 
     def execute(
         self,
@@ -107,13 +108,7 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
             },
         ]
 
-        if settings.content_feedback_prompt:
-            messages.append(
-                {
-                    "role": "user",
-                    "content": settings.content_feedback_prompt,
-                }
-            )
+        messages += self._get_prompt_messages(settings)
 
         match settings.content_feedback_content_type:
             case settings.ContentFeedbackContentType.TEXT:
@@ -128,9 +123,23 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
             }
         )
 
+        return self._get_result(messages)
+
+    def _get_prompt_messages(self, settings) -> list[dict]:
+        messages = []
+        if settings.content_feedback_prompt:
+            messages.append(
+                {
+                    "role": "user",
+                    "content": settings.content_feedback_prompt,
+                }
+            )
+        return messages
+
+    def _get_result(self, messages: list[dict]) -> dict:
         client = get_llm_service()
         result = client.completion(
             messages=messages,
-            response_format=ContentFeedbackSchema,
+            response_format=self._response_format,
         )
         return json.loads(result.choices[0].message.content)  # type: ignore
