@@ -68,14 +68,13 @@ class ContentFeedbackAgent(Agent):
         AgentParameter(
             name="content_language",
             type=str,
-            description="The language of the content (e.g., 'en' for English)",
+            description="The language of the content (e.g. 'American English')",
         ),
         AgentParameter(
             name="editor_language",
             type=str,
             description=(
-                "The preferred language for the editor interface "
-                "(e.g., 'en' for English)"
+                "The preferred language for the editor interface (e.g. 'French')"
             ),
         ),
     ]
