@@ -60,12 +60,7 @@
             </ul>
             <template data-wai-feedback-target="suggestionItemTemplate">
                 <li class="wai-feedback__suggestions-item">
-                    <div data-controller="w-tooltip">
-                        <div data-template-key="original_text" hidden></div>
-                        <div data-template-key="suggested_text"></div>
-                        <div data-template-key="explanation" data-w-tooltip-target="content">
-                        </div>
-                    </div>
+                    <textarea class="wai-feedback__suggestions-text" data-controller="w-tooltip" data-template-key="suggested_text" readonly></textarea>
                     <div class="wai-feedback__actions">
                         <button data-suggestion-id="" data-action="wai-feedback#showSuggestion" class="button button-small" type="button">
                             {% translate 'Show' %}
