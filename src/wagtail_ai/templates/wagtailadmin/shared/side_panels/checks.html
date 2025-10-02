@@ -9,10 +9,10 @@
     <div class="wai-feedback" data-controller="wai-feedback">
         <h2 class="wai-feedback__heading">
             <span>{% translate 'Content feedback' %}</span>
-            <span class="wai-feedback__indicator" data-wai-feedback-target="status" data-controller="w-tooltip">
+            <button type="button" class="wai-feedback__indicator" data-wai-feedback-target="status" data-controller="w-tooltip">
                 {% icon name="radio-full" classname="w-w-4 w-h-4" %}
-            </span>
-            <button data-action="wai-feedback#reset" class="button button-small button-secondary wai-feedback__clear">
+            </button>
+            <button type="button" data-action="wai-feedback#reset" class="button button-small button-secondary wai-feedback__clear">
                 {% translate 'Clear all' %}
             </button>
         </h2>

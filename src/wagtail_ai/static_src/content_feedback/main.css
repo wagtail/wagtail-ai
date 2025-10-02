@@ -63,6 +63,8 @@
 
 .wai-feedback__indicator {
   display: inline-flex;
+  padding: 0;
+  background: transparent;
 
   [data-wai-feedback-score-value='0'] & {
     display: none;
