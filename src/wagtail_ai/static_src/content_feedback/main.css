@@ -134,6 +134,15 @@
   }
 }
 
+.wai-feedback__suggestions-text {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: inherit;
+  padding: 0px;
+  overflow: clip;
+}
+
 .wai-feedback__actions {
   display: flex;
   justify-content: flex-end;

@@ -293,19 +293,23 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
   }
 
   async renderSuggestion(suggestion: ImprovementItem, index: number) {
+    const suggestionId = `suggestion-${index}`;
     const item =
       this.suggestionItemTemplateTarget.content.firstElementChild!.cloneNode(
         true,
       ) as HTMLElement;
 
-    const data = ['original_text', 'suggested_text', 'explanation'] as const;
-    data.forEach((key) => {
-      const element = item.querySelector(`[data-template-key="${key}"]`)!;
-      element.textContent = suggestion[key];
-    });
+    const suggestionElement = item.querySelector<HTMLTextAreaElement>(
+      '[data-template-key="suggested_text"]',
+    )!;
+    suggestionElement.name = suggestionId;
+    suggestionElement.textContent = suggestion.suggested_text;
+    suggestionElement.setAttribute(
+      'data-w-tooltip-content-value',
+      suggestion.explanation,
+    );
 
     // Find the field containing the original text and store it for later use.
-    const suggestionId = `suggestion-${index}`;
     this.walker.currentNode = this.form;
     this.targetText = suggestion.original_text;
     while (this.walker.nextNode()) {
@@ -326,6 +330,9 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
     }
 
     this.suggestionsTarget.appendChild(item);
+    // Auto-resize the textarea to fit content. This must be done after it's
+    // been added to the DOM to get correct scrollHeight.
+    suggestionElement.style.height = suggestionElement.scrollHeight + 'px';
   }
 
   async prompt(): Promise<FeedbackResult> {
