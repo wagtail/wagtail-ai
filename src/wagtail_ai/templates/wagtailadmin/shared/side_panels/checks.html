@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="{% static 'wagtail_ai/content_feedback.css' %}" />
     <script src="{% static 'wagtail_ai/content_feedback.js' %}"></script>
 
-    <div class="wai-feedback" data-controller="wai-feedback">
+    <div class="wai-feedback" data-controller="wai-feedback" data-wai-feedback-url-value="{% url 'wagtail_ai:content_feedback' %}">
         <h2 class="wai-feedback__heading">
             <span>{% translate 'Content feedback' %}</span>
             <button type="button" class="wai-feedback__indicator" data-wai-feedback-target="status" data-controller="w-tooltip">
