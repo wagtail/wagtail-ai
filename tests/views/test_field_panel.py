@@ -18,7 +18,7 @@ def test_search_description_uses_ai_field_panel(admin_client, get_soup):
     assert input is not None
 
     # Input must be controlled by the FieldPanelController
-    panel = input.find_parent(attrs={"data-controller": "wai-field-panel"})
+    panel = input.css.closest('[data-controller="wai-field-panel"]')
     assert isinstance(panel, Tag)
     assert panel.get("data-wai-field-panel-prompts-value") == json.dumps(
         [DefaultPrompt.DESCRIPTION]
@@ -46,7 +46,7 @@ def test_title_uses_ai_field_panel(admin_client, get_soup):
     assert input.get("data-controller") == "w-sync"
 
     # Input must be controlled by the FieldPanelController
-    panel = input.find_parent(attrs={"data-controller": "wai-field-panel"})
+    panel = input.css.closest('[data-controller="wai-field-panel"]')
     assert isinstance(panel, Tag)
     assert (classname := panel.get("class")) is not None
     assert "title" in classname
