@@ -51,9 +51,20 @@ class AITitleFieldPanel(AIPanelMixin, TitleFieldPanel):
 
 
 class AISuggestionsPanel(MultipleChooserPanel):
-    def __init__(self, *args, suggest_limit=3, **kwargs):
+    def __init__(self, *args, suggest_limit=3, vector_index, **kwargs):
         super().__init__(*args, **kwargs)
-        self.suggest_limit = 3
+        self.suggest_limit = suggest_limit
+        if isinstance(vector_index, str):
+            self.vector_index = vector_index
+        else:
+            self.vector_index = vector_index.index_id
+
+    def clone_kwargs(self):
+        return {
+            **super().clone_kwargs(),
+            "vector_index": self.vector_index,
+            "suggest_limit": self.suggest_limit,
+        }
 
     @classproperty
     def BASE_ATTRS(cls):
@@ -72,6 +83,7 @@ class AISuggestionsPanel(MultipleChooserPanel):
             attrs = super().attrs
             attrs["data-wai-suggestions-instance-pk-value"] = self.instance.pk
             attrs["data-wai-suggestions-limit-value"] = self.panel.suggest_limit
+            attrs["data-wai-suggestions-vector-index-value"] = self.panel.vector_index
             return attrs
 
         def get_context_data(self, parent_context=None):

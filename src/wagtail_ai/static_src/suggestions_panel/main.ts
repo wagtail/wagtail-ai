@@ -23,18 +23,19 @@ class SuggestionsPanelController extends Controller<PanelElement> {
       default: SuggestionState.IDLE,
       type: String,
     },
+    vectorIndex: String,
     instancePk: Number,
     limit: Number,
   };
   declare urlValue: string;
   declare instancePkValue: number;
+  declare vectorIndexValue: string;
   declare limitValue: number;
   declare stateValue: SuggestionState;
   abortController: AbortController | null = null;
   panelComponent: any;
 
   connect() {
-    console.log(this.element);
     this.panelComponent = this.element._panel;
   }
 
@@ -58,13 +59,6 @@ class SuggestionsPanelController extends Controller<PanelElement> {
     }
   }
 
-  removeSuggestions() {
-    const suggestions = this.element.querySelectorAll(
-      '.wai-suggestions__form-suggested',
-    );
-    suggestions.forEach((el) => el.remove());
-  }
-
   async getSuggestions() {
     const previewContent = await getPreviewContent();
     if (!previewContent) {
@@ -81,7 +75,7 @@ class SuggestionsPanelController extends Controller<PanelElement> {
         },
         body: JSON.stringify({
           arguments: {
-            vector_index: 'PageIndex',
+            vector_index: this.vectorIndexValue,
             current_page_pk: this.instancePkValue,
             limit: this.limitValue,
             content: innerText,
@@ -106,6 +100,7 @@ class SuggestionsPanelController extends Controller<PanelElement> {
     this.stateValue = SuggestionState.LOADING;
 
     try {
+      this.clear();
       const suggestions = await this.getSuggestions();
 
       suggestions.forEach((item: any) => {
