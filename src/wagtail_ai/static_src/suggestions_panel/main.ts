@@ -26,12 +26,14 @@ class SuggestionsPanelController extends Controller<PanelElement> {
     vectorIndex: String,
     instancePk: Number,
     limit: Number,
+    chunkSize: Number,
   };
   declare urlValue: string;
   declare instancePkValue: number;
   declare vectorIndexValue: string;
   declare limitValue: number;
   declare stateValue: SuggestionState;
+  declare chunkSizeValue: number;
   abortController: AbortController | null = null;
   panelComponent: any;
 
@@ -77,8 +79,9 @@ class SuggestionsPanelController extends Controller<PanelElement> {
           arguments: {
             vector_index: this.vectorIndexValue,
             current_page_pk: this.instancePkValue,
-            limit: this.limitValue,
             content: innerText,
+            limit: this.limitValue,
+            chunk_size: this.chunkSizeValue,
           },
         }),
         signal: this.abortController?.signal,
