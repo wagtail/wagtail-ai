@@ -60,6 +60,9 @@ class SuggestedContentAgent(Agent):
         chunk_transformer = SimpleChunkTransformer(chunk_size=chunk_size)
         chunks = chunk_transformer.transform(content)
 
+        if not chunks:
+            return []
+
         return [
             {"id": page.pk, "title": page.title, "editUrl": finder.get_edit_url(page)}
             for page in index.search_sources(chunks[0])[:extended_limit]

@@ -1,7 +1,3 @@
-.w-panel__content:has(.wai-suggestions-button) {
-  position: relative;
-}
-
 .wai-suggestions__buttons {
   display: flex;
   align-items: flex-start;
@@ -31,6 +27,10 @@
 }
 
 [data-wai-suggestions-state-value='loading'] .wai-suggestions__forms {
+  display: none;
+}
+
+[data-wai-suggestions-state-value='loading'] .wai-suggestions__buttons {
   display: none;
 }
 

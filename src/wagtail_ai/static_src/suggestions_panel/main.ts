@@ -35,7 +35,7 @@ class SuggestionsPanelController extends Controller<PanelElement> {
   declare stateValue: SuggestionState;
   declare chunkSizeValue: number;
   abortController: AbortController | null = null;
-  panelComponent: any;
+  panelComponent: any | null = null;
 
   connect() {
     this.panelComponent = this.element._panel;

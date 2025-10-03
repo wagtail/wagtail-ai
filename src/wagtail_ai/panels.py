@@ -1,4 +1,5 @@
 import json
+from typing import TYPE_CHECKING
 
 from django import forms
 from django.utils.functional import cached_property, classproperty  # type: ignore
@@ -9,6 +10,9 @@ from wagtail.admin.panels import (
     TitleFieldPanel,
 )
 from wagtail.admin.staticfiles import versioned_static
+
+if TYPE_CHECKING:
+    from django_ai_core.contrib.index import VectorIndex
 
 
 class AIPanelMixin(Panel):
@@ -51,7 +55,14 @@ class AITitleFieldPanel(AIPanelMixin, TitleFieldPanel):
 
 
 class AISuggestionsPanel(MultipleChooserPanel):
-    def __init__(self, *args, suggest_limit=3, chunk_size=None, vector_index, **kwargs):
+    def __init__(
+        self,
+        *args,
+        suggest_limit: int = 3,
+        chunk_size: int | None = None,
+        vector_index: "str | VectorIndex",
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.suggest_limit = suggest_limit
         self.chunk_size = chunk_size
@@ -83,7 +94,9 @@ class AISuggestionsPanel(MultipleChooserPanel):
         @property
         def attrs(self):
             attrs = super().attrs
-            attrs["data-wai-suggestions-instance-pk-value"] = self.instance.pk
+            attrs["data-wai-suggestions-instance-pk-value"] = (
+                self.instance.pk if self.instance else None
+            )
             attrs["data-wai-suggestions-limit-value"] = self.panel.suggest_limit
             attrs["data-wai-suggestions-vector-index-value"] = self.panel.vector_index
             attrs["data-wai-suggestions-chunk-size-value"] = self.panel.chunk_size

@@ -142,8 +142,8 @@ def test_applies_limit_excluding_current_pk(admin_client, mock_vector_index):
 
 
 @pytest.mark.django_db
-def test_chunks_provided_content(admin_client, mock_vector_index):
-    content = ["word " * 1000]
+def test_content_is_chunked(admin_client, mock_vector_index):
+    content = "word " * 1000
 
     response: HttpResponse = admin_client.post(
         reverse("wagtail_ai:suggested_content"),
