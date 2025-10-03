@@ -11,8 +11,8 @@ from wagtail.admin.admin_url_finder import AdminURLFinder
 
 
 @agent_registry.register()
-class SimilarContentAgent(Agent):
-    slug = "wai_similar_content"
+class SuggestedContentAgent(Agent):
+    slug = "wai_suggested_content"
     description = "Suggests similar content to the provided context using the provided VectorIndex"
     parameters = [
         AgentParameter(

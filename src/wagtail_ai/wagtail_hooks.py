@@ -14,7 +14,7 @@ from wagtail.contrib.settings.models import register_setting
 from wagtail_ai.agents.base import get_agent_settings_model
 
 from .agents.content_feedback import ContentFeedbackAgent
-from .agents.similar_content import SimilarContentAgent
+from .agents.suggested_content import SuggestedContentAgent
 from .models import Prompt
 from .views import describe_image, prompt_viewset, text_completion
 
@@ -43,9 +43,9 @@ def register_admin_urls():
             name="content_feedback",
         ),
         path(
-            "similar-content",
-            SimilarContentAgent.as_view(),
-            name="similar_content",
+            "suggested-content",
+            SuggestedContentAgent.as_view(),
+            name="suggested_content",
         ),
     ]
 
@@ -119,7 +119,7 @@ def ai_admin_js():
             "TEXT_COMPLETION": reverse("wagtail_ai:text_completion"),
             "DESCRIBE_IMAGE": reverse("wagtail_ai:describe_image"),
             "CONTENT_FEEDBACK": reverse("wagtail_ai:content_feedback"),
-            "SIMILAR_CONTENT": reverse("wagtail_ai:similar_content"),
+            "SUGGESTED_CONTENT": reverse("wagtail_ai:suggested_content"),
         },
     }
 

@@ -16,7 +16,7 @@ enum SuggestionState {
 class SuggestionsPanelController extends Controller<PanelElement> {
   static values = {
     url: {
-      default: window.wagtailAI.config.urls.SIMILAR_CONTENT,
+      default: window.wagtailAI.config.urls.SUGGESTED_CONTENT,
       type: String,
     },
     state: {
