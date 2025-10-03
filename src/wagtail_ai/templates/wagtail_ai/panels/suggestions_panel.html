@@ -1,0 +1,92 @@
+{% load i18n l10n wagtailadmin_tags %}
+{% comment %}
+This template overrides the entirety of the base wagtailadmin/panels/inline_panel.html
+instead of extending it, as we add additional elements such as the loading indicator.
+{% endcomment %}
+
+{{ self.formset.management_form }}
+
+{% if self.formset.non_form_errors %}
+    <div class="error-message">
+        {% for error in self.formset.non_form_errors %}
+            <span>{{ error|escape }}</span>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if self.help_text %}
+    {% help_block status="info" %}{{ self.help_text }}{% endhelp_block %}
+{% endif %}
+
+<div id="id_{{ self.formset.prefix }}-FORMS" class="wai-suggestions__forms">
+    {% comment %}
+
+    Child elements of this div will become orderable elements. Do not place additional
+    "furniture" elements here unless you intend them to be part of the child ordering.
+
+    {% endcomment %}
+
+    {% for child in self.children %}
+        {% include "wagtailadmin/panels/inline_panel_child.html" %}
+    {% endfor %}
+</div>
+
+<div class="wai-suggestions__loading">
+    <div>
+        {% icon name="spinner" classname="w-w-8 w-h-8" %}
+    </div>
+    <div class="wai-suggestions__loading-message">
+        {% translate 'Looking for relevant pages…' %}
+    </div>
+    <button type="button" class="button button-secondary button-small" data-action="click->wai-suggestions#cancel">
+        {% translate "Cancel" %}
+    </button>
+</div>
+
+<div class="wai-suggestions__error">
+    <div>
+        {% icon name="warning" classname="w-w-8 w-h-8" %}
+    </div>
+    <div class="wai-suggestions__error-message">
+        {% translate "An error occurred while processing your request. Please try again." %}
+    </div>
+</div>
+
+<template id="id_{{ self.formset.prefix }}-EMPTY_FORM_TEMPLATE">
+    {% include "wagtailadmin/panels/inline_panel_child.html" with child=self.empty_child %}
+</template>
+
+<div class="w-mb-4 -w-ml-4 wai-suggestions__buttons">
+    {% block add_button %}
+        <button type="button" class="button button-small button-secondary chooser__choose-button" id="id_{{ self.formset.prefix }}-OPEN_MODAL">
+            {% icon name=icon|default:"plus-inverse" %}{% blocktrans trimmed with label=self.label|lower %}Add {{ label }}{% endblocktrans %}
+        </button>
+    {% endblock %}
+    <button
+        type="button"
+        class="button button-small button-secondary chooser__choose-button wai-suggestions__button-suggest"
+        data-action="click->wai-suggestions#suggest">
+        {% icon name=icon|default:"wand" %}{% blocktrans %}Suggest{% endblocktrans %}
+    </button>
+    <button
+        type="button"
+        class="button button-small button-secondary chooser__choose-button wai-suggestions__button-clear"
+        data-action="click->wai-suggestions#clear">
+        {% blocktrans %}Clear Suggestions{% endblocktrans %}
+    </button>
+</div>
+
+{% block js_init %}
+    {% with script_id="id_"|add:self.formset.prefix|add:"-CHOOSER_WIDGET" %}
+        {{ chooser_widget_definition|json_script:script_id }}
+    {% endwith %}
+
+    <script>
+        (function() {
+            var panel = new MultipleChooserPanel(JSON.parse("{{options_json|escapejs}}"));
+            // Store a reference to the JS panel component on the panel DOM element
+            var section = document.querySelector("#{{ parent_prefix }}-section");
+            section._panel = panel;
+        })();
+    </script>
+{% endblock %}

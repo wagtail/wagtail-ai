@@ -50,7 +50,7 @@ class AITitleFieldPanel(AIPanelMixin, TitleFieldPanel):
         pass
 
 
-class AIMultipleChooserPanel(MultipleChooserPanel):
+class AISuggestionsPanel(MultipleChooserPanel):
     def __init__(self, *args, suggest_limit=3, **kwargs):
         super().__init__(*args, **kwargs)
         self.suggest_limit = 3
@@ -58,24 +58,20 @@ class AIMultipleChooserPanel(MultipleChooserPanel):
     @classproperty
     def BASE_ATTRS(cls):
         base = super().BASE_ATTRS
-        controllers = [base.get("data-controller", ""), "wai-multiple-chooser-panel"]
+        controllers = [base.get("data-controller", ""), "wai-suggestions"]
         return {
             **base,
             "data-controller": " ".join(controllers).strip(),
         }
 
     class BoundPanel(MultipleChooserPanel.BoundPanel):
-        template_name = "wagtail_ai/panels/ai_multiple_chooser_panel.html"
+        template_name = "wagtail_ai/panels/suggestions_panel.html"
 
         @property
         def attrs(self):
             attrs = super().attrs
-            attrs["data-wai-multiple-chooser-panel-instance-pk-value"] = (
-                self.instance.pk
-            )
-            attrs["data-wai-multiple-chooser-panel-suggest-limit-value"] = (
-                self.panel.suggest_limit
-            )
+            attrs["data-wai-suggestions-instance-pk-value"] = self.instance.pk
+            attrs["data-wai-suggestions-limit-value"] = self.panel.suggest_limit
             return attrs
 
         def get_context_data(self, parent_context=None):
@@ -86,8 +82,6 @@ class AIMultipleChooserPanel(MultipleChooserPanel):
         @cached_property
         def media(self):  # type: ignore
             return super().media + forms.Media(
-                js=[versioned_static("wagtail_ai/multiple_chooser_panel.js")],
-                css={
-                    "all": [versioned_static("wagtail_ai/multiple_chooser_panel.css")]
-                },
+                js=[versioned_static("wagtail_ai/suggestions_panel.js")],
+                css={"all": [versioned_static("wagtail_ai/suggestions_panel.css")]},
             )
