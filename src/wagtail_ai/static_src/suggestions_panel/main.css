@@ -7,7 +7,8 @@
   align-items: flex-start;
 }
 
-.wai-suggestions__loading {
+.wai-suggestions__loading,
+.wai-suggestions__error {
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -17,43 +18,22 @@
 
 .wai-suggestions__loading,
 .wai-suggestions__error,
-.wai-suggestions__loading-message,
-.wai-suggestions__error-message,
 .button.wai-suggestions__button-clear {
   display: none;
 }
 
-:is([data-wai-suggestions-state-value='loading']) .wai-suggestions__loading {
+.wai-suggestions__error .icon-warning {
+  color: var(--w-color-text-error);
+}
+
+[data-wai-suggestions-state-value='loading'] .wai-suggestions__loading {
   display: flex;
 }
 
-:is([data-wai-suggestions-state-value='loading']) .wai-suggestions__forms {
+[data-wai-suggestions-state-value='loading'] .wai-suggestions__forms {
   display: none;
 }
 
-[data-wai-suggestions-state-value='loading'] {
-  .wai-suggestions__loading-message,
-  .icon-spinner {
-    display: block;
-  }
-}
-
-:is([data-wai-suggestions-state-value='error']) .wai-suggestions__error {
-  display: flex;
-}
-
-[data-wai-suggestions-state-value='error'] {
-  .wai-suggestions__error-message,
-  .icon-warning {
-    display: block;
-  }
-
-  .icon-warning {
-    color: var(--w-color-text-error);
-  }
-}
-
-:is([data-wai-suggestions-state-value='suggested'])
-  .button.wai-suggestions__button-clear {
+[data-wai-suggestions-state-value='error'] .wai-suggestions__error {
   display: flex;
 }
