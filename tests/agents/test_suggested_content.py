@@ -30,7 +30,7 @@ def mock_vector_index():
 @pytest.mark.django_db
 def test_responds_with_data(admin_client, mock_vector_index):
     pages = [MockPage(pk=0, title="Foo")]
-    expected_data = [{"id": 0, "title": "Foo", "editUrl": "/admin/"}]
+    expected_data = [{"id": "0", "title": "Foo", "editUrl": "/admin/"}]
     mock_vector_index.search_sources.return_value = pages
 
     response: HttpResponse = admin_client.post(
@@ -41,7 +41,7 @@ def test_responds_with_data(admin_client, mock_vector_index):
                     "vector_index": "PageIndex",
                     "chunk_size": 1000,
                     "content": "foo",
-                    "current_page_pk": 1,
+                    "exclude_pks": [1],
                     "limit": 3,
                 }
             }
@@ -56,7 +56,7 @@ def test_responds_with_data(admin_client, mock_vector_index):
 @pytest.mark.django_db
 def test_excludes_current_pk(admin_client, mock_vector_index):
     pages = [MockPage(pk=0, title="Foo"), MockPage(pk=1, title="Bar")]
-    expected_data = [{"id": 0, "title": "Foo", "editUrl": "/admin/"}]
+    expected_data = [{"id": "0", "title": "Foo", "editUrl": "/admin/"}]
     mock_vector_index.search_sources.return_value = pages
 
     response: HttpResponse = admin_client.post(
@@ -67,7 +67,7 @@ def test_excludes_current_pk(admin_client, mock_vector_index):
                     "vector_index": "PageIndex",
                     "chunk_size": 1000,
                     "content": "foo",
-                    "current_page_pk": 1,
+                    "exclude_pks": ["1"],
                     "limit": 3,
                 }
             }
@@ -97,7 +97,7 @@ def test_applies_limit(admin_client, mock_vector_index):
                     "vector_index": "PageIndex",
                     "chunk_size": 1000,
                     "content": "foo",
-                    "current_page_pk": 10,
+                    "exclude_pks": ["10"],
                     "limit": 3,
                 }
             }
@@ -128,7 +128,7 @@ def test_applies_limit_excluding_current_pk(admin_client, mock_vector_index):
                     "vector_index": "PageIndex",
                     "chunk_size": 1000,
                     "content": "foo",
-                    "current_page_pk": 1,
+                    "exclude_pks": ["1"],
                     "limit": 3,
                 }
             }
@@ -138,7 +138,7 @@ def test_applies_limit_excluding_current_pk(admin_client, mock_vector_index):
     assert response.status_code == 200
     content = json.loads(response.content.decode())
     assert len(content["data"]) == 3
-    assert content["data"][1]["id"] == 2
+    assert content["data"][1]["id"] == "2"
 
 
 @pytest.mark.django_db
@@ -153,7 +153,7 @@ def test_content_is_chunked(admin_client, mock_vector_index):
                     "vector_index": "PageIndex",
                     "chunk_size": 1000,
                     "content": content,
-                    "current_page_pk": 1,
+                    "exclude_pks": ["1"],
                     "limit": 3,
                 }
             }

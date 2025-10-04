@@ -65,8 +65,18 @@ instead of extending it, as we add additional elements such as the loading indic
     <button
         type="button"
         class="button button-small button-secondary chooser__choose-button wai-suggestions__button-suggest"
+        data-wai-suggestions-target="suggestButton"
         data-action="click->wai-suggestions#suggest">
-        {% icon name=icon|default:"wand" %}{% blocktrans %}Suggest{% endblocktrans %}
+        {% icon name=icon|default:"wand" %}
+        <span class="wai-suggestions__suggest-label">
+            {% blocktrans %}Suggest{% endblocktrans %}
+        </span>
+        <span class="wai-suggestions__suggest-more-label">
+            {% blocktrans %}Suggest Different{% endblocktrans %}
+        </span>
+        <span class="wai-suggestions__no-more-label">
+            No results remaining
+        </span>
     </button>
     <button
         type="button"

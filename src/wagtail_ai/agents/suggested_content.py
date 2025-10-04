@@ -9,6 +9,8 @@ from django_ai_core.contrib.index import registry as index_registry
 from django_ai_core.contrib.index.chunking import SimpleChunkTransformer
 from wagtail.admin.admin_url_finder import AdminURLFinder
 
+MAX_LIMIT = 100
+
 
 @agent_registry.register()
 class SuggestedContentAgent(Agent):
@@ -21,7 +23,9 @@ class SuggestedContentAgent(Agent):
             description="ID of the VectorIndex to query",
         ),
         AgentParameter(
-            name="current_page_pk", type=int, description="PK of the current page"
+            name="exclude_pks",
+            type=list[str],
+            description="PKs to exclude from results",
         ),
         AgentParameter(
             name="content",
@@ -43,7 +47,7 @@ class SuggestedContentAgent(Agent):
     def execute(
         self,
         vector_index: str,
-        current_page_pk: int,
+        exclude_pks: list[str],
         content: str,
         limit: int = 3,
         chunk_size: int = 1000,
@@ -51,8 +55,11 @@ class SuggestedContentAgent(Agent):
         index_cls = index_registry.get(vector_index)
         index = index_cls()
         finder = AdminURLFinder()
-        # Extend limit by 1 in case we get the current page in the response
-        extended_limit = limit + 1
+        # Extend limit by the number of excluded PKs so we get enough responses
+        extended_limit = limit + len(exclude_pks)
+
+        if extended_limit > MAX_LIMIT:
+            return []
 
         if not chunk_size:
             chunk_size = 1000
@@ -64,7 +71,11 @@ class SuggestedContentAgent(Agent):
             return []
 
         return [
-            {"id": page.pk, "title": page.title, "editUrl": finder.get_edit_url(page)}
+            {
+                "id": str(page.pk),
+                "title": page.title,
+                "editUrl": finder.get_edit_url(page),
+            }
             for page in index.search_sources(chunks[0])[:extended_limit]
-            if page.pk != current_page_pk
+            if str(page.pk) not in exclude_pks
         ][:limit]
