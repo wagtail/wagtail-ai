@@ -1,0 +1,83 @@
+.wai-suggestions__buttons {
+  display: flex;
+  align-items: flex-start;
+}
+
+.wai-suggestions__loading,
+.wai-suggestions__error {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.wai-suggestions__loading,
+.wai-suggestions__error,
+.wai-suggestions__no-more-label,
+.wai-suggestions__suggest-more-label,
+.button.wai-suggestions__button-clear {
+  display: none;
+}
+
+.wai-suggestions__error .icon-warning {
+  color: var(--w-color-text-error);
+}
+
+/* Initial State
+   Show "Suggest" label, hide "clear" button
+*/
+[data-wai-suggestions-state-value]:not(
+    [data-wai-suggestions-state-value='initial']
+  )
+  .wai-suggestions__suggest-label {
+  display: none;
+}
+
+[data-wai-suggestions-state-value]:not(
+    [data-wai-suggestions-state-value='initial']
+  )
+  .wai-suggestions__suggest-more-label {
+  display: flex;
+}
+
+[data-wai-suggestions-state-value]:not(
+    [data-wai-suggestions-state-value='initial']
+  )
+  .button.wai-suggestions__button-clear {
+  display: flex;
+}
+
+/* Loading State
+   Show loading indicator, hide suggestions and buttons
+*/
+[data-wai-suggestions-state-value='loading'] .wai-suggestions__loading {
+  display: flex;
+}
+
+[data-wai-suggestions-state-value='loading'] .wai-suggestions__forms {
+  display: none;
+}
+
+[data-wai-suggestions-state-value='loading'] .wai-suggestions__buttons {
+  display: none;
+}
+
+/* Error state
+   Show error
+*/
+[data-wai-suggestions-state-value='error'] .wai-suggestions__error {
+  display: flex;
+}
+
+/* No more suggestins state
+   Show label
+*/
+[data-wai-suggestions-state-value][data-wai-suggestions-state-value='no_more']
+  .wai-suggestions__suggest-more-label {
+  display: none;
+}
+
+[data-wai-suggestions-state-value='no_more'] .wai-suggestions__no-more-label {
+  display: flex;
+}

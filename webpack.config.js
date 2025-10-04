@@ -7,6 +7,7 @@ module.exports = {
     draftail: './src/wagtail_ai/static_src/draftail/main.tsx',
     content_feedback: './src/wagtail_ai/static_src/content_feedback/main.ts',
     field_panel: './src/wagtail_ai/static_src/field_panel/main.ts',
+    suggestions_panel: './src/wagtail_ai/static_src/suggestions_panel/main.ts',
     main: './src/wagtail_ai/static_src/main.ts',
   },
   plugins: [new MiniCssExtractPlugin()],
