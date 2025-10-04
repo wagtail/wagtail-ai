@@ -70,8 +70,8 @@
   display: flex;
 }
 
-/* No more suggestins state
-   Show label
+/* No more suggestions state
+   Show no suggestions label
 */
 [data-wai-suggestions-state-value][data-wai-suggestions-state-value='no_more']
   .wai-suggestions__suggest-more-label {
