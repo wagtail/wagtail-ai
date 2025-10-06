@@ -43,7 +43,7 @@ def register_admin_urls():
             name="content_feedback",
         ),
         path(
-            "suggested-content",
+            "suggested-content/",
             SuggestedContentAgent.as_view(),
             name="suggested_content",
         ),
