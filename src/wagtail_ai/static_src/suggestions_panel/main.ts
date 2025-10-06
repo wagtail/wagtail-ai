@@ -45,19 +45,6 @@ class SuggestionsPanelController extends Controller<HTMLElement> {
 
   connect() {
     this.stateValue = SuggestionState.INITIAL;
-    this.updateControlStates();
-
-    const formsetEvents = [
-      'w-formset:removed',
-      'w-formset-added',
-      'w-formset-ready',
-    ];
-
-    formsetEvents.forEach((ev) =>
-      document.addEventListener(ev, () => {
-        this.updateControlStates();
-      }),
-    );
   }
 
   addItem(item: any) {

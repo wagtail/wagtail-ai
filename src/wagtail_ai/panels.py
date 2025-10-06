@@ -83,9 +83,16 @@ class AISuggestionsPanel(MultipleChooserPanel):
     def BASE_ATTRS(cls):
         base = super().BASE_ATTRS
         controllers = [base.get("data-controller", ""), "wai-suggestions"]
+        actions = [
+            base.get("data-action", ""),
+            "w-formset:removed->wai-suggestions#updateControlStates",
+            "w-formset:added->wai-suggestions#updateControlStates",
+            "w-formset:ready->wai-suggestions#updateControlStates",
+        ]
         return {
             **base,
             "data-controller": " ".join(controllers).strip(),
+            "data-action": " ".join(actions).strip(),
         }
 
     class BoundPanel(MultipleChooserPanel.BoundPanel):
