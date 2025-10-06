@@ -57,7 +57,7 @@ class SuggestionsPanelController extends Controller<HTMLElement> {
       `[data-inline-panel-child]:has(#${chooserFieldId})`,
     );
     if (chooserPanel) {
-      chooserPanel.classList.add('wai-suggestions__form-suggested');
+      chooserPanel.setAttribute('data-wai-suggestions-suggested', 'true');
       const chooserWidget = panel.chooserWidgetFactory.getById(chooserFieldId);
       chooserWidget.setState({
         id: item.id,
@@ -122,7 +122,7 @@ class SuggestionsPanelController extends Controller<HTMLElement> {
 
   clearSuggestions() {
     const suggestions = this.element.querySelectorAll(
-      '.wai-suggestions__form-suggested',
+      '[data-wai-suggestions-suggested="true"]',
     );
     suggestions.forEach((el) => el.remove());
     this.panelComponent.totalFormsInput.val(
