@@ -78,6 +78,7 @@ class ContentFeedbackAgent(Agent):
             ),
         ),
     ]
+    provider_alias = "default"
     _response_format = ContentFeedbackSchema
 
     def execute(
@@ -136,7 +137,7 @@ Return JSON with the provided structure WITHOUT the markdown code block. Start i
         return messages
 
     def _get_result(self, messages: list[dict]) -> dict:
-        client = get_llm_service()
+        client = get_llm_service(alias=self.provider_alias)
         result = client.completion(
             messages=messages,
             response_format=self._response_format,

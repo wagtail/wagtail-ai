@@ -25,6 +25,8 @@ def test_agent_configuration():
         ("editor_language", str),
     ]
 
+    assert ContentFeedbackAgent.provider_alias == "default"
+
     # Ensure the agent is registered with django-ai-core
     assert registry.get(ContentFeedbackAgent.slug) is ContentFeedbackAgent
 
@@ -51,25 +53,35 @@ def mock_result():
     }
 
 
-@pytest.mark.django_db
-def test_prompt_with_plain_text_and_no_custom_prompt(
-    admin_client, mock_result, monkeypatch
-):
-    settings = AgentSettings.load()
-    settings.content_feedback_content_type = settings.ContentFeedbackContentType.TEXT
-    settings.save()
-
+@pytest.fixture
+def mock_llm_service(monkeypatch, mock_result):
+    """Mock the get_llm_service function to return a mock service."""
     mock_completion = MagicMock()
     mock_completion.return_value = MagicMock(
         choices=[MagicMock(message=MagicMock(content=json.dumps(mock_result)))]
     )
 
-    mock_client = MagicMock()
-    mock_client.completion = mock_completion
+    mock_service = MagicMock()
+    mock_service.completion = mock_completion
+
+    def mock_get_llm_service(alias):
+        return mock_service
+
     monkeypatch.setattr(
         "wagtail_ai.agents.content_feedback.get_llm_service",
-        lambda: mock_client,
+        mock_get_llm_service,
     )
+
+    return mock_service
+
+
+@pytest.mark.django_db
+def test_prompt_with_plain_text_and_no_custom_prompt(
+    admin_client, mock_llm_service, mock_result
+):
+    settings = AgentSettings.load()
+    settings.content_feedback_content_type = settings.ContentFeedbackContentType.TEXT
+    settings.save()
 
     response: HttpResponse = admin_client.post(
         reverse("wagtail_ai:content_feedback"),
@@ -88,8 +100,8 @@ def test_prompt_with_plain_text_and_no_custom_prompt(
     assert response.status_code == 200
     content = json.loads(response.content.decode())
 
-    mock_completion.assert_called_once()
-    messages = mock_completion.call_args.kwargs["messages"]
+    mock_llm_service.completion.assert_called_once()
+    messages = mock_llm_service.completion.call_args.kwargs["messages"]
 
     assert len(messages) == 3
     assert messages[2]["content"] == "Content to review:\n\nSome content"
@@ -98,22 +110,12 @@ def test_prompt_with_plain_text_and_no_custom_prompt(
 
 
 @pytest.mark.django_db
-def test_prompt_with_html_and_custom_prompt(admin_client, mock_result, monkeypatch):
+def test_prompt_with_html_and_custom_prompt(
+    admin_client, mock_llm_service, mock_result
+):
     settings = AgentSettings.load()
     settings.content_feedback_prompt = "Content must include the word 'bird'."
     settings.save()
-
-    mock_completion = MagicMock()
-    mock_completion.return_value = MagicMock(
-        choices=[MagicMock(message=MagicMock(content=json.dumps(mock_result)))]
-    )
-
-    mock_client = MagicMock()
-    mock_client.completion = mock_completion
-    monkeypatch.setattr(
-        "wagtail_ai.agents.content_feedback.get_llm_service",
-        lambda: mock_client,
-    )
 
     response: HttpResponse = admin_client.post(
         reverse("wagtail_ai:content_feedback"),
@@ -132,8 +134,8 @@ def test_prompt_with_html_and_custom_prompt(admin_client, mock_result, monkeypat
     assert response.status_code == 200
     content = json.loads(response.content.decode())
 
-    mock_completion.assert_called_once()
-    messages = mock_completion.call_args.kwargs["messages"]
+    mock_llm_service.completion.assert_called_once()
+    messages = mock_llm_service.completion.call_args.kwargs["messages"]
 
     assert len(messages) == 4
     assert messages[2] == {
