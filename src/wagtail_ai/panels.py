@@ -94,6 +94,7 @@ class AISuggestionsPanel(MultipleChooserPanel):
         @property
         def attrs(self):
             attrs = super().attrs
+            attrs["data-wai-suggestions-relation-name-value"] = self.panel.relation_name
             attrs["data-wai-suggestions-instance-pk-value"] = (
                 self.instance.pk if self.instance else None
             )

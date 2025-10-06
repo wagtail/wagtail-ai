@@ -94,9 +94,6 @@ instead of extending it, as we add additional elements such as the loading indic
     <script>
         (function() {
             var panel = new MultipleChooserPanel(JSON.parse("{{options_json|escapejs}}"));
-            // Store a reference to the JS panel component on the panel DOM element
-            var section = document.querySelector("#{{ parent_prefix }}-section");
-            section._panel = panel;
         })();
     </script>
 {% endblock %}

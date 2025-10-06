@@ -2,10 +2,6 @@ import { Controller } from '@hotwired/stimulus';
 import './main.css';
 import { getPreviewContent } from '../preview';
 
-interface PanelElement extends HTMLElement {
-  _panel: any;
-}
-
 enum SuggestionState {
   INITIAL = 'initial',
   LOADING = 'loading',
@@ -14,9 +10,10 @@ enum SuggestionState {
   NO_MORE = 'no_more',
 }
 
-class SuggestionsPanelController extends Controller<PanelElement> {
+class SuggestionsPanelController extends Controller<HTMLElement> {
   static targets = ['suggestButton'];
   static values = {
+    relationName: String,
     url: {
       default: window.wagtailAI.config.urls.SUGGESTED_CONTENT,
       type: String,
@@ -34,6 +31,7 @@ class SuggestionsPanelController extends Controller<PanelElement> {
     limit: Number,
     chunkSize: Number,
   };
+  declare relationNameValue: string;
   declare urlValue: string;
   declare instancePkValue: string;
   declare vectorIndexValue: string;
@@ -47,7 +45,6 @@ class SuggestionsPanelController extends Controller<PanelElement> {
 
   connect() {
     this.stateValue = SuggestionState.INITIAL;
-    this.panelComponent = this.element._panel;
     this.updateControlStates();
 
     const formsetEvents = [
@@ -161,6 +158,11 @@ class SuggestionsPanelController extends Controller<PanelElement> {
   }
 
   updateControlStates() {
+    if (!this.panelComponent) {
+      this.panelComponent = window.wagtail.editHandler.getPanelByName(
+        this.relationNameValue,
+      )!;
+    }
     const maxForms = this.panelComponent.opts.maxForms;
     const atLimit = maxForms && this.panelComponent.getChildCount() >= maxForms;
     const noMoreSuggestions = this.stateValue === SuggestionState.NO_MORE;

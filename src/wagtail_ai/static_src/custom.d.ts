@@ -68,12 +68,19 @@ declare global {
     CSRF_TOKEN: string;
   }
 
+  interface WagtailPanel {
+    type: string;
+    prefix: string;
+    getPanelByName(_name: string): WagtailPanel | null;
+  }
+
   interface Window {
     LanguageModel: any;
     WAGTAIL_AI_PROCESS_URL: string;
     WAGTAIL_AI_PROMPTS: [Prompt];
     wagtail: {
       app: WagtailApplication;
+      editHandler: WagtailPanel;
     };
     wagtailAI: {
       config: WagtailAiConfiguration;
