@@ -6,6 +6,7 @@ from django.template.loader import render_to_string
 from django.urls import include, path, reverse
 from django.utils.html import format_html, json_script
 from django.views.i18n import JavaScriptCatalog
+from django_ai_core.contrib.agents import registry
 from wagtail import hooks
 from wagtail.admin.rich_text.editors.draftail.features import ControlFeature
 from wagtail.admin.staticfiles import versioned_static
@@ -13,14 +14,15 @@ from wagtail.contrib.settings.models import register_setting
 
 from wagtail_ai.agents.base import get_agent_settings_model
 
-from .agents.content_feedback import ContentFeedbackAgent
-from .agents.suggested_content import SuggestedContentAgent
 from .models import Prompt
 from .views import describe_image, prompt_viewset, text_completion
 
 
 @hooks.register("register_admin_urls")  # type: ignore
 def register_admin_urls():
+    content_feedback_agent = registry.get("wai_content_feedback")
+    suggested_content_agent = registry.get("wai_suggested_content")
+
     urls = [
         path(
             "jsi18n/",
@@ -39,12 +41,12 @@ def register_admin_urls():
         ),
         path(
             "content_feedback/",
-            ContentFeedbackAgent.as_view(),
+            content_feedback_agent.as_view(),
             name="content_feedback",
         ),
         path(
             "suggested-content/",
-            SuggestedContentAgent.as_view(),
+            suggested_content_agent.as_view(),
             name="suggested_content",
         ),
     ]
