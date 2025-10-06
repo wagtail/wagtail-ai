@@ -187,6 +187,12 @@ if os.environ.get("WAGTAIL_AI_DEFAULT_BACKEND") == "chatgpt":
                 },
             },
         },
+        "PROVIDERS": {
+            "default": {
+                "provider": "openai",
+                "model": "gpt-4.1-mini",
+            },
+        },
         "IMAGE_DESCRIPTION_BACKEND": "vision",
     }
 
@@ -200,6 +206,12 @@ else:
                     "MAX_WORD_SLEEP_SECONDS": 1,
                     "TOKEN_LIMIT": 100,
                 },
+            },
+        },
+        "PROVIDERS": {
+            "default": {
+                "provider": "foo",
+                "model": "bar",
             },
         },
         "IMAGE_DESCRIPTION_BACKEND": "default",
