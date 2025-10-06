@@ -54,7 +54,7 @@ class AITitleFieldPanel(AIPanelMixin, TitleFieldPanel):
         pass
 
 
-class AISuggestionsPanel(MultipleChooserPanel):
+class AIChooserPanelMixin(Panel):
     def __init__(
         self,
         *args,
@@ -95,8 +95,12 @@ class AISuggestionsPanel(MultipleChooserPanel):
             "data-action": " ".join(actions).strip(),
         }
 
-    class BoundPanel(MultipleChooserPanel.BoundPanel):
+    class BoundPanel(Panel.BoundPanel):
         template_name = "wagtail_ai/panels/suggestions_panel.html"
+
+        @classproperty
+        def original_template_name(cls):
+            return super().template_name
 
         @property
         def attrs(self):
@@ -113,6 +117,7 @@ class AISuggestionsPanel(MultipleChooserPanel):
         def get_context_data(self, parent_context=None):
             context = super().get_context_data(parent_context=parent_context) or {}
             context["parent_prefix"] = self.prefix.replace("content-child-", "content-")
+            context["original_template_name"] = self.original_template_name
             return context
 
         @cached_property
@@ -121,3 +126,8 @@ class AISuggestionsPanel(MultipleChooserPanel):
                 js=[versioned_static("wagtail_ai/suggestions_panel.js")],
                 css={"all": [versioned_static("wagtail_ai/suggestions_panel.css")]},
             )
+
+
+class AISuggestionsPanel(AIChooserPanelMixin, MultipleChooserPanel):
+    class BoundPanel(AIChooserPanelMixin.BoundPanel, MultipleChooserPanel.BoundPanel):  # type: ignore
+        pass
