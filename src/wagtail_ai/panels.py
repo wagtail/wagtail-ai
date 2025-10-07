@@ -96,7 +96,7 @@ class AIChooserPanelMixin(Panel):
         }
 
     class BoundPanel(Panel.BoundPanel):
-        template_name = "wagtail_ai/panels/suggestions_panel.html"
+        template_name = "wagtail_ai/panels/chooser_panel.html"
 
         @classproperty
         def original_template_name(cls):
@@ -122,8 +122,8 @@ class AIChooserPanelMixin(Panel):
         @cached_property
         def media(self):  # type: ignore
             return super().media + forms.Media(
-                js=[versioned_static("wagtail_ai/suggestions_panel.js")],
-                css={"all": [versioned_static("wagtail_ai/suggestions_panel.css")]},
+                js=[versioned_static("wagtail_ai/chooser_panel.js")],
+                css={"all": [versioned_static("wagtail_ai/chooser_panel.css")]},
             )
 
 
