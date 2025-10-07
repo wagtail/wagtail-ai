@@ -113,7 +113,8 @@ class AIChooserPanelMixin(Panel):
             )
             attrs["data-wai-chooser-panel-limit-value"] = self.panel.suggest_limit
             attrs["data-wai-chooser-panel-vector-index-value"] = self.panel.vector_index
-            attrs["data-wai-chooser-panel-chunk-size-value"] = self.panel.chunk_size
+            if self.panel.chunk_size:
+                attrs["data-wai-chooser-panel-chunk-size-value"] = self.panel.chunk_size
             return attrs
 
         def get_context_data(self, parent_context=None):

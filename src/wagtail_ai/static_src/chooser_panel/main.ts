@@ -39,6 +39,7 @@ class ChooserPanelController extends Controller<HTMLElement> {
   declare seenPksValue: [string?];
   declare stateValue: ChooserSuggestionState;
   declare chunkSizeValue: number;
+  declare hasChunkSizeValue: boolean;
   declare suggestButtonTarget: HTMLButtonElement;
   abortController: AbortController | null = null;
   #panelComponent: any | null = null;
@@ -112,7 +113,9 @@ class ChooserPanelController extends Controller<HTMLElement> {
             ],
             content: innerText,
             limit: limit,
-            chunk_size: this.chunkSizeValue,
+            chunk_size: this.hasChunkSizeValue
+              ? this.chunkSizeValue
+              : undefined,
           },
         }),
         signal: this.abortController?.signal,
