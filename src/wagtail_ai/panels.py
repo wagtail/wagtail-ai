@@ -116,7 +116,6 @@ class AIChooserPanelMixin(Panel):
 
         def get_context_data(self, parent_context=None):
             context = super().get_context_data(parent_context=parent_context) or {}
-            context["parent_prefix"] = self.prefix.replace("content-child-", "content-")
             context["original_template_name"] = self.original_template_name
             return context
 
