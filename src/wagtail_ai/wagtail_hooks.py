@@ -45,7 +45,7 @@ def register_admin_urls():
             name="content_feedback",
         ),
         path(
-            "suggested-content/",
+            "suggested_content/",
             suggested_content_agent.as_view(),
             name="suggested_content",
         ),
