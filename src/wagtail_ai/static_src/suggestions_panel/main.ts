@@ -41,10 +41,19 @@ class SuggestionsPanelController extends Controller<HTMLElement> {
   declare chunkSizeValue: number;
   declare suggestButtonTarget: HTMLButtonElement;
   abortController: AbortController | null = null;
-  panelComponent: any | null = null;
+  #panelComponent: any | null = null;
 
   connect() {
     this.stateValue = SuggestionState.INITIAL;
+  }
+
+  get panelComponent() {
+    if (!this.#panelComponent) {
+      this.#panelComponent = window.wagtail.editHandler.getPanelByName(
+        this.relationNameValue,
+      )!;
+    }
+    return this.#panelComponent;
   }
 
   addItem(item: any) {
@@ -145,11 +154,6 @@ class SuggestionsPanelController extends Controller<HTMLElement> {
   }
 
   updateControlStates() {
-    if (!this.panelComponent) {
-      this.panelComponent = window.wagtail.editHandler.getPanelByName(
-        this.relationNameValue,
-      )!;
-    }
     const maxForms = this.panelComponent.opts.maxForms;
     const atLimit = maxForms && this.panelComponent.getChildCount() >= maxForms;
     const noMoreSuggestions = this.stateValue === SuggestionState.NO_MORE;
