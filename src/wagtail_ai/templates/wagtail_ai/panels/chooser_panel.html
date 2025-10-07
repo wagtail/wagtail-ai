@@ -1,26 +1,26 @@
 {% load i18n l10n wagtailadmin_tags %}
 
-<div class="wai-suggestions__forms">
+<div class="wai-chooser-panel__forms">
     {% include "./_ai_chooser_panel.html" %}
 </div>
 
-<div class="wai-suggestions__loading">
+<div class="wai-chooser-panel__loading">
     <div>
         {% icon name="spinner" classname="w-w-8 w-h-8" %}
     </div>
-    <div class="wai-suggestions__loading-message">
+    <div class="wai-chooser-panel__loading-message">
         {% translate "Looking for relevant pages…" %}
     </div>
-    <button type="button" class="button button-secondary button-small" data-action="click->wai-suggestions#cancel">
+    <button type="button" class="button button-secondary button-small" data-action="click->wai-chooser-panel#cancel">
         {% translate "Cancel" %}
     </button>
 </div>
 
-<div class="wai-suggestions__error">
+<div class="wai-chooser-panel__error">
     <div>
         {% icon name="warning" classname="w-w-8 w-h-8" %}
     </div>
-    <div class="wai-suggestions__error-message">
+    <div class="wai-chooser-panel__error-message">
         {% translate "An error occurred while processing your request. Please try again." %}
     </div>
 </div>

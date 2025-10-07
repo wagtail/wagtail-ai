@@ -2,7 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 import './main.css';
 import { getPreviewContent } from '../preview';
 
-enum SuggestionState {
+enum ChooserSuggestionState {
   INITIAL = 'initial',
   LOADING = 'loading',
   ERROR = 'error',
@@ -10,7 +10,7 @@ enum SuggestionState {
   NO_MORE = 'no_more',
 }
 
-class SuggestionsPanelController extends Controller<HTMLElement> {
+class ChooserPanelController extends Controller<HTMLElement> {
   static targets = ['suggestButton'];
   static values = {
     relationName: String,
@@ -19,7 +19,7 @@ class SuggestionsPanelController extends Controller<HTMLElement> {
       type: String,
     },
     state: {
-      default: SuggestionState.INITIAL,
+      default: ChooserSuggestionState.INITIAL,
       type: String,
     },
     seenPks: {
@@ -37,14 +37,14 @@ class SuggestionsPanelController extends Controller<HTMLElement> {
   declare vectorIndexValue: string;
   declare limitValue: number;
   declare seenPksValue: [string?];
-  declare stateValue: SuggestionState;
+  declare stateValue: ChooserSuggestionState;
   declare chunkSizeValue: number;
   declare suggestButtonTarget: HTMLButtonElement;
   abortController: AbortController | null = null;
   #panelComponent: any | null = null;
 
   connect() {
-    this.stateValue = SuggestionState.INITIAL;
+    this.stateValue = ChooserSuggestionState.INITIAL;
   }
 
   get panelComponent() {
@@ -66,7 +66,7 @@ class SuggestionsPanelController extends Controller<HTMLElement> {
       `[data-inline-panel-child]:has(#${chooserFieldId})`,
     );
     if (chooserPanel) {
-      chooserPanel.setAttribute('data-wai-suggestions-suggested', 'true');
+      chooserPanel.setAttribute(`data-${this.identifier}-suggested`, 'true');
       const chooserWidget = panel.chooserWidgetFactory.getById(chooserFieldId);
       chooserWidget.setState({
         id: item.id,
@@ -131,7 +131,7 @@ class SuggestionsPanelController extends Controller<HTMLElement> {
 
   clearSuggestions() {
     const suggestions = this.element.querySelectorAll(
-      '[data-wai-suggestions-suggested="true"]',
+      `[data-${this.identifier}-suggested="true"]`,
     );
     suggestions.forEach((el) => el.remove());
     this.panelComponent.totalFormsInput.val(
@@ -156,7 +156,8 @@ class SuggestionsPanelController extends Controller<HTMLElement> {
   updateControlStates() {
     const maxForms = this.panelComponent.opts.maxForms;
     const atLimit = maxForms && this.panelComponent.getChildCount() >= maxForms;
-    const noMoreSuggestions = this.stateValue === SuggestionState.NO_MORE;
+    const noMoreSuggestions =
+      this.stateValue === ChooserSuggestionState.NO_MORE;
 
     if (atLimit || noMoreSuggestions) {
       this.suggestButtonTarget.disabled = true;
@@ -171,7 +172,7 @@ class SuggestionsPanelController extends Controller<HTMLElement> {
 
   async suggest() {
     this.abortController = new AbortController();
-    this.stateValue = SuggestionState.LOADING;
+    this.stateValue = ChooserSuggestionState.LOADING;
 
     try {
       const suggestions = await this.getSuggestions();
@@ -182,19 +183,19 @@ class SuggestionsPanelController extends Controller<HTMLElement> {
           this.seenPksValue.push(item.id);
           this.addItem(item);
         });
-        this.stateValue = SuggestionState.SUGGESTED;
+        this.stateValue = ChooserSuggestionState.SUGGESTED;
       } else {
-        this.stateValue = SuggestionState.NO_MORE;
+        this.stateValue = ChooserSuggestionState.NO_MORE;
       }
       this.updateControlStates();
     } catch (error) {
       if (this.abortController?.signal.aborted) {
-        this.stateValue = SuggestionState.INITIAL;
+        this.stateValue = ChooserSuggestionState.INITIAL;
         this.abortController = null;
         return;
       }
       console.error('Error parsing AI response:', error);
-      this.stateValue = SuggestionState.ERROR;
+      this.stateValue = ChooserSuggestionState.ERROR;
       return;
     }
   }
@@ -204,11 +205,11 @@ class SuggestionsPanelController extends Controller<HTMLElement> {
   }
 
   async clear() {
-    this.stateValue = SuggestionState.INITIAL;
+    this.stateValue = ChooserSuggestionState.INITIAL;
     this.seenPksValue.length = 0;
     this.clearSuggestions();
     this.updateControlStates();
   }
 }
 
-window.wagtail.app.register('wai-suggestions', SuggestionsPanelController);
+window.wagtail.app.register('wai-chooser-panel', ChooserPanelController);

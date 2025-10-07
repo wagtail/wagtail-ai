@@ -82,12 +82,12 @@ class AIChooserPanelMixin(Panel):
     @classproperty
     def BASE_ATTRS(cls):
         base = super().BASE_ATTRS
-        controllers = [base.get("data-controller", ""), "wai-suggestions"]
+        controllers = [base.get("data-controller", ""), "wai-chooser-panel"]
         actions = [
             base.get("data-action", ""),
-            "w-formset:removed->wai-suggestions#updateControlStates",
-            "w-formset:added->wai-suggestions#updateControlStates",
-            "w-formset:ready->wai-suggestions#updateControlStates",
+            "w-formset:removed->wai-chooser-panel#updateControlStates",
+            "w-formset:added->wai-chooser-panel#updateControlStates",
+            "w-formset:ready->wai-chooser-panel#updateControlStates",
         ]
         return {
             **base,
@@ -105,13 +105,15 @@ class AIChooserPanelMixin(Panel):
         @property
         def attrs(self):
             attrs = super().attrs
-            attrs["data-wai-suggestions-relation-name-value"] = self.panel.relation_name
-            attrs["data-wai-suggestions-instance-pk-value"] = (
+            attrs["data-wai-chooser-panel-relation-name-value"] = (
+                self.panel.relation_name
+            )
+            attrs["data-wai-chooser-panel-instance-pk-value"] = (
                 self.instance.pk if self.instance else None
             )
-            attrs["data-wai-suggestions-limit-value"] = self.panel.suggest_limit
-            attrs["data-wai-suggestions-vector-index-value"] = self.panel.vector_index
-            attrs["data-wai-suggestions-chunk-size-value"] = self.panel.chunk_size
+            attrs["data-wai-chooser-panel-limit-value"] = self.panel.suggest_limit
+            attrs["data-wai-chooser-panel-vector-index-value"] = self.panel.vector_index
+            attrs["data-wai-chooser-panel-chunk-size-value"] = self.panel.chunk_size
             return attrs
 
         def get_context_data(self, parent_context=None):
@@ -127,6 +129,6 @@ class AIChooserPanelMixin(Panel):
             )
 
 
-class AISuggestionsPanel(AIChooserPanelMixin, MultipleChooserPanel):
+class AIMultipleChooserPanel(AIChooserPanelMixin, MultipleChooserPanel):
     class BoundPanel(AIChooserPanelMixin.BoundPanel, MultipleChooserPanel.BoundPanel):  # type: ignore
         pass

@@ -2,29 +2,29 @@
 {% load wagtailadmin_tags i18n %}
 
 {% block add_button %}
-    <div class="wai-suggestions__buttons">
+    <div class="wai-chooser-panel__buttons">
         {{ block.super }}
 
         <button
             type="button"
-            class="button button-small button-secondary chooser__choose-button wai-suggestions__button-suggest"
-            data-wai-suggestions-target="suggestButton"
-            data-action="click->wai-suggestions#suggest">
+            class="button button-small button-secondary chooser__choose-button wai-chooser-panel__button-suggest"
+            data-wai-chooser-panel-target="suggestButton"
+            data-action="click->wai-chooser-panel#suggest">
             {% icon name=icon|default:"wand" %}
-            <span class="wai-suggestions__suggest-label">
+            <span class="wai-chooser-panel__suggest-label">
                 {% translate "Suggest" %}
             </span>
-            <span class="wai-suggestions__suggest-more-label">
+            <span class="wai-chooser-panel__suggest-more-label">
                 {% translate "Suggest different" %}
             </span>
-            <span class="wai-suggestions__no-more-label">
+            <span class="wai-chooser-panel__no-more-label">
                 {% translate "No results remaining" %}
             </span>
         </button>
         <button
             type="button"
-            class="button button-small button-secondary chooser__choose-button wai-suggestions__button-clear"
-            data-action="click->wai-suggestions#clear">
+            class="button button-small button-secondary chooser__choose-button wai-chooser-panel__button-clear"
+            data-action="click->wai-chooser-panel#clear">
             {% translate "Clear suggestions" %}
         </button>
     </div>
