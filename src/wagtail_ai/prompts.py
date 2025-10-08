@@ -1,13 +1,5 @@
 from collections.abc import Sequence
-from enum import IntEnum
 from typing import NotRequired, Required, TypedDict
-
-
-class DefaultPrompt(IntEnum):
-    """A unique ID used to identify and manage default prompts."""
-
-    CORRECTION = 1
-    COMPLETION = 2
 
 
 class PromptDict(TypedDict):
@@ -20,7 +12,7 @@ class PromptDict(TypedDict):
 
 DEFAULT_PROMPTS: Sequence[PromptDict] = [
     {
-        "default_prompt_id": DefaultPrompt.CORRECTION,
+        "default_prompt_id": 1,
         "label": "AI Correction",
         "description": "Correct grammar and spelling",
         "prompt": (
@@ -32,7 +24,7 @@ DEFAULT_PROMPTS: Sequence[PromptDict] = [
         "method": "replace",
     },
     {
-        "default_prompt_id": DefaultPrompt.COMPLETION,
+        "default_prompt_id": 2,
         "label": "AI Completion",
         "description": "Get help writing more content based on what you've written",
         "prompt": (

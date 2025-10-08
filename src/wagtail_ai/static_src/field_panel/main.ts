@@ -1,6 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import './main.css';
-import { DefaultPrompt, PromptMethod } from '../constants';
+import { PromptMethod } from '../constants';
 import { Prompt, SettingPrompt } from '../custom';
 import { getPreviewContent } from '../preview';
 
@@ -77,7 +77,7 @@ class FieldPanelController extends Controller<HTMLElement> {
    * An array of `Prompt.default_prompt_id` or `SettingPrompt.name` used for
    * filtering the available prompts.
    */
-  declare promptsValue: Array<DefaultPrompt | string>;
+  declare promptsValue: Array<number | string>;
   declare stateValue: FieldPanelState;
   declare suggestionValue: string;
   declare filteredPrompts: Array<Prompt | SettingPrompt>;
