@@ -1,4 +1,3 @@
-import json
 from typing import cast
 from urllib.parse import SplitResult
 
@@ -8,7 +7,7 @@ from pytest_django import DjangoAssertNumQueries
 from wagtail.images.models import Image
 from wagtail_factories import ImageFactory
 
-from wagtail_ai.context import PromptContext, PromptJSONDecoder
+from wagtail_ai.context import PromptContext
 
 
 def test_missing_key():
@@ -19,16 +18,6 @@ def test_missing_key():
     assert context["company"] == "{company}"
     result = prompt.format_map(context)
     assert result == "My name is Gordon and I am a Scientist. I work at {company}."
-
-
-def test_json_decoder():
-    json_str = '{"name": "Gordon", "role": "Scientist"}'
-    context = json.loads(json_str, cls=PromptJSONDecoder)
-    assert isinstance(context, PromptContext)
-    prompt = "Write an introduction for {name}, a {role}."
-    context.clean(prompt)
-    result = prompt.format_map(context)
-    assert result == "Write an introduction for Gordon, a Scientist."
 
 
 @pytest.mark.django_db

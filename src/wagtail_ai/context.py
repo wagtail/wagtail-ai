@@ -1,4 +1,3 @@
-import json
 from string import Formatter
 from typing import Any, Type, cast
 from urllib.parse import SplitResult, urlsplit
@@ -49,16 +48,6 @@ class PromptContext(dict[str, Any]):
                 self[key] = self.validators[key](self)
             elif key not in self:
                 self[key] = "{%s}" % key
-
-
-class PromptJSONDecoder(json.JSONDecoder):
-    """
-    A JSON decoder that uses ``PromptContext`` in place of a plain ``dict``
-    when parsing a JSON object.
-    """
-
-    def __init__(self, *args, object_pairs_hook=PromptContext, **kwargs):
-        super().__init__(*args, object_pairs_hook=object_pairs_hook, **kwargs)
 
 
 def image_id_validator(context) -> File | SplitResult | None:
