@@ -89,7 +89,6 @@ def text_completion(request) -> JsonResponse:
         return ErrorJsonResponse(prompt_form.errors_for_json_response(), status=400)
 
     prompt = prompt_form.cleaned_data["prompt"]
-    context = prompt_form.cleaned_data["context"]
 
     handlers = {
         Prompt.Method.REPLACE: _replace_handler,
@@ -99,12 +98,7 @@ def text_completion(request) -> JsonResponse:
     handler = handlers[Prompt.Method(prompt.method)]
 
     try:
-        if context is None:
-            response = handler(prompt=prompt, text=prompt_form.cleaned_data["text"])
-        else:
-            backend = ai.get_backend()
-            prompt_text = prompt.prompt_value
-            response = backend.prompt(prompt=prompt_text, context=context).text()
+        response = handler(prompt=prompt, text=prompt_form.cleaned_data["text"])
     except AIHandlerException as e:
         return ErrorJsonResponse(str(e), status=400)
     except Exception:
