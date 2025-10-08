@@ -40,8 +40,8 @@ def test_process_view_get_request(admin_client):
     response = admin_client.get(url)
     assert response.status_code == 400
     assert response.json() == {
-        "error": "Invalid prompt provided. "
-        "\nNo text provided - please enter some text before using AI features."
+        "error": "No text provided - please enter some text before using AI features. "
+        "\nInvalid prompt provided."
     }
 
 
@@ -51,8 +51,8 @@ def test_process_view_post_without_text(admin_client):
     response = admin_client.post(url, data={})
     assert response.status_code == 400
     assert response.json() == {
-        "error": "Invalid prompt provided. "
-        "\nNo text provided - please enter some text before using AI features."
+        "error": "No text provided - please enter some text before using AI features. "
+        "\nInvalid prompt provided."
     }
 
 
