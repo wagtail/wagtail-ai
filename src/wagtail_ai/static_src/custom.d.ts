@@ -11,15 +11,18 @@ export enum ApiUrlName {
   TEXT_COMPLETION = 'TEXT_COMPLETION',
   DESCRIBE_IMAGE = 'DESCRIBE_IMAGE',
   CONTENT_FEEDBACK = 'CONTENT_FEEDBACK',
+  BASIC_PROMPT = 'BASIC_PROMPT',
   SUGGESTED_CONTENT = 'SUGGESTED_CONTENT',
 }
 
 export interface WagtailAiConfiguration {
   aiPrompts: Prompt[];
+  settingPrompts: SettingPrompt[];
   urls: {
     [ApiUrlName.TEXT_COMPLETION]: string;
     [ApiUrlName.DESCRIBE_IMAGE]: string;
     [ApiUrlName.CONTENT_FEEDBACK]: string;
+    [ApiUrlName.BASIC_PROMPT]: string;
     [ApiUrlName.SUGGESTED_CONTENT]: string;
   };
 }
@@ -32,6 +35,17 @@ export type Prompt = {
   prompt: string;
   method: PromptMethod;
 };
+
+/**
+ * Temporary compatibility shim for prompts in `AgentSettings` to be used
+ * in place of the Prompt model.
+ */
+export interface SettingPrompt {
+  name: string;
+  label: string;
+  description: string;
+  prompt: string;
+}
 
 export interface WagtailApplication extends Application {
   queryController: <T extends Controller>(name: string) => T | null;

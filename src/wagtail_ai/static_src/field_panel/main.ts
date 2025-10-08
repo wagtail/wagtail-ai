@@ -1,8 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
-import { fetchResponse } from '../api';
 import './main.css';
 import { DefaultPrompt, PromptMethod } from '../constants';
-import { Prompt } from '../custom';
+import { Prompt, SettingPrompt } from '../custom';
 import { getPreviewContent } from '../preview';
 
 interface PromptOptions {
@@ -74,13 +73,17 @@ class FieldPanelController extends Controller<HTMLElement> {
   declare dropdownTemplateValue: string;
   declare imageInputValue: string;
   declare mainInputValue: string;
-  declare promptsValue: DefaultPrompt[];
+  /**
+   * An array of `Prompt.default_prompt_id` or `SettingPrompt.name` used for
+   * filtering the available prompts.
+   */
+  declare promptsValue: Array<DefaultPrompt | string>;
   declare stateValue: FieldPanelState;
   declare suggestionValue: string;
-  declare filteredPrompts: Prompt[];
+  declare filteredPrompts: Array<Prompt | SettingPrompt>;
   declare fieldInput: HTMLElement;
   declare input: InputType;
-  activePrompt: Prompt | null = null;
+  activePrompt: Prompt | SettingPrompt | null = null;
   abortController: AbortController | null = null;
   imageInput: HTMLInputElement | null = null;
   dropdownController: DropdownController | null = null;
@@ -199,14 +202,18 @@ class FieldPanelController extends Controller<HTMLElement> {
     return root;
   }
 
-  getDropdownItemTemplate(prompt: Prompt) {
+  #getPromptId(prompt: Prompt | SettingPrompt) {
+    return 'uuid' in prompt ? prompt.uuid : prompt.name;
+  }
+
+  getDropdownItemTemplate(prompt: Prompt | SettingPrompt) {
     return /* html */ `
       <button
         type="button"
         class="wai-dropdown__item"
         data-action="click->wai-field-panel#prompt"
         data-wai-field-panel-target="prompt"
-        data-wai-field-panel-prompt-id-param="${prompt.uuid}"
+        data-wai-field-panel-prompt-id-param="${this.#getPromptId(prompt)}"
       >
         <div>${prompt.label}</div>
         <div class="wai-dropdown__description">${prompt.description}</div>
@@ -379,20 +386,28 @@ class FieldPanelController extends Controller<HTMLElement> {
   }
 
   promptsValueChanged() {
+    const allPrompts = ([] as Array<Prompt | SettingPrompt>).concat(
+      window.wagtailAI.config.aiPrompts,
+      window.wagtailAI.config.settingPrompts,
+    );
     if (!this.promptsValue.length) {
-      this.filteredPrompts = window.wagtailAI.config.aiPrompts;
+      this.filteredPrompts = allPrompts;
       return;
     }
-    this.filteredPrompts = window.wagtailAI.config.aiPrompts.filter(
-      ({ default_prompt_id }) =>
-        default_prompt_id && this.promptsValue.includes(default_prompt_id),
-    );
+    this.filteredPrompts = allPrompts.filter((prompt) => {
+      if ('default_prompt_id' in prompt) {
+        if (prompt.default_prompt_id)
+          return this.promptsValue.includes(prompt.default_prompt_id);
+        return false;
+      }
+      return this.promptsValue.includes(prompt.name);
+    });
   }
 
   activePromptIdValueChanged() {
     this.activePrompt =
-      window.wagtailAI.config.aiPrompts.find(
-        (p) => p.uuid === this.activePromptIdValue,
+      this.filteredPrompts.find(
+        (p) => this.#getPromptId(p) === this.activePromptIdValue,
       ) ?? null;
   }
 
@@ -410,18 +425,28 @@ class FieldPanelController extends Controller<HTMLElement> {
     // Call the callback manually to ensure `this.activePrompt` is set.
     this.activePromptIdValueChanged();
 
-    const data = new FormData();
-    data.append('context', JSON.stringify(await ContextProvider.get(this)));
-    data.append('prompt', promptId!);
+    const data = {
+      context: await ContextProvider.get(this),
+      prompt: this.activePrompt!.prompt,
+    };
 
     let result = '';
     try {
       this.abortController = new AbortController();
-      result = await fetchResponse(
-        'TEXT_COMPLETION',
-        data,
-        this.abortController!.signal,
-      );
+      const response = await fetch(window.wagtailAI.config.urls.BASIC_PROMPT, {
+        method: 'POST',
+        headers: {
+          [wagtailConfig.CSRF_HEADER_NAME]: wagtailConfig.CSRF_TOKEN,
+        },
+        body: JSON.stringify({ arguments: data }),
+        signal: this.abortController?.signal,
+      });
+      if (!response.ok) {
+        throw new Error(
+          `Error fetching AI response: ${response.status} ${response.statusText}`,
+        );
+      }
+      result = await response.json().then(({ data }) => data);
     } catch (error) {
       if (this.abortController?.signal.aborted) {
         this.stateValue = FieldPanelState.IDLE;
@@ -478,7 +503,11 @@ class FieldPanelController extends Controller<HTMLElement> {
   }
 
   useSuggestion() {
-    if (this.activePrompt?.method === PromptMethod.APPEND) {
+    if (
+      this.activePrompt &&
+      'method' in this.activePrompt &&
+      this.activePrompt.method === PromptMethod.APPEND
+    ) {
       this.inputValue += this.suggestionValue;
     } else {
       this.inputValue = this.suggestionValue;

@@ -80,11 +80,81 @@ class Prompt(models.Model, index.Indexed):
         return self.prompt
 
 
+class AgentPromptDefaults:
+    @classmethod
+    def page_title_prompt(cls):
+        return (
+            "Create an SEO-friendly page title, and respond ONLY with the title "
+            "in plain text, for the following "
+            "web page content:\n\n"
+            "{content_text}"
+        )
+
+    @classmethod
+    def page_description_prompt(cls):
+        return (
+            "Create an SEO-friendly meta description, and respond ONLY with the "
+            "description in plain text for the following web page content:\n\n"
+            "{content_text}"
+        )
+
+    @classmethod
+    def image_title_prompt(cls):
+        return (
+            "Generate a title (in plain text, no longer than "
+            "{max_length} characters) for the following image: {image_id}"
+        )
+
+    @classmethod
+    def image_description_prompt(cls):
+        return (
+            "Generate a description (in plain text, no longer than "
+            "{max_length} characters) for the following image: {image_id}"
+        )
+
+    @classmethod
+    def contextual_alt_text_prompt(cls):
+        return """Generate an alt text (and only the text) for the following image:
+{image_id}
+
+Make the alt text relevant to the following content shown before the image:
+
+---
+{form_context_before}
+---
+
+and also relevant to the following content shown after the image:
+
+---
+{form_context_after}
+---"""
+
+
 class AgentSettingsMixin(models.Model):
     class ContentFeedbackContentType(models.TextChoices):
         TEXT = "text", _("Plain text")
         HTML = "html", _("HTML")
 
+    page_title_prompt = models.TextField(
+        blank=True,
+        default=AgentPromptDefaults.page_title_prompt,
+    )
+    page_description_prompt = models.TextField(
+        blank=True,
+        default=AgentPromptDefaults.page_description_prompt,
+    )
+    image_title_prompt = models.TextField(
+        blank=True,
+        default=AgentPromptDefaults.image_title_prompt,
+    )
+    image_description_prompt = models.TextField(
+        blank=True,
+        default=AgentPromptDefaults.image_description_prompt,
+    )
+    contextual_alt_text_prompt = models.TextField(
+        blank=True,
+        default=AgentPromptDefaults.contextual_alt_text_prompt,
+    )
     content_feedback_prompt = models.TextField(blank=True)
     content_feedback_content_type = models.CharField(
         max_length=64,
@@ -93,6 +163,50 @@ class AgentSettingsMixin(models.Model):
     )
 
     panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel(
+                    "page_title_prompt",
+                    heading=_("Page title prompt"),
+                    help_text=_("Prompt to use for generating page titles."),
+                ),
+                FieldPanel(
+                    "page_description_prompt",
+                    heading=_("Page description prompt"),
+                    help_text=_("Prompt to use for generating page descriptions."),
+                ),
+            ],
+            heading=_("Page metadata"),
+        ),
+        MultiFieldPanel(
+            [
+                FieldPanel(
+                    "image_title_prompt",
+                    heading=_("Image title prompt"),
+                    help_text=_(
+                        "Prompt to use for generating image titles when uploading or "
+                        "editing an image."
+                    ),
+                ),
+                FieldPanel(
+                    "image_description_prompt",
+                    heading=_("Image description prompt"),
+                    help_text=_(
+                        "Prompt to use for generating image descriptions when "
+                        "uploading or editing an image."
+                    ),
+                ),
+                FieldPanel(
+                    "contextual_alt_text_prompt",
+                    heading=_("Contextual alt text prompt"),
+                    help_text=_(
+                        "Prompt to use for generating contextual image alt text "
+                        "in the page editor."
+                    ),
+                ),
+            ],
+            heading=_("Images"),
+        ),
         MultiFieldPanel(
             [
                 FieldPanel(
@@ -116,6 +230,20 @@ class AgentSettingsMixin(models.Model):
     class Meta:  # type: ignore
         abstract = True
         verbose_name = _("Agents")
+
+    def clean_fields(self, exclude=None):
+        super().clean_fields(exclude)
+        # Ensure these prompts have a value, falling back to defaults if needed.
+        for field_name in [
+            "page_title_prompt",
+            "page_description_prompt",
+            "image_title_prompt",
+            "image_description_prompt",
+            "contextual_alt_text_prompt",
+        ]:
+            field_value = getattr(self, field_name)
+            if not field_value:
+                setattr(self, field_name, getattr(AgentPromptDefaults, field_name)())
 
 
 class AgentSettings(AgentSettingsMixin, BaseGenericSetting):

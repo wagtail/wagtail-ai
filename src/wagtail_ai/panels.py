@@ -11,6 +11,8 @@ from wagtail.admin.panels import (
 )
 from wagtail.admin.staticfiles import versioned_static
 
+from wagtail_ai.agents.basic_prompt import PageDescriptionPrompt, PageTitlePrompt
+
 if TYPE_CHECKING:
     from django_ai_core.contrib.index import VectorIndex
 
@@ -50,8 +52,20 @@ class AIFieldPanel(AIPanelMixin, FieldPanel):
 
 
 class AITitleFieldPanel(AIPanelMixin, TitleFieldPanel):
+    def __init__(self, *args, prompts=None, **kwargs):
+        if prompts is None:
+            prompts = [PageTitlePrompt.name]
+        super().__init__(*args, prompts=prompts, **kwargs)
+
     class BoundPanel(AIPanelMixin.BoundPanel, TitleFieldPanel.BoundPanel):  # type: ignore
         pass
+
+
+class AIDescriptionFieldPanel(AIFieldPanel):
+    def __init__(self, *args, prompts=None, **kwargs):
+        if prompts is None:
+            prompts = [PageDescriptionPrompt.name]
+        super().__init__(*args, prompts=prompts, **kwargs)
 
 
 class AIChooserPanelMixin(Panel):

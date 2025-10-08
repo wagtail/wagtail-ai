@@ -1,3 +1,4 @@
+import json
 from http import HTTPStatus
 from typing import cast
 from unittest.mock import ANY, Mock, call
@@ -10,9 +11,9 @@ from django.urls import reverse
 from wagtail.images.models import Image
 from wagtail_factories import ImageFactory
 
+from wagtail_ai.agents.basic_prompt import ImageDescriptionPrompt, ImageTitlePrompt
 from wagtail_ai.ai import echo
 from wagtail_ai.forms import ImageDescriptionWidgetMixin
-from wagtail_ai.prompts import DefaultPrompt
 
 pytestmark = pytest.mark.django_db
 
@@ -198,9 +199,8 @@ def test_enabled_on_image_upload(admin_client, get_soup):
     assert title.get("maxlength") == "255"
     assert title.has_attr("data-wai-field-panel-image-id") is False
     assert title.get("data-wai-field-panel-image-input-value") == "#id_file"
-    assert (
-        title.get("data-wai-field-panel-prompts-value")
-        == f"[{DefaultPrompt.IMAGE_TITLE}]"
+    assert title.get("data-wai-field-panel-prompts-value") == json.dumps(
+        [ImageTitlePrompt.name]
     )
 
     description = form.select_one('[name="description"]')
@@ -209,9 +209,8 @@ def test_enabled_on_image_upload(admin_client, get_soup):
     assert description.get("maxlength") == "255"
     assert title.has_attr("data-wai-field-panel-image-id") is False
     assert description.get("data-wai-field-panel-image-input-value") == "#id_file"
-    assert (
-        description.get("data-wai-field-panel-prompts-value")
-        == f"[{DefaultPrompt.IMAGE_DESCRIPTION}]"
+    assert description.get("data-wai-field-panel-prompts-value") == json.dumps(
+        [ImageDescriptionPrompt.name]
     )
 
 
@@ -232,9 +231,8 @@ def test_enabled_on_image_edit(admin_client, get_soup):
     assert title.has_attr("data-wai-field-panel-image-id") is True
     assert title.get("data-wai-field-panel-image-id") == str(image.pk)
     assert title.get("data-wai-field-panel-image-input-value") == "#id_file"
-    assert (
-        title.get("data-wai-field-panel-prompts-value")
-        == f"[{DefaultPrompt.IMAGE_TITLE}]"
+    assert title.get("data-wai-field-panel-prompts-value") == json.dumps(
+        [ImageTitlePrompt.name]
     )
 
     description = form.select_one('[name="description"]')
@@ -244,9 +242,8 @@ def test_enabled_on_image_edit(admin_client, get_soup):
     assert title.has_attr("data-wai-field-panel-image-id") is True
     assert description.get("data-wai-field-panel-image-id") == str(image.pk)
     assert description.get("data-wai-field-panel-image-input-value") == "#id_file"
-    assert (
-        description.get("data-wai-field-panel-prompts-value")
-        == f"[{DefaultPrompt.IMAGE_DESCRIPTION}]"
+    assert description.get("data-wai-field-panel-prompts-value") == json.dumps(
+        [ImageDescriptionPrompt.name]
     )
 
 
@@ -267,8 +264,7 @@ def test_image_description_widget_with_textarea(get_soup):
     assert textarea.get("maxlength") == "512"
     assert textarea.get("data-wai-field-panel-image-id") == "123"
     assert textarea.get("data-wai-field-panel-image-input-value") == "#id_file"
-    assert (
-        textarea.get("data-wai-field-panel-prompts-value")
-        == f"[{DefaultPrompt.IMAGE_DESCRIPTION}]"
+    assert textarea.get("data-wai-field-panel-prompts-value") == json.dumps(
+        [ImageDescriptionPrompt.name]
     )
     assert textarea.text.strip() == "A portrait of a Wagtail."

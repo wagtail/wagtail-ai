@@ -4,7 +4,7 @@ import pytest
 from bs4 import BeautifulSoup, Tag
 from django.urls import reverse
 
-from wagtail_ai.prompts import DefaultPrompt
+from wagtail_ai.agents.basic_prompt import PageDescriptionPrompt
 
 pytestmark = pytest.mark.django_db
 
@@ -21,7 +21,7 @@ def test_search_description_uses_ai_field_panel(admin_client, get_soup):
     panel = input.css.closest('[data-controller="wai-field-panel"]')
     assert isinstance(panel, Tag)
     assert panel.get("data-wai-field-panel-prompts-value") == json.dumps(
-        [DefaultPrompt.DESCRIPTION]
+        [PageDescriptionPrompt.name]
     )
 
     # There must be a template for the dropdown to be rendered by the controller

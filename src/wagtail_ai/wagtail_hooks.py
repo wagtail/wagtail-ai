@@ -1,5 +1,5 @@
 import uuid
-from typing import NotRequired, Required, TypedDict
+from typing import NotRequired, Required, TypedDict, cast
 
 from django.forms.utils import flatatt
 from django.template.loader import render_to_string
@@ -12,7 +12,8 @@ from wagtail.admin.rich_text.editors.draftail.features import ControlFeature
 from wagtail.admin.staticfiles import versioned_static
 from wagtail.contrib.settings.models import register_setting
 
-from wagtail_ai.agents.base import get_agent_settings_model
+from wagtail_ai.agents.base import get_agent_settings, get_agent_settings_model
+from wagtail_ai.agents.basic_prompt import BasicPromptAgent
 
 from .models import Prompt
 from .views import describe_image, prompt_viewset, text_completion
@@ -21,6 +22,7 @@ from .views import describe_image, prompt_viewset, text_completion
 @hooks.register("register_admin_urls")  # type: ignore
 def register_admin_urls():
     content_feedback_agent = registry.get("wai_content_feedback")
+    basic_prompt_agent = registry.get("wai_basic_prompt")
     suggested_content_agent = registry.get("wai_suggested_content")
 
     urls = [
@@ -43,6 +45,11 @@ def register_admin_urls():
             "content_feedback/",
             content_feedback_agent.as_view(),
             name="content_feedback",
+        ),
+        path(
+            "basic_prompt/",
+            basic_prompt_agent.as_view(),
+            name="basic_prompt",
         ),
         path(
             "suggested_content/",
@@ -106,6 +113,23 @@ def get_prompts():
     return [_serialize_prompt(prompt) for prompt in Prompt.objects.all()]
 
 
+def get_setting_prompts():
+    settings = get_agent_settings()
+    basic_prompt_agent = cast(
+        type[BasicPromptAgent],
+        registry.get("wai_basic_prompt"),
+    )
+    return [
+        {
+            "name": prompt.name,
+            "label": prompt.label,
+            "description": prompt.description,
+            "prompt": getattr(settings, prompt.name),
+        }
+        for prompt in basic_prompt_agent.settings_prompts
+    ]
+
+
 @hooks.register("insert_global_admin_css")  # type: ignore
 def ai_admin_css():
     return format_html(
@@ -117,10 +141,12 @@ def ai_admin_css():
 def ai_admin_js():
     config = {
         "aiPrompts": get_prompts(),
+        "settingPrompts": get_setting_prompts(),
         "urls": {
             "TEXT_COMPLETION": reverse("wagtail_ai:text_completion"),
             "DESCRIBE_IMAGE": reverse("wagtail_ai:describe_image"),
             "CONTENT_FEEDBACK": reverse("wagtail_ai:content_feedback"),
+            "BASIC_PROMPT": reverse("wagtail_ai:basic_prompt"),
             "SUGGESTED_CONTENT": reverse("wagtail_ai:suggested_content"),
         },
     }

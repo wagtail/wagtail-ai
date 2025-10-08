@@ -1,7 +1,9 @@
+import json
+
 from wagtail.images.blocks import ImageBlock
 
+from wagtail_ai.agents.basic_prompt import ContextualAltTextPrompt
 from wagtail_ai.blocks import AIImageBlock, get_image_block_form_attrs
-from wagtail_ai.prompts import DefaultPrompt
 
 
 class TestGetImageBlockFormAttrs:
@@ -17,9 +19,8 @@ class TestGetImageBlockFormAttrs:
             attrs["data-wai-field-panel-image-input-value"]
             == '[data-contentpath="image"] input'
         )
-        assert (
-            attrs["data-wai-field-panel-prompts-value"]
-            == f"[{DefaultPrompt.CONTEXTUAL_ALT_TEXT}]"
+        assert attrs["data-wai-field-panel-prompts-value"] == json.dumps(
+            [ContextualAltTextPrompt.name]
         )
 
     def test_custom_field_names(self):
@@ -37,9 +38,8 @@ class TestGetImageBlockFormAttrs:
             attrs["data-wai-field-panel-image-input-value"]
             == '[data-contentpath="custom_image"] input'
         )
-        assert (
-            attrs["data-wai-field-panel-prompts-value"]
-            == f"[{DefaultPrompt.CONTEXTUAL_ALT_TEXT}]"
+        assert attrs["data-wai-field-panel-prompts-value"] == json.dumps(
+            [ContextualAltTextPrompt.name]
         )
 
 
@@ -62,9 +62,8 @@ class TestAIImageBlock:
             form_attrs["data-wai-field-panel-image-input-value"]
             == '[data-contentpath="image"] input'
         )
-        assert (
-            form_attrs["data-wai-field-panel-prompts-value"]
-            == f"[{DefaultPrompt.CONTEXTUAL_ALT_TEXT}]"
+        assert form_attrs["data-wai-field-panel-prompts-value"] == json.dumps(
+            [ContextualAltTextPrompt.name]
         )
 
     def test_uses_default_form_attrs(self):
