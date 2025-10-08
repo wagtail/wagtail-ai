@@ -1,8 +1,6 @@
 import os
 import re
 from typing import cast
-from urllib.parse import urlsplit
-from urllib.request import urlopen
 
 import llm
 import pytest
@@ -68,38 +66,25 @@ def test_llm_custom_init_kwargs(llm_backend_class):
         },
     }
 )
-def test_llm_prompt(mocker, image_data_url):
+def test_llm_prompt(mocker):
     image = cast(Image, ImageFactory())
     backend = get_ai_backend("default")
     assert backend.config.prompt_kwargs == {"system": "This is a test system prompt."}
     prompt_mock = mocker.patch("wagtail_ai.ai.llm.llm.models._Model.prompt")
 
-    context = {
-        "name": "Gordon",
-        "image": image.file,
-        "id_card": urlsplit(image_data_url),
-    }
+    context = {"name": "Gordon", "image": image.file}
     with image.file.open("rb") as f:
         content = f.read()
 
     backend.prompt(
-        prompt=(
-            "My name is {name}. Here's my photo: {image}. "
-            "Here's a scan of my ID card: {id_card}"
-        ),
+        prompt="My name is {name}. Here's my photo: {image}",
         context=context,
     )
     assert context["image"] == "[file 1]"
     prompt_mock.assert_called_once_with(
-        (
-            "My name is Gordon. Here's my photo: [file 1]. "
-            "Here's a scan of my ID card: [file 2]"
-        ),
+        "My name is Gordon. Here's my photo: [file 1]",
         system="This is a test system prompt.",
-        attachments=[
-            llm.Attachment(content=content),
-            llm.Attachment(content=urlopen(image_data_url).read()),
-        ],
+        attachments=[llm.Attachment(content=content)],
     )
 
 

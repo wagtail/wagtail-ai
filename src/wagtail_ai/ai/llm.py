@@ -2,8 +2,6 @@ import os
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, NotRequired, Self
-from urllib.parse import SplitResult
-from urllib.request import urlopen
 
 import llm
 from django.core.files import File
@@ -44,12 +42,9 @@ class LLMBackend(AIBackend[LLMBackendConfig]):
         model = self.get_llm_model()
         attachments: list[llm.Attachment] = []
         for key, value in context.items():
-            if isinstance(value, (File, SplitResult)):
-                if isinstance(value, File):
-                    with value.open("rb") as f:
-                        content = f.read()
-                else:
-                    content = urlopen(value.geturl()).read()
+            if isinstance(value, File):
+                with value.open("rb") as f:
+                    content = f.read()
                 attachments.append(llm.Attachment(content=content))
                 context[key] = f"[file {len(attachments)}]"
 
