@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import Any, NotRequired, Self
 
 import llm
-from django.core.files import File
 
 from ..types import AIResponse
 from .base import AIBackend, BaseAIBackendConfig, BaseAIBackendConfigSettings
@@ -37,24 +36,6 @@ class LLMBackendConfig(BaseAIBackendConfig[LLMBackendConfigSettingsDict]):
 
 class LLMBackend(AIBackend[LLMBackendConfig]):
     config_cls = LLMBackendConfig
-
-    def prompt(self, prompt, context):
-        model = self.get_llm_model()
-        attachments: list[llm.Attachment] = []
-        for key, value in context.items():
-            if isinstance(value, File):
-                with value.open("rb") as f:
-                    content = f.read()
-                attachments.append(llm.Attachment(content=content))
-                context[key] = f"[file {len(attachments)}]"
-
-        full_prompt = prompt.format_map(context)
-        prompt_kwargs = {}
-        if attachments:
-            prompt_kwargs["attachments"] = attachments
-        if self.config.prompt_kwargs is not None:
-            prompt_kwargs.update(self.config.prompt_kwargs)
-        return model.prompt(full_prompt, **prompt_kwargs)
 
     def prompt_with_context(
         self, *, pre_prompt: str, context: str, post_prompt: str | None = None

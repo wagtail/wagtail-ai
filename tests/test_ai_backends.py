@@ -1,13 +1,10 @@
 import re
-from typing import cast
 
 import pytest
 from test_utils.settings import (
     custom_ai_backend_class,
     custom_ai_backend_settings,
 )
-from wagtail.images.models import Image
-from wagtail_factories import ImageFactory
 
 from wagtail_ai.ai import (
     BackendNotFound,
@@ -53,34 +50,6 @@ def test_get_backend_instance_with_custom_setting():
     assert backend.config.model_id == "echo"
     assert backend.config.max_word_sleep_seconds == 150
     assert backend.config.token_limit == 123123
-
-
-@custom_ai_backend_settings(
-    new_value={
-        "CLASS": "wagtail_ai.ai.echo.EchoBackend",
-        "CONFIG": {
-            "MODEL_ID": "echo",
-            "TOKEN_LIMIT": 123123,
-            "MAX_WORD_SLEEP_SECONDS": 0,  # type: ignore
-        },
-    }
-)
-@pytest.mark.django_db
-def test_prompt():
-    image = cast(Image, ImageFactory())
-    backend = get_ai_backend("default")
-    context = {"name": "Gordon", "image": image.file}
-    response = backend.prompt(
-        prompt="My name is {name}. Here's my photo: {image}",
-        context=context,
-    )
-    assert response.text() == (
-        "This is an echo backend: "
-        "My name is Gordon. "
-        # This backend does not handle images, so it will just be a string
-        # representation of the image object.
-        f"Here's my photo: {context['image']}"
-    )
 
 
 @custom_ai_backend_settings(

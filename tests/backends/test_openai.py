@@ -1,4 +1,3 @@
-import base64
 from typing import cast
 from unittest.mock import ANY, Mock
 
@@ -87,57 +86,6 @@ def test_describe_image(settings, mock_post):
     ]
     url = messages[0]["content"][1]["image_url"]["url"]
     assert url.startswith("data:image/jpeg;base64,")
-
-
-def test_prompt(settings, mock_post):
-    settings.WAGTAIL_AI = {
-        "BACKENDS": {
-            "openai": {
-                "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
-                "CONFIG": {
-                    "MODEL_ID": "gpt-4",
-                },
-            },
-        },
-    }
-
-    mock_post.return_value.json.return_value = {
-        "choices": [{"message": {"content": MOCK_OUTPUT}}],
-    }
-    backend = get_ai_backend("openai")
-    image = cast(Image, ImageFactory())
-
-    context = {"name": "Gordon", "image": image.file}
-    with image.file.open("rb") as f:
-        content = base64.b64encode(f.read()).decode()
-
-    response = backend.prompt(
-        prompt="My name is {name}. Here's my photo: {image}",
-        context=context,
-    )
-    assert context["image"] == "[file 1]"
-    assert "".join(response) == MOCK_OUTPUT
-    assert response.text() == MOCK_OUTPUT
-
-    headers = mock_post.call_args.kwargs["headers"]
-    assert headers["Authorization"] == f"Bearer {MOCK_API_KEY}"
-
-    messages = mock_post.call_args.kwargs["json"]["messages"]
-    assert messages == [
-        {
-            "content": [
-                {
-                    "type": "text",
-                    "text": "My name is Gordon. Here's my photo: [file 1]",
-                },
-                {
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{content}"},
-                },
-            ],
-            "role": "user",
-        },
-    ]
 
 
 def test_text_completion(settings, mock_post):

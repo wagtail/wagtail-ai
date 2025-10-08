@@ -1,12 +1,8 @@
 import os
 import re
-from typing import cast
 
-import llm
 import pytest
 from test_utils.settings import custom_ai_backend_class, custom_ai_backend_settings
-from wagtail.images.models import Image
-from wagtail_factories import ImageFactory
 
 from wagtail_ai.ai import InvalidAIBackendError, get_ai_backend
 
@@ -52,40 +48,6 @@ def test_llm_custom_init_kwargs(llm_backend_class):
     assert backend.config.init_kwargs == {"key": "random-api-key"}
     llm_model = backend.get_llm_model()  # type: ignore
     assert llm_model.key == "random-api-key"
-
-
-@pytest.mark.django_db
-@custom_ai_backend_settings(
-    new_value={
-        "CLASS": "wagtail_ai.ai.llm.LLMBackend",
-        "CONFIG": {
-            "MODEL_ID": "gpt-4.1-mini",
-            "PROMPT_KWARGS": {  # type: ignore
-                "system": "This is a test system prompt."
-            },
-        },
-    }
-)
-def test_llm_prompt(mocker):
-    image = cast(Image, ImageFactory())
-    backend = get_ai_backend("default")
-    assert backend.config.prompt_kwargs == {"system": "This is a test system prompt."}
-    prompt_mock = mocker.patch("wagtail_ai.ai.llm.llm.models._Model.prompt")
-
-    context = {"name": "Gordon", "image": image.file}
-    with image.file.open("rb") as f:
-        content = f.read()
-
-    backend.prompt(
-        prompt="My name is {name}. Here's my photo: {image}",
-        context=context,
-    )
-    assert context["image"] == "[file 1]"
-    prompt_mock.assert_called_once_with(
-        "My name is Gordon. Here's my photo: [file 1]",
-        system="This is a test system prompt.",
-        attachments=[llm.Attachment(content=content)],
-    )
 
 
 @custom_ai_backend_settings(
