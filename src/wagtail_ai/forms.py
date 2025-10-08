@@ -9,8 +9,11 @@ from wagtail.admin.staticfiles import versioned_static
 from wagtail.images.fields import WagtailImageField
 from wagtail.images.forms import BaseImageForm
 
-from wagtail_ai.models import Prompt
-from wagtail_ai.prompts import DefaultPrompt
+from wagtail_ai.prompts import (
+    ImageDescriptionPrompt,
+    ImageTitlePrompt,
+    Prompt,
+)
 
 from .context import PromptContext, PromptJSONDecoder
 
@@ -119,7 +122,7 @@ class ImageDescriptionWidgetMixin(forms.Widget):
             self.attrs["data-wai-field-panel-image-id"] = image_id
         self.attrs["data-wai-field-panel-image-input-value"] = file_selector
         self.attrs["data-wai-field-panel-prompts-value"] = json.dumps(
-            prompts or [DefaultPrompt.IMAGE_DESCRIPTION]
+            prompts or [ImageDescriptionPrompt]
         )
 
     @cached_property
@@ -147,11 +150,11 @@ class DescribeImageForm(BaseImageForm):
 
         self.fields["title"].widget = ImageDescriptionTextInput(
             **widget_kwargs,
-            prompts=[DefaultPrompt.IMAGE_TITLE],
+            prompts=[ImageTitlePrompt],
             attrs=self.fields["title"].widget.attrs,
         )
         self.fields["description"].widget = ImageDescriptionTextInput(
             **widget_kwargs,
-            prompts=[DefaultPrompt.IMAGE_DESCRIPTION],
+            prompts=[ImageDescriptionPrompt],
             attrs=self.fields["description"].widget.attrs,
         )

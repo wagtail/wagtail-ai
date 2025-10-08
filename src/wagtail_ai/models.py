@@ -9,7 +9,7 @@ from wagtail.search import index
 from wagtail_ai.prompts import DEFAULT_PROMPTS
 
 
-class Prompt(models.Model, index.Indexed):
+class CustomPrompt(models.Model, index.Indexed):
     class Method(models.TextChoices):
         REPLACE = "replace", _("Replace content")
         APPEND = "append", _("Append after existing content")
@@ -92,6 +92,12 @@ class AgentSettingsMixin(models.Model):
         default=ContentFeedbackContentType.HTML,
     )
 
+    title_prompt = models.TextField(blank=True)
+    meta_description_prompt = models.TextField(blank=True)
+    contextual_alt_text_prompt = models.TextField(blank=True)
+    image_title_prompt = models.TextField(blank=True)
+    image_description_prompt = models.TextField(blank=True)
+
     panels = [
         MultiFieldPanel(
             [
@@ -110,6 +116,26 @@ class AgentSettingsMixin(models.Model):
                 ),
             ],
             heading=_("Content feedback"),
+        ),
+        MultiFieldPanel(
+            [
+                # TODO: Custom Panel type that validates prompt tokens?
+                FieldPanel(
+                    "title_prompt",
+                    heading=_("Title Prompt"),
+                    help_text=_(
+                        "Prompt provided to the agent when generating page titles."
+                    ),
+                ),
+                FieldPanel(
+                    "meta_description_prompt",
+                    heading=_("Meta Description Prompt"),
+                    help_text=_(
+                        "Prompt provided to the agent when generating meta descriptions."
+                    ),
+                ),
+            ],
+            heading=_("Page fields"),
         ),
     ]
 

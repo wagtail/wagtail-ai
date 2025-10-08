@@ -1,77 +1,58 @@
-from collections.abc import Sequence
-from enum import IntEnum
-from typing import NotRequired, Required, TypedDict
+from typing import Callable, TypeVar
+
+from django.utils.functional import cached_property
+from django.utils.translation import gettext_lazy as _
+from django_ai_core.llm.prompt import Prompt, TokenDict
+from wagtail.contrib.settings.models import BaseGenericSetting
+
+from .models import AgentSettings
+from .models import CustomPrompt as CustomPromptModel
+
+PromptT = TypeVar("PromptT", bound=Prompt)
 
 
-class DefaultPrompt(IntEnum):
-    """A unique ID used to identify and manage default prompts."""
+class ManagedPromptRegistry:
+    def __init__(self):
+        self._prompts: dict[str, type[Prompt]] = {}
 
-    CORRECTION = 1
-    COMPLETION = 2
-    DESCRIPTION = 3
-    TITLE = 4
-    CONTEXTUAL_ALT_TEXT = 5
-    IMAGE_TITLE = 6
-    IMAGE_DESCRIPTION = 7
+    def register(
+        self, cls: type[PromptT] | None = None
+    ) -> type[PromptT] | Callable[[type[PromptT]], type[PromptT]]:
+        def decorator(prompt_cls: type[PromptT]) -> type[PromptT]:
+            prompt_name = prompt_cls.__name__
+            self._prompts[prompt_name] = prompt_cls
+            return prompt_cls
+
+        if cls is None:
+            # Called with parentheses: @registry.register()
+            return decorator
+        else:
+            # Called without parentheses: @registry.register
+            return decorator(cls)
+
+    def get(self, name: str) -> type[Prompt]:
+        if name not in self._prompts:
+            raise KeyError(f"Prompt '{name}' not found")
+        return self._prompts[name]
+
+    def list(self) -> dict[str, type[Prompt]]:
+        return self._prompts.copy()
 
 
-class PromptDict(TypedDict):
-    default_prompt_id: Required[int]
-    label: Required[str]
-    description: NotRequired[str]
-    prompt: Required[str]
-    method: Required[str]
+registry = ManagedPromptRegistry()
 
 
-DEFAULT_PROMPTS: Sequence[PromptDict] = [
-    {
-        "default_prompt_id": DefaultPrompt.CORRECTION,
-        "label": "AI Correction",
-        "description": "Correct grammar and spelling",
-        "prompt": (
-            "You are assisting a user in writing content for their website. "
-            "The user has provided some text (following the colon). "
-            "Return the provided text but with corrected grammar, spelling and punctuation. "
-            "Do not add additional punctuation, quotation marks or change any words:"
-        ),
-        "method": "replace",
-    },
-    {
-        "default_prompt_id": DefaultPrompt.COMPLETION,
-        "label": "AI Completion",
-        "description": "Get help writing more content based on what you've written",
-        "prompt": (
-            "You are assisting a user in writing content for their website. "
-            "The user has provided some initial text (following the colon). "
-            "Assist the user in writing the remaining content:"
-        ),
-        "method": "append",
-    },
-    {
-        "default_prompt_id": DefaultPrompt.DESCRIPTION,
-        "label": "AI Description",
-        "description": "Generate a description by summarizing the page content",
-        "prompt": (
-            "Create an SEO-friendly meta description of the following web page content:\n\n"
-            "{content_text}"
-        ),
-        "method": "replace",
-    },
-    {
-        "default_prompt_id": DefaultPrompt.TITLE,
-        "label": "AI Title",
-        "description": "Generate a title based on the page content",
-        "prompt": (
-            "Create an SEO-friendly page title for the following web page content:\n\n"
-            "{content_text}"
-        ),
-        "method": "replace",
-    },
-    {
-        "default_prompt_id": DefaultPrompt.CONTEXTUAL_ALT_TEXT,
-        "label": "Contextual alt text",
-        "description": "Generate an alt text for the image with the relevant context",
-        "prompt": """Generate an alt text (and only the text) for the following image: {image_id}
+DEFAULT_MANAGED_PROMPTS = {
+    "TITLE": (
+        "Create an SEO-friendly page title for the following web page content:\n\n"
+        "{content_text}"
+    ),
+    "META_DESCRIPTION": (
+        "Create an SEO-friendly meta description of the following web page content:\n\n"
+        "{content_text}"
+    ),
+    "CONTEXTUAL_ALT_TEXT": (
+        """Generate an alt text (and only the text) for the following image: {image_id}
 
 Make the alt text relevant to the following content shown before the image:
 
@@ -84,27 +65,128 @@ and also relevant to the following content shown after the image:
 ---
 {form_context_after}
 ---
-""",
-        "method": "replace",
-    },
-    {
-        "default_prompt_id": DefaultPrompt.IMAGE_TITLE,
-        "label": "Image title",
-        "description": "Generate a title for the image",
-        "prompt": (
-            "Generate a title (and only the title, no longer than "
-            "{max_length} characters) for the following image: {image_id}"
-        ),
-        "method": "replace",
-    },
-    {
-        "default_prompt_id": DefaultPrompt.IMAGE_DESCRIPTION,
-        "label": "Image description",
-        "description": "Generate a description for the image",
-        "prompt": (
-            "Generate a description (and only the description, no longer than "
-            "{max_length} characters) for the following image: {image_id}"
-        ),
-        "method": "replace",
-    },
-]
+"""
+    ),
+    "IMAGE_TITLE": (
+        "Generate a title (and only the title, no longer than "
+        "{max_length} characters) for the following image: {image_id}"
+    ),
+    "IMAGE_DESCRIPTION": (
+        "Generate a description (and only the description, no longer than "
+        "{max_length} characters) for the following image: {image_id}"
+    ),
+}
+
+
+class WagtailAIPrompt(Prompt):
+    name: str
+    description: str
+    method: str = "replace"
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        registry.register(cls)
+
+
+class SettingsManagedPrompt(WagtailAIPrompt):
+    settings_model: type[BaseGenericSetting]
+    prompt_field: str
+    default_value: str
+
+    def __new__(cls, **tokens):
+        obj = super().__new__(cls, "", **tokens)
+        return obj
+
+    @cached_property
+    def _base_text(self) -> str:
+        """Lazily fetch the raw prompt string from settings."""
+        settings = self.settings_model.load()
+        value = getattr(settings, self.prompt_field)
+        if value:
+            return value
+        return self.default_value
+
+    def __str__(self) -> str:
+        """Render using the lazy-loaded base text."""
+        tokens = self._tokens
+        return self._base_text.format_map(TokenDict(tokens))
+
+    def with_tokens(self, **tokens) -> "SettingsManagedPrompt":
+        """Return a new Prompt with overridden tokens."""
+        merged = {**self._tokens, **tokens}
+        new_prompt = type(self)(**merged)
+        new_prompt.settings_model = self.settings_model
+        new_prompt.prompt_field = self.prompt_field
+        return new_prompt
+
+
+class CustomPrompt(WagtailAIPrompt):
+    uuid: str
+
+    @cached_property
+    def _base_text(self) -> str:
+        """Lazily fetch the raw prompt string from the CustomPrompt."""
+        prompt = CustomPrompt.objects.get(uuid=self.uuid)
+        return prompt.prompt
+
+    def __str__(self) -> str:
+        """Render using the lazy-loaded base text."""
+        tokens = self._tokens
+        return self._base_text.format_map(TokenDict(tokens))
+
+    @classmethod
+    def from_model(cls, instance: CustomPromptModel):
+        return type(
+            "CustomPrompt",
+            (cls,),
+            {
+                "uuid": instance.uuid,
+                "name": instance.label,
+                "description": instance.description,
+                "method": instance.method,
+            },
+        )
+
+
+class TitlePrompt(SettingsManagedPrompt):
+    name = _("AI Title")
+    description = _("Generate a title based on the page content")
+    settings_model = AgentSettings
+    prompt_field = "title_prompt"
+    default_value = DEFAULT_MANAGED_PROMPTS["TITLE"]
+
+
+class MetaDescriptionPrompt(SettingsManagedPrompt):
+    name = _("AI Description")
+    description = _("Generate a description by summarizing the page content")
+    settings_model = AgentSettings
+    prompt_field = "meta_description_prompt"
+    default_value = DEFAULT_MANAGED_PROMPTS["META_DESCRIPTION"]
+
+
+class ContextualAltTextPrompt(SettingsManagedPrompt):
+    name = _("Contextual alt text")
+    description = _("Generate an alt text for the image with the relevant context")
+    settings_model = AgentSettings
+    prompt_field = "contextual_alt_text_prompt"
+    default_value = DEFAULT_MANAGED_PROMPTS["CONTEXTUAL_ALT_TEXT"]
+
+
+class ImageTitlePrompt(SettingsManagedPrompt):
+    name = _("Image title")
+    description = _("Generate a title for the image")
+    settings_model = AgentSettings
+    prompt_field = "image_title_prompt"
+    default_value = DEFAULT_MANAGED_PROMPTS["IMAGE_TITLE"]
+
+
+class ImageDescriptionPrompt(SettingsManagedPrompt):
+    name = _("Image description")
+    description = _("Generate a description for the image")
+    settings_model = AgentSettings
+    prompt_field = "image_description_prompt"
+    default_value = DEFAULT_MANAGED_PROMPTS["IMAGE_DESCRIPTION"]
+
+
+def get_custom_prompts():
+    return [CustomPrompt.from_model(prompt) for prompt in CustomPrompt.objects.all()]
