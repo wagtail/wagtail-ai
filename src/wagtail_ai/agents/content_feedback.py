@@ -16,12 +16,14 @@ class QualityScore(IntEnum):
 class SpecificImprovement(BaseModel):
     original_text: str = Field(description="The original text that needs improvement")
     suggested_text: str = Field(
-        description="The suggested revised text in the content's language"
+        description=(
+            "The suggested revised text in the content's language, in plain text"
+        )
     )
     explanation: str = Field(
         description=(
-            "A brief explanation in the editor's language for why this change "
-            "would improve the content"
+            "A brief explanation in plain text in the editor's language for why "
+            "this change would improve the content"
         )
     )
 
@@ -100,7 +102,8 @@ class ContentFeedbackAgent(Agent):
 1. A quality score between 1 and 3 (1=needs major improvement, 2=adequate, 3=excellent)
 2. 3-5 bullet points of qualitative feedback highlighting strengths and areas for improvement in {editor_language}
 3. Specific text improvements with original text, suggested revised text in {content_language}, and a brief explanation
-   in {editor_language} for why each change would improve the content
+   in {editor_language} for why each change would improve the content. Provide text
+   improvements in plain text, not HTML and not markdown.
 
 The language rules specified are IMPORTANT. Always ensure the feedback and improvements are in the correct language.
 
