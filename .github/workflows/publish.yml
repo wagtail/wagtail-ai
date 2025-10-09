@@ -12,12 +12,12 @@ jobs:
     permissions:
       contents: read # to fetch code (actions/checkout)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version-file: '.nvmrc'
 
@@ -28,7 +28,7 @@ jobs:
         run: ./node_modules/.bin/webpack --mode production
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -41,7 +41,7 @@ jobs:
       - name: Build
         run: python -Im flit build
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: ./dist
 
@@ -53,7 +53,7 @@ jobs:
       id-token: write # required for trusted publishing
     environment: publish
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v5
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
