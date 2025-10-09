@@ -50,15 +50,15 @@ class PromptContext(dict[str, Any]):
                 self[key] = "{%s}" % key
 
 
-def image_id_validator(context) -> File | SplitResult | None:
+def image_validator(context) -> File | SplitResult | None:
     """Fetch a Wagtail image by ID and return its rendition file."""
-    if "image_id" not in context:
+    if "image" not in context:
         raise ValidationError(_("The prompt requires an image, but none was provided."))
-    image_id = context["image_id"]
+    image = context["image"]
 
     # Check if it's a data URL
     try:
-        url: SplitResult = urlsplit(image_id)
+        url: SplitResult = urlsplit(image)
     except (AttributeError, ValueError):
         pass
     else:
@@ -76,10 +76,10 @@ def image_id_validator(context) -> File | SplitResult | None:
 
     Image = cast(Type[AbstractImage], get_image_model())
     try:
-        image = Image._default_manager.get(id=image_id)
+        image = Image._default_manager.get(id=image)
     except Image.DoesNotExist as error:
         raise ValidationError(
-            _("Could not find image with id %(image_id)s.") % {"image_id": image_id}
+            _("Could not find image with id %(image)s.") % {"image": image}
         ) from error
     wagtail_ai_settings = getattr(settings, "WAGTAIL_AI", {})
     rendition_filter = wagtail_ai_settings.get(
@@ -90,4 +90,4 @@ def image_id_validator(context) -> File | SplitResult | None:
     return image_file
 
 
-PromptContext.register_validator("image_id", image_id_validator)
+PromptContext.register_validator("image", image_validator)

@@ -80,7 +80,7 @@ class BasicPromptAgent(Agent):
     def execute(self, prompt: str, context: dict[str, str]) -> str:
         self.prompt = prompt
         self.context = self.validate_context(prompt, context)
-        if "image_id" in self.context:
+        if self.context.get("image"):
             ai_settings = getattr(settings, "WAGTAIL_AI", {})
             self.provider_alias = ai_settings.get(
                 "IMAGE_DESCRIPTION_PROVIDER", "default"

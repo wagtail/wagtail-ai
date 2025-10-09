@@ -102,20 +102,20 @@ class AgentPromptDefaults:
     def image_title_prompt(cls):
         return (
             "Generate a title (in plain text, no longer than "
-            "{max_length} characters) for the following image: {image_id}"
+            "{max_length} characters) for the following image: {image}"
         )
 
     @classmethod
     def image_description_prompt(cls):
         return (
             "Generate a description (in plain text, no longer than "
-            "{max_length} characters) for the following image: {image_id}"
+            "{max_length} characters) for the following image: {image}"
         )
 
     @classmethod
     def contextual_alt_text_prompt(cls):
         return """Generate an alt text (and only the text) for the following image:
-{image_id}
+{image}
 
 Make the alt text relevant to the following content shown before the image:
 

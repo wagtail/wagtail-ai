@@ -101,7 +101,7 @@ class FieldPanelController extends Controller<HTMLElement> {
     async form_context_after(this: FieldPanelController) {
       return this.formContext.after;
     },
-    async image_id(this: FieldPanelController) {
+    async image(this: FieldPanelController) {
       // Allow the image input to be of type="file"
       if (this.imageInput?.files?.[0]) {
         return new Promise<string>((resolve, reject) => {

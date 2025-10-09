@@ -21,51 +21,51 @@ def test_missing_key():
 
 
 @pytest.mark.django_db
-def test_image_id_validator(django_assert_num_queries: DjangoAssertNumQueries):
+def test_image_validator(django_assert_num_queries: DjangoAssertNumQueries):
     image = cast(Image, ImageFactory())
-    context = PromptContext(image_id=image.pk)
-    prompt = "Prompt does not use the image_id placeholder."
-    # This will not hit the database as the prompt does not use {image_id}
+    context = PromptContext(image=image.pk)
+    prompt = "Prompt does not use the image placeholder."
+    # This will not hit the database as the prompt does not use {image}
     with django_assert_num_queries(0):
         context.clean(prompt)
-        assert context["image_id"] == image.pk
-    prompt = "Describe the image with ID {image_id}."
+        assert context["image"] == image.pk
+    prompt = "Describe the image with ID {image}."
     expected = image.get_rendition("max-800x600").file
     # This will fetch the image and generate a rendition
     with django_assert_num_queries(7):
         context.clean(prompt)
     # Accessing the result again should not hit the database
     with django_assert_num_queries(0):
-        assert context["image_id"] == expected
+        assert context["image"] == expected
 
 
 @pytest.mark.django_db
-def test_image_id_validator_data_url(
+def test_image_validator_data_url(
     image_data_url,
     django_assert_num_queries: DjangoAssertNumQueries,
 ):
-    context = PromptContext(image_id=image_data_url)
+    context = PromptContext(image=image_data_url)
     with django_assert_num_queries(0):
-        context.clean("Describe the following image: {image_id}")
-        assert isinstance(context["image_id"], SplitResult)
-        assert context["image_id"].geturl() == image_data_url
+        context.clean("Describe the following image: {image}")
+        assert isinstance(context["image"], SplitResult)
+        assert context["image"].geturl() == image_data_url
 
 
 @pytest.mark.django_db
-def test_image_id_validator_invalid_data_url(
+def test_image_validator_invalid_data_url(
     django_assert_num_queries: DjangoAssertNumQueries,
 ):
     data_url = "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=="
-    context = PromptContext(image_id=data_url)
+    context = PromptContext(image=data_url)
     with django_assert_num_queries(0), pytest.raises(ValidationError) as exc_info:
-        context.clean("Describe the following image: {image_id}")
+        context.clean("Describe the following image: {image}")
     assert str(exc_info.value.message) == "The provided data URL is not an image."
 
 
-def test_image_id_validator_missing():
+def test_image_validator_missing():
     context = PromptContext()
     with pytest.raises(ValidationError) as exc_info:
-        context.clean("Describe the image with ID {image_id}.")
+        context.clean("Describe the image with ID {image}.")
     assert (
         str(exc_info.value.message)
         == "The prompt requires an image, but none was provided."
@@ -73,8 +73,8 @@ def test_image_id_validator_missing():
 
 
 @pytest.mark.django_db
-def test_image_id_validator_not_found():
-    context = PromptContext(image_id=9999999)
+def test_image_validator_not_found():
+    context = PromptContext(image=9999999)
     with pytest.raises(ValidationError) as exc_info:
-        context.clean("Describe the image with ID {image_id}.")
+        context.clean("Describe the image with ID {image}.")
     assert str(exc_info.value.message) == "Could not find image with id 9999999."
