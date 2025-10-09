@@ -152,9 +152,10 @@ def ai_admin_js():
     }
 
     return format_html(
-        '{}<script src="{}"></script>',
+        '{}<script src="{}"></script><script src="{}"></script>',
         json_script(config, "wagtail-ai-config"),
         versioned_static("wagtail_ai/main.js"),
+        reverse("wagtail_ai:javascript_catalog"),
     )
 
 
