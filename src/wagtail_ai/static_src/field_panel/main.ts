@@ -63,6 +63,7 @@ class FieldPanelController extends Controller<HTMLElement> {
     prompts: { type: Array, default: [] },
     state: { type: String, default: FieldPanelState.IDLE },
     suggestion: { type: String, default: '' },
+    url: { type: String, default: window.wagtailAI.config.urls.BASIC_PROMPT },
   };
   declare hasDropdownTarget: boolean;
   declare dropdownTarget: HTMLDivElement;
@@ -80,6 +81,7 @@ class FieldPanelController extends Controller<HTMLElement> {
   declare promptsValue: Array<number | string>;
   declare stateValue: FieldPanelState;
   declare suggestionValue: string;
+  declare urlValue: string;
   declare filteredPrompts: Array<Prompt | SettingPrompt>;
   declare fieldInput: HTMLElement;
   declare input: InputType;
@@ -433,7 +435,7 @@ class FieldPanelController extends Controller<HTMLElement> {
     let result = '';
     try {
       this.abortController = new AbortController();
-      const response = await fetch(window.wagtailAI.config.urls.BASIC_PROMPT, {
+      const response = await fetch(this.urlValue, {
         method: 'POST',
         headers: {
           [wagtailConfig.CSRF_HEADER_NAME]: wagtailConfig.CSRF_TOKEN,
