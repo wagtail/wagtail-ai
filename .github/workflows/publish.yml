@@ -54,9 +54,10 @@ jobs:
     environment: publish
     steps:
       - uses: actions/download-artifact@v5
+        with:
+          path: ./dist
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: artifact/
           print-hash: true
