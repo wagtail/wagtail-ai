@@ -12,11 +12,15 @@ Wagtail AI integrates Wagtail with AI's APIs (think ChatGPT) to help you write a
 
 Right now, it can:
 
-* Finish what you've started - write some text and tell Wagtail AI to finish it off for you
-* Correct your spelling/grammar
-* Let you add your own custom prompts
-* Automatically generate alt-tags for your uploaded images
+* Give you suggestions for titles and meta descriptions based on your page content
+* Suggest titles and descriptions for your images
+* Generate relevant alt text for your images based on both the image and surrounding page content
+* Provide qualitative feedback on your content with actionable improvement suggestions
+* Suggest related pages based on semantic similarity using vector embeddings
 * Work with multiple LLM providers including local models, OpenAI, Mistral, Claude and many others
+* Let you add your own custom prompts
+* Correct your spelling/grammar
+* Finish what you've started - write some text and tell Wagtail AI to finish it off for you
 
 ## Demos
 
@@ -30,7 +34,7 @@ https://github.com/wagtail/wagtail-ai/assets/27617/5ffd5493-b39c-4d38-bed8-fdd24
 
 ## Requirements & Costs
 
-Wagtail AI supports [many different LLMs](https://wagtail-ai.readthedocs.io/latest/ai-backends/), with OpenAI models
+Wagtail AI supports [many different LLMs](https://wagtail-ai.readthedocs.io/latest/ai-providers/), with OpenAI models
 available by default. To use these, you'll need an OpenAI account and an API key. There'll also be some cost involved.
 
 For the OpenAI API used here (`gpt-3.5-turbo`), the [cost](https://openai.com/pricing) is

@@ -1,11 +1,11 @@
 nav:
   - installation.md
-  - editor-integration.md
+  - ai-providers.md
   - images-integration.md
   - field-panel-integration.md
   - content-feedback.md
   - related-pages.md
-  - ai-providers.md
+  - editor-integration.md
   - ai-backends.md
   - text-splitting.md
   - contributing.md
