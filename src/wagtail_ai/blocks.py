@@ -30,7 +30,10 @@ class AIImageBlockAdapter(StructBlockAdapter):
     @cached_property
     def media(self):
         return super().media + forms.Media(
-            js=[versioned_static("wagtail_ai/field_panel.js")],
+            js=[
+                versioned_static("wagtail_ai/field_panel.js"),
+                versioned_static("wagtail_ai/image_block.js"),
+            ],
             css={"all": [versioned_static("wagtail_ai/field_panel.css")]},
         )
 

@@ -8,6 +8,7 @@ module.exports = {
     content_feedback: './src/wagtail_ai/static_src/content_feedback/main.ts',
     field_panel: './src/wagtail_ai/static_src/field_panel/main.ts',
     chooser_panel: './src/wagtail_ai/static_src/chooser_panel/main.ts',
+    image_block: './src/wagtail_ai/static_src/image_block/main.ts',
     main: './src/wagtail_ai/static_src/main.ts',
   },
   plugins: [new MiniCssExtractPlugin()],
