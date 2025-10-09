@@ -156,7 +156,7 @@ class FeedbackController extends Controller {
         if (!isInput || el.getAttribute('type') === 'hidden')
           return NodeFilter.FILTER_SKIP;
 
-        const text = ('value' in el ? el.value : el.innerText)
+        const text = ('value' in el ? `${el.value}` : `${el.innerText}`)
           // Normalize whitespace to avoid mismatches
           .replace(/\s+/g, ' ')
           .trim();
