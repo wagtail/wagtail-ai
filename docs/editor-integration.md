@@ -1,4 +1,4 @@
-# Editor Integration
+# Rich text editor integration
 
 Wagtail AI integrates with Wagtail's Draftail rich text editor to provide tools to help write content. To use it, highlight some text and click the 'magic wand' icon in the toolbar.
 
@@ -6,6 +6,10 @@ By default, it includes prompts that:
 
 * Run AI assisted spelling/grammar checks on your content
 * Generate additional content based on what you're writing
+
+!!! note
+
+    This is a legacy feature and kept for backwards compatibility. In the future, we will use [AI Providers](./ai-providers.md) (instead of backends) to build agent-based features using [django-ai-core](https://github.com/wagtail/django-ai-core).
 
 ### Adding Your Own Prompts
 
