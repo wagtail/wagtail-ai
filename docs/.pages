@@ -2,6 +2,7 @@ nav:
   - installation.md
   - editor-integration.md
   - images-integration.md
+  - ai-providers.md
   - ai-backends.md
   - text-splitting.md
   - contributing.md
