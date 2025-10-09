@@ -7,6 +7,11 @@ Wagtail AI provides two components that help with this:
 - Splitter length calculator - which decides how many characters will fit inside a model's context window based on the `TOKEN_LIMIT` specified in your backend configuration.
 - Splitter - which splits your text in to sensible chunks.
 
+
+!!! note
+
+    The configuration for text splitting still uses the legacy [AI Backends](./ai-backends.md) and is only used for the legacy [rich text integration](./editor-integration.md). In the future, we will move towards [AI Providers](./ai-providers.md) and [django-ai-core](https://github.com/wagtail/django-ai-core).
+
 ## Defaults
 
 By default, Wagtail AI comes with:
