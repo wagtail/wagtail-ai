@@ -1,0 +1,277 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-09 07:25+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: src/wagtail_ai/agents/basic_prompt.py:25
+#: src/wagtail_ai/agents/basic_prompt.py:37
+msgid "Generate title"
+msgstr ""
+
+#: src/wagtail_ai/agents/basic_prompt.py:26
+msgid "Generate a title based on the page content"
+msgstr ""
+
+#: src/wagtail_ai/agents/basic_prompt.py:31
+#: src/wagtail_ai/agents/basic_prompt.py:43
+msgid "Generate description"
+msgstr ""
+
+#: src/wagtail_ai/agents/basic_prompt.py:32
+msgid "Generate a description by summarizing the page content"
+msgstr ""
+
+#: src/wagtail_ai/agents/basic_prompt.py:38
+msgid "Generate a title for the image"
+msgstr ""
+
+#: src/wagtail_ai/agents/basic_prompt.py:44
+msgid "Generate a description for the image"
+msgstr ""
+
+#: src/wagtail_ai/agents/basic_prompt.py:49
+msgid "Generate alt text"
+msgstr ""
+
+#: src/wagtail_ai/agents/basic_prompt.py:50
+msgid "Generate contextual alt text for the image"
+msgstr ""
+
+#: src/wagtail_ai/context.py:56
+msgid "The prompt requires an image, but none was provided."
+msgstr ""
+
+#: src/wagtail_ai/context.py:71
+msgid "The provided data URL is not an image."
+msgstr ""
+
+#: src/wagtail_ai/context.py:82
+#, python-format
+msgid "Could not find image with id %(image)s."
+msgstr ""
+
+#: src/wagtail_ai/forms.py:17
+msgid "No text provided - please enter some text before using AI features."
+msgstr ""
+
+#: src/wagtail_ai/forms.py:24 src/wagtail_ai/forms.py:25
+msgid "Invalid prompt provided."
+msgstr ""
+
+#: src/wagtail_ai/models.py:14
+msgid "Replace content"
+msgstr ""
+
+#: src/wagtail_ai/models.py:15
+msgid "Append after existing content"
+msgstr ""
+
+#: src/wagtail_ai/models.py:24
+msgid ""
+"The prompt description, displayed alongside its label on the settings "
+"listing."
+msgstr ""
+
+#: src/wagtail_ai/models.py:31
+msgid ""
+"The prompt text sent to the Large Language Model (e.g. ChatGPT) to generate "
+"content."
+msgstr ""
+
+#: src/wagtail_ai/models.py:37
+msgid "The method used for processing the responses to the prompt."
+msgstr ""
+
+#: src/wagtail_ai/models.py:135
+msgid "Plain text"
+msgstr ""
+
+#: src/wagtail_ai/models.py:136
+msgid "HTML"
+msgstr ""
+
+#: src/wagtail_ai/models.py:170
+msgid "Page title prompt"
+msgstr ""
+
+#: src/wagtail_ai/models.py:171
+msgid "Prompt to use for generating page titles."
+msgstr ""
+
+#: src/wagtail_ai/models.py:175
+msgid "Page description prompt"
+msgstr ""
+
+#: src/wagtail_ai/models.py:176
+msgid "Prompt to use for generating page descriptions."
+msgstr ""
+
+#: src/wagtail_ai/models.py:179
+msgid "Page metadata"
+msgstr ""
+
+#: src/wagtail_ai/models.py:185
+msgid "Image title prompt"
+msgstr ""
+
+#: src/wagtail_ai/models.py:187
+msgid ""
+"Prompt to use for generating image titles when uploading or editing an image."
+msgstr ""
+
+#: src/wagtail_ai/models.py:193
+msgid "Image description prompt"
+msgstr ""
+
+#: src/wagtail_ai/models.py:195
+msgid ""
+"Prompt to use for generating image descriptions when uploading or editing an "
+"image."
+msgstr ""
+
+#: src/wagtail_ai/models.py:201
+msgid "Contextual alt text prompt"
+msgstr ""
+
+#: src/wagtail_ai/models.py:203
+msgid ""
+"Prompt to use for generating contextual image alt text in the page editor."
+msgstr ""
+
+#: src/wagtail_ai/models.py:208
+msgid "Images"
+msgstr ""
+
+#: src/wagtail_ai/models.py:214
+msgid "Content type"
+msgstr ""
+
+#: src/wagtail_ai/models.py:215
+msgid "The format of the content to review."
+msgstr ""
+
+#: src/wagtail_ai/models.py:219
+msgid "Prompt"
+msgstr ""
+
+#: src/wagtail_ai/models.py:221
+msgid "Additional instructions to adjust the feedback given by the agent."
+msgstr ""
+
+#: src/wagtail_ai/models.py:226
+#: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:11
+msgid "Content feedback"
+msgstr ""
+
+#: src/wagtail_ai/models.py:232
+msgid "Agents"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:15
+msgid "Suggest"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:18
+msgid "Suggest different"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:21
+msgid "No results remaining"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:28
+msgid "Clear suggestions"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:12
+msgid "Looking for relevant pages…"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:15
+#: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:24
+#: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:37
+msgid "Cancel"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:24
+#: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:21
+#: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:34
+msgid "An error occurred while processing your request. Please try again."
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:10
+msgid "AI Actions"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:18
+#: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:31
+msgid "Please wait…"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:29
+msgid "Suggestion"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:35
+msgid "Use"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:38
+msgid "Regenerate"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:41
+#: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:50
+#: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:69
+msgid "Dismiss"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/widgets/image_description.html:12
+msgid "Describe image using AI"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtail_ai/widgets/image_description.html:20
+msgid "An error occurred while generating the description. Please try again."
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:16
+msgid "Clear all"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:22
+msgid "Get content feedback"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:42
+msgid "Overall feedback"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:58
+msgid "Suggested improvements"
+msgstr ""
+
+#: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:66
+msgid "Show"
+msgstr ""
+
+#: src/wagtail_ai/views.py:107
+msgid "An unexpected error occurred."
+msgstr ""
+
+#: src/wagtail_ai/views.py:159 src/wagtail_ai/views.py:162
+msgid "There was an issue describing the image."
+msgstr ""
