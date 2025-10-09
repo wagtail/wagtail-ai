@@ -3,10 +3,8 @@ from functools import cached_property
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.staticfiles import versioned_static
-from wagtail.images.fields import WagtailImageField
 from wagtail.images.forms import BaseImageForm
 
 from wagtail_ai.agents.basic_prompt import ImageDescriptionPrompt, ImageTitlePrompt
@@ -54,19 +52,8 @@ class PromptForm(ApiForm):
 
 
 class DescribeImageApiForm(ApiForm):
-    image_id = forms.CharField(required=False)
-    file = WagtailImageField(required=False)
+    image_id = forms.CharField()
     maxlength = forms.IntegerField(required=False, min_value=0, max_value=4096)
-
-    def clean(self):
-        cleaned_data = super().clean()
-        image_id = cleaned_data.get("image_id")
-        file = cleaned_data.get("file")
-
-        if not image_id and not file:
-            raise ValidationError(gettext("Please provide an image."), code="invalid")
-
-        return cleaned_data
 
 
 class ImageDescriptionWidgetMixin(forms.Widget):

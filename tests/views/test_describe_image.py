@@ -21,7 +21,7 @@ pytestmark = pytest.mark.django_db
 def test_get_request(admin_client):
     response = admin_client.get(reverse("wagtail_ai:describe_image"))
     assert response.status_code == 400
-    assert response.json() == {"error": "Please provide an image."}
+    assert response.json() == {"error": "This field is required."}
 
 
 def test_image_not_found(admin_client):

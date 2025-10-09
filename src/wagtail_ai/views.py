@@ -5,6 +5,7 @@ from typing import Type, cast
 from django import forms
 from django.conf import settings
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from wagtail.admin.ui.tables import UpdatedAtColumn
 from wagtail.admin.viewsets.model import ModelViewSet
@@ -114,14 +115,16 @@ def user_has_permission_for_image(user, image):
     return permission_policy.user_has_permission_for_instance(user, "choose", image)
 
 
-def describe_image(request) -> JsonResponse:  # noqa: C901
-    form = DescribeImageApiForm(request.POST, request.FILES)
+def describe_image(request) -> JsonResponse:
+    form = DescribeImageApiForm(request.POST)
     if not form.is_valid():
         return ErrorJsonResponse(form.errors_for_json_response(), status=400)
 
     model = cast(Type[AbstractImage], get_image_model())
-    image_file = form.cleaned_data["file"]
-    image_id = form.cleaned_data["image_id"]
+    image = get_object_or_404(model, pk=form.cleaned_data["image_id"])
+
+    if not user_has_permission_for_image(request.user, image):
+        return ErrorJsonResponse("Access denied.", status=403)
 
     try:
         backend = ai.get_backend(BackendFeature.IMAGE_DESCRIPTION)
@@ -133,18 +136,10 @@ def describe_image(request) -> JsonResponse:  # noqa: C901
         )
 
     wagtail_ai_settings = getattr(settings, "WAGTAIL_AI", {})
-    if not image_file:
-        try:
-            image = model._default_manager.get(pk=image_id)
-        except model.DoesNotExist:
-            return ErrorJsonResponse(_("Image not found."), status=404)
-        if not user_has_permission_for_image(request.user, image):
-            return ErrorJsonResponse(_("Access denied."), status=403)
-        rendition_filter = wagtail_ai_settings.get(
-            "IMAGE_DESCRIPTION_RENDITION_FILTER", "max-800x600"
-        )
-        rendition = image.get_rendition(rendition_filter)
-        image_file = rendition.file
+    rendition_filter = wagtail_ai_settings.get(
+        "IMAGE_DESCRIPTION_RENDITION_FILTER", "max-800x600"
+    )
+    rendition = image.get_rendition(rendition_filter)
 
     maxlength = form.cleaned_data["maxlength"]
     prompt = wagtail_ai_settings.get("IMAGE_DESCRIPTION_PROMPT")
@@ -157,7 +152,7 @@ def describe_image(request) -> JsonResponse:  # noqa: C901
             prompt += f" Make the description less than {maxlength} characters long."
 
     try:
-        ai_response = backend.describe_image(image_file=image_file, prompt=prompt)
+        ai_response = backend.describe_image(image_file=rendition.file, prompt=prompt)
         description = ai_response.text()
     except Exception:
         logger.exception("There was an issue describing the image.")
