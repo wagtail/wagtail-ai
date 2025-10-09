@@ -2,7 +2,11 @@
 
 Wagtail AI can be configured to use different backends to support different AI services.
 
-The default backend for text completion available in Wagtail AI is the ["LLM" backend](#the-llm-backend). To enable [image description](../images-integration/), you can use the ["OpenAI" backend](#the-openai-backend).
+The default backend for text completion available in Wagtail AI is the ["LLM" backend](#the-llm-backend).
+
+!!! note
+
+    Backends are being replaced by "providers" in Wagtail AI 3.0+. See [AI Providers](ai-providers.md) for more details. At the moment, the backends are only used for the [rich text editor integration](./editor-integration.md).
 
 ## The "LLM" backend
 
