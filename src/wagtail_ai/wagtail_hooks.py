@@ -158,7 +158,7 @@ def ai_admin_js():
     )
 
 
-@hooks.register("insert_editor_js")  # type: ignore
+@hooks.register("insert_global_admin_js")  # type: ignore
 def ai_editor_js():
     dropdown_attrs = {
         "data-wai-field-panel-target": "dropdown",

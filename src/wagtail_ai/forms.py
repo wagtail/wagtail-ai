@@ -103,7 +103,9 @@ class ImageDescriptionTextInput(ImageDescriptionWidgetMixin, forms.TextInput):
 class DescribeImageForm(BaseImageForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        widget_kwargs = {"file_selector": f"#{self['file'].id_for_label}"}
+        widget_kwargs = {}
+        if "file" in self.fields:
+            widget_kwargs["file_selector"] = f"#{self['file'].id_for_label}"
         if self.instance and self.instance.pk:
             widget_kwargs["image_id"] = self.instance.pk
 
