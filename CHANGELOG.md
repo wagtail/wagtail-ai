@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2025-10-09
+
+### Added
+
+- Page title and description generation with `AITitleFieldPanel` and `AIDescriptionFieldPanel`
+- Image title and description generation during upload
+- Contextual image alt text generation with `AIImageBlock` and `@ai_image_block`
+- Qualitative content feedback
+- Related pages suggestions support with `django-ai-core` vector index
+- Unified interface for different LLM providers via `any-llm` library
+
+### Changed
+
+- `WAGTAIL_AI` settings now accepts a `PROVIDERS` key to configure different LLM providers using `django-ai-core` and `any-llm`
+- `IMAGE_DESCRIPTION_BACKEND` setting replaced with `IMAGE_DESCRIPTION_PROVIDER`
+
 ## [2.1.2] - 2024-11-18
 
 ### Fixed
