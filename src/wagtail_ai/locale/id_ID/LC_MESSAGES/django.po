@@ -225,13 +225,13 @@ msgstr "Gunakan"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:38
 msgid "Regenerate"
-msgstr "Hasilkan ulang"
+msgstr "Ulangi"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:41
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:50
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:69
 msgid "Dismiss"
-msgstr "Tutup"
+msgstr "Abaikan"
 
 #: src/wagtail_ai/templates/wagtail_ai/widgets/image_description.html:12
 msgid "Describe image using AI"
