@@ -1,73 +1,133 @@
-# Images Integration
+# Images integration
 
-Wagtail AI integrates with the image edit form to provide AI-generated descriptions to images. The integration requires a backend that supports image descriptions, such as [the OpenAI backend](../ai-backends/#the-openai-backend).
+Wagtail AI integrates with image upload and edit forms to provide AI-generated titles and descriptions. The integration requires a model that supports vision.
 
-## Configuration
+## Configuring the AI provider
 
-1. In the Django project settings, configure an AI backend, and a model, that support images. Set `IMAGE_DESCRIPTION_BACKEND` to the name of the backend:
-   ```python
-   WAGTAIL_AI = {
-       "BACKENDS": {
-           "vision": {
-               "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
-               "CONFIG": {
-                   "MODEL_ID": "gpt-4-vision-preview",
-                   "TOKEN_LIMIT": 300,
-               },
-           },
-       },
-       "IMAGE_DESCRIPTION_BACKEND": "vision",
-   }
-   ```
-2. In the Django project settings, configure a [custom Wagtail image base form](https://docs.wagtail.org/en/stable/reference/settings.html#wagtailimages-image-form-base):
-   ```python
-   WAGTAILIMAGES_IMAGE_FORM_BASE = "wagtail_ai.forms.DescribeImageForm"
-   ```
-
-Now, when you upload or edit an image, a magic wand icon should appear next to the _title_ field. Clicking on the icon will invoke the AI backend to generate an image description.
-
-## Separate backends for text completion and image description
-
-Multi-modal models are faily new, so you may want to configure two different backends for text completion and image description. The `default` model will be used for text completion:
+Set up an AI provider that supports vision/image understanding in your Django settings:
 
 ```python
 WAGTAIL_AI = {
-    "BACKENDS": {
+    "PROVIDERS": {
         "default": {
-            "CLASS": "wagtail_ai.ai.llm.LLMBackend",
-            "CONFIG": {
-                "MODEL_ID": "gpt-3.5-turbo",
-            },
+            "provider": "openai",
+            "model": "gpt-oss-120b",
         },
         "vision": {
-            "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
-            "CONFIG": {
-                "MODEL_ID": "gpt-4-vision-preview",
-                "TOKEN_LIMIT": 300,
-            },
+            "provider": "mistral",
+            "model": "mistral-small-3.2-24b-instruct-2506",
         },
     },
-    "IMAGE_DESCRIPTION_BACKEND": "vision",
+    "IMAGE_DESCRIPTION_PROVIDER": "vision",  # Use vision model for images
 }
 ```
 
-## Custom prompt
+If your `default` provider is vision-capable, you can omit the `vision` provider and `IMAGE_DESCRIPTION_PROVIDER` setting.
 
-Wagtail AI includes a simple prompt to ask the AI to generate an image description:
+## Title and description generation
 
-> Describe this image. Make the description suitable for use as an alt-text.
+Configure Wagtail to use the AI-enhanced image form:
 
-If you want to use a different prompt, override the `IMAGE_DESCRIPTION_PROMPT` value:
+```python
+WAGTAILIMAGES_IMAGE_FORM_BASE = "wagtail_ai.forms.DescribeImageForm"
+```
+
+Now when you upload or edit an image, magic wand icons will appear next to both the **title** and **description** fields.
+
+For the title field, you get the option to generate a concise, descriptive title for your image based on its visual content. For the description field, you get the option to generate a detailed description suitable for alt text and image metadata.
+
+The prompts for both features can be customized in **Settings -> Agent** in the Wagtail admin under "Image title prompt" and "Image description prompt". These prompts allow the following placeholder tokens to be used:
+
+- `{image}`: The image to describe (required)
+- `{max_length}`: The maximum length (in characters) set on the input widget
+
+### Custom form
+
+Wagtail AI includes an image form that enhances the `title` field with an AI button. If you are using a [custom image model](https://docs.wagtail.org/en/stable/advanced_topics/images/custom_image_model.html), you can provide your own form to target another field. Check out the implementation of `DescribeImageForm` in [`forms.py`](https://github.com/wagtail/wagtail-ai/blob/main/src/wagtail_ai/forms.py), adapt it to your needs, and set it as `WAGTAILIMAGES_IMAGE_FORM_BASE`.
+
+## Contextual image alt text
+
+Wagtail AI can generate contextual alt text for images based on both the image content and the surrounding page content. This creates more meaningful, accessible alt text that considers the context in which the image appears. This is made possible by using the `AIImageBlock` in `StreamField`s.
+
+### `AIImageBlock`
+
+The `AIImageBlock` is a drop-in replacement for Wagtail's standard [`ImageBlock`](https://docs.wagtail.org/en/stable/reference/streamfield/blocks.html#wagtail.images.blocks.ImageBlock) that adds AI-powered contextual alt text generation.
+
+**Usage in StreamField:**
+
+```python
+from wagtail import blocks
+from wagtail.models import Page
+from wagtail.fields import StreamField
+from wagtail_ai.blocks import AIImageBlock
+
+
+class BlogPage(Page):
+    body = StreamField(
+        [
+            ("paragraph", blocks.RichTextBlock()),
+            ("image", AIImageBlock()),
+            # Other block types...
+        ]
+    )
+```
+
+When an editor selects an image in the `AIImageBlock`, they'll see a magic wand icon next to the alt text field. Clicking it generates alt text that considers:
+
+- The image itself
+- The content before the image in the page
+- The content after the image in the page
+
+This contextual awareness helps create more relevant alt text than image-only analysis.
+
+### Custom image blocks with @ai_image_block
+
+For custom image blocks with different field names, use the `@ai_image_block` decorator:
+
+```python
+from wagtail import blocks
+from wagtail_ai.blocks import ai_image_block
+
+
+@ai_image_block(
+    alt_text_field_name="caption",
+    image_field_name="photo",
+)
+class CustomImageBlock(blocks.StructBlock):
+    photo = ImageChooserBlock()
+    caption = blocks.CharBlock(required=False)
+```
+
+**Decorator parameters:**
+
+- `alt_text_field_name` (default: `'alt_text'`): The name of the alt text field in your block
+- `image_field_name` (default: `'image'`): The name of the image field in your block
+
+### Configuring the prompt
+
+The default contextual alt text prompt can be customized in **Settings → Agent** in the Wagtail admin under "Images > Contextual alt text prompt".
+
+The following placeholder tokens are available to use in the prompt:
+
+- `{image}`: The image to describe
+- `{form_context_before}`: Text content in the page editor before the image
+- `{form_context_after}`: Text content in the page editor after the image
+- `{max_length}`: The maximum length (in characters) set on the alt text input widget
+- `{input}`: The current value of the alt text input widget
+
+## Configuring image rendition
+
+For optimal performance and cost, Wagtail AI resizes images before sending them to the AI provider. Configure the rendition filter:
 
 ```python
 WAGTAIL_AI = {
-    "BACKENDS": {
+    "PROVIDERS": {
         # ...
     },
-    "IMAGE_DESCRIPTION_PROMPT": "Describe this image in the voice of Sir David Attenborough.",
+    "IMAGE_DESCRIPTION_RENDITION_FILTER": "max-800x600",  # Default
 }
 ```
 
-## Custom form
+This helps control API costs while maintaining sufficient image quality for AI analysis.
 
-Wagtail AI includes an image form that enhances the `title` field with an AI button. If you are using a [custom image model](https://docs.wagtail.org/en/stable/advanced_topics/images/custom_image_model.html), you can provide your own form to target another field. Check out the implementation of `DescribeImageForm` in [`forms.py`](https://github.com/wagtail/wagtail-ai/blob/main/src/wagtail_ai/forms.py), adapt it to your needs, and set it as `WAGTAILIMAGES_IMAGE_FORM_BASE`.
+The setting is currently only used for images that have already been uploaded to Wagtail. During new uploads, Wagtail AI will use the original image.

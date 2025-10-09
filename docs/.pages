@@ -2,6 +2,9 @@ nav:
   - installation.md
   - editor-integration.md
   - images-integration.md
+  - field-panel-integration.md
+  - content-feedback.md
+  - related-pages.md
   - ai-providers.md
   - ai-backends.md
   - text-splitting.md
