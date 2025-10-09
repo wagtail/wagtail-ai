@@ -87,7 +87,7 @@ class AgentPromptDefaults:
             "Create an SEO-friendly page title, and respond ONLY with the title "
             "in plain text, for the following "
             "web page content:\n\n"
-            "{content_text}"
+            "{content_html}"
         )
 
     @classmethod
@@ -95,7 +95,7 @@ class AgentPromptDefaults:
         return (
             "Create an SEO-friendly meta description, and respond ONLY with the "
             "description in plain text for the following web page content:\n\n"
-            "{content_text}"
+            "{content_html}"
         )
 
     @classmethod
