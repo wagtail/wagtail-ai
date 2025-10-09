@@ -6,7 +6,7 @@ The default backend for text completion available in Wagtail AI is the ["LLM" ba
 
 ## The "LLM" backend
 
-This backend uses the ["LLM" library](https://llm.datasette.io/en/stable/) which offers support for many AI services through plugins. At the moment it only supports [text completion](../editor-integration/).
+This backend uses the ["LLM" library](https://llm.datasette.io/en/stable/) which offers support for many AI services through plugins. At the moment it only supports [text completion](./editor-integration.md).
 
 By default, it is configured to use OpenAI's `gpt-3.5-turbo` model.
 
@@ -158,7 +158,7 @@ You can find the "LLM" library specific instructions at: https://llm.datasette.i
 
 ## The "OpenAI" backend
 
-Wagtail AI includes a backend for OpenAI that supports both [text completion](../editor-integration/) and [image description](../images-integration/).
+Wagtail AI includes a backend for OpenAI that supports both [text completion](./editor-integration.md) and [image description](./images-integration.md).
 
 To use the OpenAI backend, you need an API key, which must be set in the `OPENAI_API_KEY` environment variable. Then, configure it in your Django project settings:
 
