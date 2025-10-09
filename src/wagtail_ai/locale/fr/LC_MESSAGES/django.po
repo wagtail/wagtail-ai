@@ -17,261 +17,256 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
 #: src/wagtail_ai/agents/basic_prompt.py:25
 #: src/wagtail_ai/agents/basic_prompt.py:37
 msgid "Generate title"
-msgstr ""
+msgstr "Générer un titre"
 
 #: src/wagtail_ai/agents/basic_prompt.py:26
 msgid "Generate a title based on the page content"
-msgstr ""
+msgstr "Générer un titre basé sur le contenu de la page"
 
 #: src/wagtail_ai/agents/basic_prompt.py:31
 #: src/wagtail_ai/agents/basic_prompt.py:43
 msgid "Generate description"
-msgstr ""
+msgstr "Générer une description"
 
 #: src/wagtail_ai/agents/basic_prompt.py:32
 msgid "Generate a description by summarizing the page content"
-msgstr ""
+msgstr "Générer une description en résumant le contenu de la page"
 
 #: src/wagtail_ai/agents/basic_prompt.py:38
 msgid "Generate a title for the image"
-msgstr ""
+msgstr "Générer un titre pour l'image"
 
 #: src/wagtail_ai/agents/basic_prompt.py:44
 msgid "Generate a description for the image"
-msgstr ""
+msgstr "Générer une description pour l'image"
 
 #: src/wagtail_ai/agents/basic_prompt.py:49
 msgid "Generate alt text"
-msgstr ""
+msgstr "Générer un texte alternatif"
 
 #: src/wagtail_ai/agents/basic_prompt.py:50
 msgid "Generate contextual alt text for the image"
-msgstr ""
+msgstr "Générer un texte alternatif contextuel pour l'image"
 
 #: src/wagtail_ai/context.py:56
 msgid "The prompt requires an image, but none was provided."
-msgstr ""
+msgstr "L'invite nécessite une image, mais aucune n'a été fournie."
 
 #: src/wagtail_ai/context.py:71
 msgid "The provided data URL is not an image."
-msgstr ""
+msgstr "L'URL de données fournie n'est pas une image."
 
 #: src/wagtail_ai/context.py:82
 #, python-format
 msgid "Could not find image with id %(image)s."
-msgstr ""
+msgstr "Impossible de trouver l'image avec l'id %(image)s."
 
 #: src/wagtail_ai/forms.py:17
 msgid "No text provided - please enter some text before using AI features."
-msgstr ""
+msgstr "Aucun texte fourni - veuillez entrer du texte avant d'utiliser les fonctionnalités d'IA."
 
-#: src/wagtail_ai/forms.py:24 src/wagtail_ai/forms.py:25
+#: src/wagtail_ai/forms.py:24
+#: src/wagtail_ai/forms.py:25
 msgid "Invalid prompt provided."
-msgstr ""
+msgstr "Invite invalide fournie."
 
 #: src/wagtail_ai/models.py:14
 msgid "Replace content"
-msgstr ""
+msgstr "Remplacer le contenu"
 
 #: src/wagtail_ai/models.py:15
 msgid "Append after existing content"
-msgstr ""
+msgstr "Ajouter après le contenu existant"
 
 #: src/wagtail_ai/models.py:24
-msgid ""
-"The prompt description, displayed alongside its label on the settings "
-"listing."
-msgstr ""
+msgid "The prompt description, displayed alongside its label on the settings listing."
+msgstr "La description de l'invite, affichée à côté de son étiquette dans la liste des paramètres."
 
 #: src/wagtail_ai/models.py:31
-msgid ""
-"The prompt text sent to the Large Language Model (e.g. ChatGPT) to generate "
-"content."
-msgstr ""
+msgid "The prompt text sent to the Large Language Model (e.g. ChatGPT) to generate content."
+msgstr "Le texte de l'invite envoyé au modèle de langage large (par exemple ChatGPT) pour générer du contenu."
 
 #: src/wagtail_ai/models.py:37
 msgid "The method used for processing the responses to the prompt."
-msgstr ""
+msgstr "La méthode utilisée pour traiter les réponses à l'invite."
 
 #: src/wagtail_ai/models.py:135
 msgid "Plain text"
-msgstr ""
+msgstr "Texte brut"
 
 #: src/wagtail_ai/models.py:136
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #: src/wagtail_ai/models.py:170
 msgid "Page title prompt"
-msgstr ""
+msgstr "Invite pour le titre de la page"
 
 #: src/wagtail_ai/models.py:171
 msgid "Prompt to use for generating page titles."
-msgstr ""
+msgstr "Invite à utiliser pour générer les titres de page."
 
 #: src/wagtail_ai/models.py:175
 msgid "Page description prompt"
-msgstr ""
+msgstr "Invite pour la description de la page"
 
 #: src/wagtail_ai/models.py:176
 msgid "Prompt to use for generating page descriptions."
-msgstr ""
+msgstr "Invite à utiliser pour générer les descriptions de page."
 
 #: src/wagtail_ai/models.py:179
 msgid "Page metadata"
-msgstr ""
+msgstr "Métadonnées de la page"
 
 #: src/wagtail_ai/models.py:185
 msgid "Image title prompt"
-msgstr ""
+msgstr "Invite pour le titre de l'image"
 
 #: src/wagtail_ai/models.py:187
-msgid ""
-"Prompt to use for generating image titles when uploading or editing an image."
-msgstr ""
+msgid "Prompt to use for generating image titles when uploading or editing an image."
+msgstr "Invite à utiliser pour générer les titres d'image lors du téléchargement ou de la modification d'une image."
 
 #: src/wagtail_ai/models.py:193
 msgid "Image description prompt"
-msgstr ""
+msgstr "Invite pour la description de l'image"
 
 #: src/wagtail_ai/models.py:195
-msgid ""
-"Prompt to use for generating image descriptions when uploading or editing an "
-"image."
-msgstr ""
+msgid "Prompt to use for generating image descriptions when uploading or editing an image."
+msgstr "Invite à utiliser pour générer les descriptions d'image lors du téléchargement ou de la modification d'une image."
 
 #: src/wagtail_ai/models.py:201
 msgid "Contextual alt text prompt"
-msgstr ""
+msgstr "Invite pour le texte alternatif contextuel"
 
 #: src/wagtail_ai/models.py:203
-msgid ""
-"Prompt to use for generating contextual image alt text in the page editor."
-msgstr ""
+msgid "Prompt to use for generating contextual image alt text in the page editor."
+msgstr "Invite à utiliser pour générer le texte alternatif contextuel de l'image dans l'éditeur de page."
 
 #: src/wagtail_ai/models.py:208
 msgid "Images"
-msgstr ""
+msgstr "Images"
 
 #: src/wagtail_ai/models.py:214
 msgid "Content type"
-msgstr ""
+msgstr "Type de contenu"
 
 #: src/wagtail_ai/models.py:215
 msgid "The format of the content to review."
-msgstr ""
+msgstr "Le format du contenu à examiner."
 
 #: src/wagtail_ai/models.py:219
 msgid "Prompt"
-msgstr ""
+msgstr "Invite"
 
 #: src/wagtail_ai/models.py:221
 msgid "Additional instructions to adjust the feedback given by the agent."
-msgstr ""
+msgstr "Instructions supplémentaires pour ajuster les retours donnés par l'agent."
 
 #: src/wagtail_ai/models.py:226
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:11
 msgid "Content feedback"
-msgstr ""
+msgstr "Retour sur le contenu"
 
 #: src/wagtail_ai/models.py:232
 msgid "Agents"
-msgstr ""
+msgstr "Agents"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:15
 msgid "Suggest"
-msgstr ""
+msgstr "Suggérer"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:18
 msgid "Suggest different"
-msgstr ""
+msgstr "Suggérer différent"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:21
 msgid "No results remaining"
-msgstr ""
+msgstr "Plus aucun résultat"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:28
 msgid "Clear suggestions"
-msgstr ""
+msgstr "Effacer les suggestions"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:12
 msgid "Looking for relevant pages…"
-msgstr ""
+msgstr "Recherche de pages pertinentes…"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:15
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:24
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:37
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:24
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:21
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:34
 msgid "An error occurred while processing your request. Please try again."
-msgstr ""
+msgstr "Une erreur est survenue lors du traitement de votre demande. Veuillez réessayer."
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:10
 msgid "AI Actions"
-msgstr ""
+msgstr "Actions IA"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:18
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:31
 msgid "Please wait…"
-msgstr ""
+msgstr "Veuillez patienter…"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:29
 msgid "Suggestion"
-msgstr ""
+msgstr "Suggestion"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:35
 msgid "Use"
-msgstr ""
+msgstr "Utiliser"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:38
 msgid "Regenerate"
-msgstr ""
+msgstr "Régénérer"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:41
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:50
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:69
 msgid "Dismiss"
-msgstr ""
+msgstr "Ignorer"
 
 #: src/wagtail_ai/templates/wagtail_ai/widgets/image_description.html:12
 msgid "Describe image using AI"
-msgstr ""
+msgstr "Décrire l'image en utilisant l'IA"
 
 #: src/wagtail_ai/templates/wagtail_ai/widgets/image_description.html:20
 msgid "An error occurred while generating the description. Please try again."
-msgstr ""
+msgstr "Une erreur est survenue lors de la génération de la description. Veuillez réessayer."
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:16
 msgid "Clear all"
-msgstr ""
+msgstr "Tout effacer"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:22
 msgid "Get content feedback"
-msgstr ""
+msgstr "Obtenir un retour sur le contenu"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:42
 msgid "Overall feedback"
-msgstr ""
+msgstr "Retour global"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:58
 msgid "Suggested improvements"
-msgstr ""
+msgstr "Améliorations suggérées"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:66
 msgid "Show"
-msgstr ""
+msgstr "Afficher"
 
 #: src/wagtail_ai/views.py:107
 msgid "An unexpected error occurred."
-msgstr ""
+msgstr "Une erreur inattendue est survenue."
 
-#: src/wagtail_ai/views.py:159 src/wagtail_ai/views.py:162
+#: src/wagtail_ai/views.py:159
+#: src/wagtail_ai/views.py:162
 msgid "There was an issue describing the image."
-msgstr ""
+msgstr "Un problème est survenu lors de la description de l'image."

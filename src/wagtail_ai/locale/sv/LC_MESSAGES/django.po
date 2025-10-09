@@ -17,261 +17,256 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: src/wagtail_ai/agents/basic_prompt.py:25
 #: src/wagtail_ai/agents/basic_prompt.py:37
 msgid "Generate title"
-msgstr ""
+msgstr "Generera titel"
 
 #: src/wagtail_ai/agents/basic_prompt.py:26
 msgid "Generate a title based on the page content"
-msgstr ""
+msgstr "Generera en titel baserad på sidans innehåll"
 
 #: src/wagtail_ai/agents/basic_prompt.py:31
 #: src/wagtail_ai/agents/basic_prompt.py:43
 msgid "Generate description"
-msgstr ""
+msgstr "Generera beskrivning"
 
 #: src/wagtail_ai/agents/basic_prompt.py:32
 msgid "Generate a description by summarizing the page content"
-msgstr ""
+msgstr "Generera en beskrivning genom att sammanfatta sidans innehåll"
 
 #: src/wagtail_ai/agents/basic_prompt.py:38
 msgid "Generate a title for the image"
-msgstr ""
+msgstr "Generera en titel för bilden"
 
 #: src/wagtail_ai/agents/basic_prompt.py:44
 msgid "Generate a description for the image"
-msgstr ""
+msgstr "Generera en beskrivning för bilden"
 
 #: src/wagtail_ai/agents/basic_prompt.py:49
 msgid "Generate alt text"
-msgstr ""
+msgstr "Generera alt-text"
 
 #: src/wagtail_ai/agents/basic_prompt.py:50
 msgid "Generate contextual alt text for the image"
-msgstr ""
+msgstr "Generera kontextuell alt-text för bilden"
 
 #: src/wagtail_ai/context.py:56
 msgid "The prompt requires an image, but none was provided."
-msgstr ""
+msgstr "Uppmaningen kräver en bild, men ingen bild tillhandahölls."
 
 #: src/wagtail_ai/context.py:71
 msgid "The provided data URL is not an image."
-msgstr ""
+msgstr "Den angivna data-URL:en är inte en bild."
 
 #: src/wagtail_ai/context.py:82
 #, python-format
 msgid "Could not find image with id %(image)s."
-msgstr ""
+msgstr "Kunde inte hitta bild med id %(image)s."
 
 #: src/wagtail_ai/forms.py:17
 msgid "No text provided - please enter some text before using AI features."
-msgstr ""
+msgstr "Ingen text angiven - vänligen skriv in text innan du använder AI-funktioner."
 
-#: src/wagtail_ai/forms.py:24 src/wagtail_ai/forms.py:25
+#: src/wagtail_ai/forms.py:24
+#: src/wagtail_ai/forms.py:25
 msgid "Invalid prompt provided."
-msgstr ""
+msgstr "Ogiltig uppmaning angiven."
 
 #: src/wagtail_ai/models.py:14
 msgid "Replace content"
-msgstr ""
+msgstr "Ersätt innehåll"
 
 #: src/wagtail_ai/models.py:15
 msgid "Append after existing content"
-msgstr ""
+msgstr "Lägg till efter befintligt innehåll"
 
 #: src/wagtail_ai/models.py:24
-msgid ""
-"The prompt description, displayed alongside its label on the settings "
-"listing."
-msgstr ""
+msgid "The prompt description, displayed alongside its label on the settings listing."
+msgstr "Uppmaningsbeskrivningen, visas tillsammans med dess etikett i inställningslistan."
 
 #: src/wagtail_ai/models.py:31
-msgid ""
-"The prompt text sent to the Large Language Model (e.g. ChatGPT) to generate "
-"content."
-msgstr ""
+msgid "The prompt text sent to the Large Language Model (e.g. ChatGPT) to generate content."
+msgstr "Uppmaningstexten som skickas till den stora språkmodellen (t.ex. ChatGPT) för att generera innehåll."
 
 #: src/wagtail_ai/models.py:37
 msgid "The method used for processing the responses to the prompt."
-msgstr ""
+msgstr "Metoden som används för att bearbeta svaren på uppmaningen."
 
 #: src/wagtail_ai/models.py:135
 msgid "Plain text"
-msgstr ""
+msgstr "Ren text"
 
 #: src/wagtail_ai/models.py:136
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #: src/wagtail_ai/models.py:170
 msgid "Page title prompt"
-msgstr ""
+msgstr "Sidtiteluppmaning"
 
 #: src/wagtail_ai/models.py:171
 msgid "Prompt to use for generating page titles."
-msgstr ""
+msgstr "Uppmaning att använda för att generera sidtitlar."
 
 #: src/wagtail_ai/models.py:175
 msgid "Page description prompt"
-msgstr ""
+msgstr "Sidbeskrivningsuppmaning"
 
 #: src/wagtail_ai/models.py:176
 msgid "Prompt to use for generating page descriptions."
-msgstr ""
+msgstr "Uppmaning att använda för att generera sidbeskrivningar."
 
 #: src/wagtail_ai/models.py:179
 msgid "Page metadata"
-msgstr ""
+msgstr "Sidmetadata"
 
 #: src/wagtail_ai/models.py:185
 msgid "Image title prompt"
-msgstr ""
+msgstr "Bildtiteluppmaning"
 
 #: src/wagtail_ai/models.py:187
-msgid ""
-"Prompt to use for generating image titles when uploading or editing an image."
-msgstr ""
+msgid "Prompt to use for generating image titles when uploading or editing an image."
+msgstr "Uppmaning att använda för att generera bildtitlar vid uppladdning eller redigering av en bild."
 
 #: src/wagtail_ai/models.py:193
 msgid "Image description prompt"
-msgstr ""
+msgstr "Bildbeskrivningsuppmaning"
 
 #: src/wagtail_ai/models.py:195
-msgid ""
-"Prompt to use for generating image descriptions when uploading or editing an "
-"image."
-msgstr ""
+msgid "Prompt to use for generating image descriptions when uploading or editing an image."
+msgstr "Uppmaning att använda för att generera bildbeskrivningar vid uppladdning eller redigering av en bild."
 
 #: src/wagtail_ai/models.py:201
 msgid "Contextual alt text prompt"
-msgstr ""
+msgstr "Kontextuell alt-textuppmaning"
 
 #: src/wagtail_ai/models.py:203
-msgid ""
-"Prompt to use for generating contextual image alt text in the page editor."
-msgstr ""
+msgid "Prompt to use for generating contextual image alt text in the page editor."
+msgstr "Uppmaning att använda för att generera kontextuell alt-text för bilder i sidredigeraren."
 
 #: src/wagtail_ai/models.py:208
 msgid "Images"
-msgstr ""
+msgstr "Bilder"
 
 #: src/wagtail_ai/models.py:214
 msgid "Content type"
-msgstr ""
+msgstr "Innehållstyp"
 
 #: src/wagtail_ai/models.py:215
 msgid "The format of the content to review."
-msgstr ""
+msgstr "Formatet på innehållet som ska granskas."
 
 #: src/wagtail_ai/models.py:219
 msgid "Prompt"
-msgstr ""
+msgstr "Uppmaning"
 
 #: src/wagtail_ai/models.py:221
 msgid "Additional instructions to adjust the feedback given by the agent."
-msgstr ""
+msgstr "Ytterligare instruktioner för att justera feedbacken från agenten."
 
 #: src/wagtail_ai/models.py:226
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:11
 msgid "Content feedback"
-msgstr ""
+msgstr "Innehållsfeedback"
 
 #: src/wagtail_ai/models.py:232
 msgid "Agents"
-msgstr ""
+msgstr "Agenter"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:15
 msgid "Suggest"
-msgstr ""
+msgstr "Föreslå"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:18
 msgid "Suggest different"
-msgstr ""
+msgstr "Föreslå annorlunda"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:21
 msgid "No results remaining"
-msgstr ""
+msgstr "Inga resultat kvar"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:28
 msgid "Clear suggestions"
-msgstr ""
+msgstr "Rensa förslag"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:12
 msgid "Looking for relevant pages…"
-msgstr ""
+msgstr "Söker efter relevanta sidor…"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:15
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:24
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:37
 msgid "Cancel"
-msgstr ""
+msgstr "Avbryt"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:24
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:21
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:34
 msgid "An error occurred while processing your request. Please try again."
-msgstr ""
+msgstr "Ett fel uppstod vid bearbetning av din förfrågan. Vänligen försök igen."
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:10
 msgid "AI Actions"
-msgstr ""
+msgstr "AI-åtgärder"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:18
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:31
 msgid "Please wait…"
-msgstr ""
+msgstr "Vänligen vänta…"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:29
 msgid "Suggestion"
-msgstr ""
+msgstr "Förslag"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:35
 msgid "Use"
-msgstr ""
+msgstr "Använd"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:38
 msgid "Regenerate"
-msgstr ""
+msgstr "Generera på nytt"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:41
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:50
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:69
 msgid "Dismiss"
-msgstr ""
+msgstr "Avfärda"
 
 #: src/wagtail_ai/templates/wagtail_ai/widgets/image_description.html:12
 msgid "Describe image using AI"
-msgstr ""
+msgstr "Beskriv bild med AI"
 
 #: src/wagtail_ai/templates/wagtail_ai/widgets/image_description.html:20
 msgid "An error occurred while generating the description. Please try again."
-msgstr ""
+msgstr "Ett fel uppstod vid generering av beskrivningen. Vänligen försök igen."
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:16
 msgid "Clear all"
-msgstr ""
+msgstr "Rensa alla"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:22
 msgid "Get content feedback"
-msgstr ""
+msgstr "Få innehållsfeedback"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:42
 msgid "Overall feedback"
-msgstr ""
+msgstr "Övergripande feedback"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:58
 msgid "Suggested improvements"
-msgstr ""
+msgstr "Föreslagna förbättringar"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:66
 msgid "Show"
-msgstr ""
+msgstr "Visa"
 
 #: src/wagtail_ai/views.py:107
 msgid "An unexpected error occurred."
-msgstr ""
+msgstr "Ett oväntat fel uppstod."
 
-#: src/wagtail_ai/views.py:159 src/wagtail_ai/views.py:162
+#: src/wagtail_ai/views.py:159
+#: src/wagtail_ai/views.py:162
 msgid "There was an issue describing the image."
-msgstr ""
+msgstr "Det uppstod ett problem vid beskrivningen av bilden."

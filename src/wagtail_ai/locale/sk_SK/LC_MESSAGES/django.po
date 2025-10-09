@@ -20,258 +20,252 @@ msgstr ""
 #: src/wagtail_ai/agents/basic_prompt.py:25
 #: src/wagtail_ai/agents/basic_prompt.py:37
 msgid "Generate title"
-msgstr ""
+msgstr "Vygenerovať názov"
 
 #: src/wagtail_ai/agents/basic_prompt.py:26
 msgid "Generate a title based on the page content"
-msgstr ""
+msgstr "Vygenerovať názov na základe obsahu stránky"
 
 #: src/wagtail_ai/agents/basic_prompt.py:31
 #: src/wagtail_ai/agents/basic_prompt.py:43
 msgid "Generate description"
-msgstr ""
+msgstr "Vygenerovať popis"
 
 #: src/wagtail_ai/agents/basic_prompt.py:32
 msgid "Generate a description by summarizing the page content"
-msgstr ""
+msgstr "Vygenerovať popis zhrnutím obsahu stránky"
 
 #: src/wagtail_ai/agents/basic_prompt.py:38
 msgid "Generate a title for the image"
-msgstr ""
+msgstr "Vygenerovať názov pre obrázok"
 
 #: src/wagtail_ai/agents/basic_prompt.py:44
 msgid "Generate a description for the image"
-msgstr ""
+msgstr "Vygenerovať popis pre obrázok"
 
 #: src/wagtail_ai/agents/basic_prompt.py:49
 msgid "Generate alt text"
-msgstr ""
+msgstr "Vygenerovať alternatívny text"
 
 #: src/wagtail_ai/agents/basic_prompt.py:50
 msgid "Generate contextual alt text for the image"
-msgstr ""
+msgstr "Vygenerovať kontextuálny alternatívny text pre obrázok"
 
 #: src/wagtail_ai/context.py:56
 msgid "The prompt requires an image, but none was provided."
-msgstr ""
+msgstr "Výzva vyžaduje obrázok, ale žiadny nebol poskytnutý."
 
 #: src/wagtail_ai/context.py:71
 msgid "The provided data URL is not an image."
-msgstr ""
+msgstr "Poskytnutý dátový URL nie je obrázok."
 
 #: src/wagtail_ai/context.py:82
 #, python-format
 msgid "Could not find image with id %(image)s."
-msgstr ""
+msgstr "Nemožno nájsť obrázok s id %(image)s."
 
 #: src/wagtail_ai/forms.py:17
 msgid "No text provided - please enter some text before using AI features."
-msgstr ""
+msgstr "Nebol zadaný žiadny text - prosím, zadajte nejaký text pred použitím funkcií AI."
 
-#: src/wagtail_ai/forms.py:24 src/wagtail_ai/forms.py:25
+#: src/wagtail_ai/forms.py:24
+#: src/wagtail_ai/forms.py:25
 msgid "Invalid prompt provided."
-msgstr ""
+msgstr "Poskytnutá výzva je neplatná."
 
 #: src/wagtail_ai/models.py:14
 msgid "Replace content"
-msgstr ""
+msgstr "Nahradiť obsah"
 
 #: src/wagtail_ai/models.py:15
 msgid "Append after existing content"
-msgstr ""
+msgstr "Pripojiť za existujúci obsah"
 
 #: src/wagtail_ai/models.py:24
-msgid ""
-"The prompt description, displayed alongside its label on the settings "
-"listing."
-msgstr ""
+msgid "The prompt description, displayed alongside its label on the settings listing."
+msgstr "Popis výzvy, zobrazený spolu s jej štítkom v zozname nastavení."
 
 #: src/wagtail_ai/models.py:31
-msgid ""
-"The prompt text sent to the Large Language Model (e.g. ChatGPT) to generate "
-"content."
-msgstr ""
+msgid "The prompt text sent to the Large Language Model (e.g. ChatGPT) to generate content."
+msgstr "Text výzvy odoslaný do veľkého jazykového modelu (napr. ChatGPT) na generovanie obsahu."
 
 #: src/wagtail_ai/models.py:37
 msgid "The method used for processing the responses to the prompt."
-msgstr ""
+msgstr "Metóda použitá na spracovanie odpovedí na výzvu."
 
 #: src/wagtail_ai/models.py:135
 msgid "Plain text"
-msgstr ""
+msgstr "Čistý text"
 
 #: src/wagtail_ai/models.py:136
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #: src/wagtail_ai/models.py:170
 msgid "Page title prompt"
-msgstr ""
+msgstr "Výzva pre názov stránky"
 
 #: src/wagtail_ai/models.py:171
 msgid "Prompt to use for generating page titles."
-msgstr ""
+msgstr "Výzva na generovanie názvov stránok."
 
 #: src/wagtail_ai/models.py:175
 msgid "Page description prompt"
-msgstr ""
+msgstr "Výzva pre popis stránky"
 
 #: src/wagtail_ai/models.py:176
 msgid "Prompt to use for generating page descriptions."
-msgstr ""
+msgstr "Výzva na generovanie popisov stránok."
 
 #: src/wagtail_ai/models.py:179
 msgid "Page metadata"
-msgstr ""
+msgstr "Metaúdaje stránky"
 
 #: src/wagtail_ai/models.py:185
 msgid "Image title prompt"
-msgstr ""
+msgstr "Výzva pre názov obrázka"
 
 #: src/wagtail_ai/models.py:187
-msgid ""
-"Prompt to use for generating image titles when uploading or editing an image."
-msgstr ""
+msgid "Prompt to use for generating image titles when uploading or editing an image."
+msgstr "Výzva na generovanie názvov obrázkov pri nahrávaní alebo úprave obrázka."
 
 #: src/wagtail_ai/models.py:193
 msgid "Image description prompt"
-msgstr ""
+msgstr "Výzva pre popis obrázka"
 
 #: src/wagtail_ai/models.py:195
-msgid ""
-"Prompt to use for generating image descriptions when uploading or editing an "
-"image."
-msgstr ""
+msgid "Prompt to use for generating image descriptions when uploading or editing an image."
+msgstr "Výzva na generovanie popisov obrázkov pri nahrávaní alebo úprave obrázka."
 
 #: src/wagtail_ai/models.py:201
 msgid "Contextual alt text prompt"
-msgstr ""
+msgstr "Výzva pre kontextuálny alternatívny text"
 
 #: src/wagtail_ai/models.py:203
-msgid ""
-"Prompt to use for generating contextual image alt text in the page editor."
-msgstr ""
+msgid "Prompt to use for generating contextual image alt text in the page editor."
+msgstr "Výzva na generovanie kontextuálneho alternatívneho textu obrázkov v editore stránky."
 
 #: src/wagtail_ai/models.py:208
 msgid "Images"
-msgstr ""
+msgstr "Obrázky"
 
 #: src/wagtail_ai/models.py:214
 msgid "Content type"
-msgstr ""
+msgstr "Typ obsahu"
 
 #: src/wagtail_ai/models.py:215
 msgid "The format of the content to review."
-msgstr ""
+msgstr "Formát obsahu na kontrolu."
 
 #: src/wagtail_ai/models.py:219
 msgid "Prompt"
-msgstr ""
+msgstr "Výzva"
 
 #: src/wagtail_ai/models.py:221
 msgid "Additional instructions to adjust the feedback given by the agent."
-msgstr ""
+msgstr "Dodatočné pokyny na úpravu spätnej väzby od agenta."
 
 #: src/wagtail_ai/models.py:226
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:11
 msgid "Content feedback"
-msgstr ""
+msgstr "Spätná väzba k obsahu"
 
 #: src/wagtail_ai/models.py:232
 msgid "Agents"
-msgstr ""
+msgstr "Agenti"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:15
 msgid "Suggest"
-msgstr ""
+msgstr "Navrhnúť"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:18
 msgid "Suggest different"
-msgstr ""
+msgstr "Navrhnúť iné"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:21
 msgid "No results remaining"
-msgstr ""
+msgstr "Žiadne zostávajúce výsledky"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:28
 msgid "Clear suggestions"
-msgstr ""
+msgstr "Vymazať návrhy"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:12
 msgid "Looking for relevant pages…"
-msgstr ""
+msgstr "Hľadanie relevantných stránok…"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:15
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:24
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:37
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušiť"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:24
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:21
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:34
 msgid "An error occurred while processing your request. Please try again."
-msgstr ""
+msgstr "Pri spracovaní vašej požiadavky došlo k chybe. Skúste to prosím znova."
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:10
 msgid "AI Actions"
-msgstr ""
+msgstr "AI akcie"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:18
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:31
 msgid "Please wait…"
-msgstr ""
+msgstr "Prosím, čakajte…"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:29
 msgid "Suggestion"
-msgstr ""
+msgstr "Návrh"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:35
 msgid "Use"
-msgstr ""
+msgstr "Použiť"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:38
 msgid "Regenerate"
-msgstr ""
+msgstr "Znovu vygenerovať"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:41
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:50
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:69
 msgid "Dismiss"
-msgstr ""
+msgstr "Zamietnuť"
 
 #: src/wagtail_ai/templates/wagtail_ai/widgets/image_description.html:12
 msgid "Describe image using AI"
-msgstr ""
+msgstr "Popísať obrázok pomocou AI"
 
 #: src/wagtail_ai/templates/wagtail_ai/widgets/image_description.html:20
 msgid "An error occurred while generating the description. Please try again."
-msgstr ""
+msgstr "Pri generovaní popisu došlo k chybe. Skúste to prosím znova."
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:16
 msgid "Clear all"
-msgstr ""
+msgstr "Vymazať všetko"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:22
 msgid "Get content feedback"
-msgstr ""
+msgstr "Získať spätnú väzbu k obsahu"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:42
 msgid "Overall feedback"
-msgstr ""
+msgstr "Celková spätná väzba"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:58
 msgid "Suggested improvements"
-msgstr ""
+msgstr "Navrhované zlepšenia"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:66
 msgid "Show"
-msgstr ""
+msgstr "Zobraziť"
 
 #: src/wagtail_ai/views.py:107
 msgid "An unexpected error occurred."
-msgstr ""
+msgstr "Došlo k neočakávanej chybe."
 
-#: src/wagtail_ai/views.py:159 src/wagtail_ai/views.py:162
+#: src/wagtail_ai/views.py:159
+#: src/wagtail_ai/views.py:162
 msgid "There was an issue describing the image."
-msgstr ""
+msgstr "Vyskytol sa problém pri popisovaní obrázka."

@@ -20,258 +20,252 @@ msgstr ""
 #: src/wagtail_ai/agents/basic_prompt.py:25
 #: src/wagtail_ai/agents/basic_prompt.py:37
 msgid "Generate title"
-msgstr ""
+msgstr "Búa til titil"
 
 #: src/wagtail_ai/agents/basic_prompt.py:26
 msgid "Generate a title based on the page content"
-msgstr ""
+msgstr "Búa til titil byggðan á efni síðunnar"
 
 #: src/wagtail_ai/agents/basic_prompt.py:31
 #: src/wagtail_ai/agents/basic_prompt.py:43
 msgid "Generate description"
-msgstr ""
+msgstr "Búa til lýsingu"
 
 #: src/wagtail_ai/agents/basic_prompt.py:32
 msgid "Generate a description by summarizing the page content"
-msgstr ""
+msgstr "Búa til lýsingu með því að draga saman efni síðunnar"
 
 #: src/wagtail_ai/agents/basic_prompt.py:38
 msgid "Generate a title for the image"
-msgstr ""
+msgstr "Búa til titil fyrir mynd"
 
 #: src/wagtail_ai/agents/basic_prompt.py:44
 msgid "Generate a description for the image"
-msgstr ""
+msgstr "Búa til lýsingu fyrir mynd"
 
 #: src/wagtail_ai/agents/basic_prompt.py:49
 msgid "Generate alt text"
-msgstr ""
+msgstr "Búa til alt texta"
 
 #: src/wagtail_ai/agents/basic_prompt.py:50
 msgid "Generate contextual alt text for the image"
-msgstr ""
+msgstr "Búa til samhengi alt texta fyrir mynd"
 
 #: src/wagtail_ai/context.py:56
 msgid "The prompt requires an image, but none was provided."
-msgstr ""
+msgstr "Fyrirspurnin krefst myndar, en engin var gefin."
 
 #: src/wagtail_ai/context.py:71
 msgid "The provided data URL is not an image."
-msgstr ""
+msgstr "Gefinn gagnavefur er ekki mynd."
 
 #: src/wagtail_ai/context.py:82
 #, python-format
 msgid "Could not find image with id %(image)s."
-msgstr ""
+msgstr "Gat ekki fundið mynd með id %(image)s."
 
 #: src/wagtail_ai/forms.py:17
 msgid "No text provided - please enter some text before using AI features."
-msgstr ""
+msgstr "Enginn texti gefinn - vinsamlegast sláðu inn texta áður en þú notar AI eiginleika."
 
-#: src/wagtail_ai/forms.py:24 src/wagtail_ai/forms.py:25
+#: src/wagtail_ai/forms.py:24
+#: src/wagtail_ai/forms.py:25
 msgid "Invalid prompt provided."
-msgstr ""
+msgstr "Ógild fyrirspurn gefin."
 
 #: src/wagtail_ai/models.py:14
 msgid "Replace content"
-msgstr ""
+msgstr "Skipta um efni"
 
 #: src/wagtail_ai/models.py:15
 msgid "Append after existing content"
-msgstr ""
+msgstr "Bæta við eftir núverandi efni"
 
 #: src/wagtail_ai/models.py:24
-msgid ""
-"The prompt description, displayed alongside its label on the settings "
-"listing."
-msgstr ""
+msgid "The prompt description, displayed alongside its label on the settings listing."
+msgstr "Lýsing fyrirspurnar, sýnd við hlið merkis hennar í stillingalista."
 
 #: src/wagtail_ai/models.py:31
-msgid ""
-"The prompt text sent to the Large Language Model (e.g. ChatGPT) to generate "
-"content."
-msgstr ""
+msgid "The prompt text sent to the Large Language Model (e.g. ChatGPT) to generate content."
+msgstr "Texti fyrirspurnar sendur til stórs málmódels (t.d. ChatGPT) til að búa til efni."
 
 #: src/wagtail_ai/models.py:37
 msgid "The method used for processing the responses to the prompt."
-msgstr ""
+msgstr "Aðferðin sem notuð er til að vinna úr svörum við fyrirspurninni."
 
 #: src/wagtail_ai/models.py:135
 msgid "Plain text"
-msgstr ""
+msgstr "Hreinn texti"
 
 #: src/wagtail_ai/models.py:136
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #: src/wagtail_ai/models.py:170
 msgid "Page title prompt"
-msgstr ""
+msgstr "Titil fyrirspurnar síðu"
 
 #: src/wagtail_ai/models.py:171
 msgid "Prompt to use for generating page titles."
-msgstr ""
+msgstr "Fyrirspurn til að nota við að búa til titla síðna."
 
 #: src/wagtail_ai/models.py:175
 msgid "Page description prompt"
-msgstr ""
+msgstr "Lýsing fyrirspurnar síðu"
 
 #: src/wagtail_ai/models.py:176
 msgid "Prompt to use for generating page descriptions."
-msgstr ""
+msgstr "Fyrirspurn til að nota við að búa til lýsingar síðna."
 
 #: src/wagtail_ai/models.py:179
 msgid "Page metadata"
-msgstr ""
+msgstr "Málsgögn síðunnar"
 
 #: src/wagtail_ai/models.py:185
 msgid "Image title prompt"
-msgstr ""
+msgstr "Titil fyrirspurnar myndar"
 
 #: src/wagtail_ai/models.py:187
-msgid ""
-"Prompt to use for generating image titles when uploading or editing an image."
-msgstr ""
+msgid "Prompt to use for generating image titles when uploading or editing an image."
+msgstr "Fyrirspurn til að nota við að búa til titla mynda þegar mynd er hlaðin upp eða breytt."
 
 #: src/wagtail_ai/models.py:193
 msgid "Image description prompt"
-msgstr ""
+msgstr "Lýsing fyrirspurnar myndar"
 
 #: src/wagtail_ai/models.py:195
-msgid ""
-"Prompt to use for generating image descriptions when uploading or editing an "
-"image."
-msgstr ""
+msgid "Prompt to use for generating image descriptions when uploading or editing an image."
+msgstr "Fyrirspurn til að nota við að búa til lýsingar mynda þegar mynd er hlaðin upp eða breytt."
 
 #: src/wagtail_ai/models.py:201
 msgid "Contextual alt text prompt"
-msgstr ""
+msgstr "Samhengi alt texta fyrirspurn"
 
 #: src/wagtail_ai/models.py:203
-msgid ""
-"Prompt to use for generating contextual image alt text in the page editor."
-msgstr ""
+msgid "Prompt to use for generating contextual image alt text in the page editor."
+msgstr "Fyrirspurn til að nota við að búa til samhengi alt texta mynda í síðueitara."
 
 #: src/wagtail_ai/models.py:208
 msgid "Images"
-msgstr ""
+msgstr "Myndir"
 
 #: src/wagtail_ai/models.py:214
 msgid "Content type"
-msgstr ""
+msgstr "Tegund efnis"
 
 #: src/wagtail_ai/models.py:215
 msgid "The format of the content to review."
-msgstr ""
+msgstr "Snið efnisins til að yfirfara."
 
 #: src/wagtail_ai/models.py:219
 msgid "Prompt"
-msgstr ""
+msgstr "Fyrirspurn"
 
 #: src/wagtail_ai/models.py:221
 msgid "Additional instructions to adjust the feedback given by the agent."
-msgstr ""
+msgstr "Viðbótarleiðbeiningar til að aðlaga endurgjöf frá umboðsmanni."
 
 #: src/wagtail_ai/models.py:226
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:11
 msgid "Content feedback"
-msgstr ""
+msgstr "Endurgjöf um efni"
 
 #: src/wagtail_ai/models.py:232
 msgid "Agents"
-msgstr ""
+msgstr "Umboðsmenn"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:15
 msgid "Suggest"
-msgstr ""
+msgstr "Stinga upp á"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:18
 msgid "Suggest different"
-msgstr ""
+msgstr "Stinga upp á öðruvísi"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:21
 msgid "No results remaining"
-msgstr ""
+msgstr "Engin niðurstaða eftir"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/_ai_chooser_panel.html:28
 msgid "Clear suggestions"
-msgstr ""
+msgstr "Hreinsa tillögur"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:12
 msgid "Looking for relevant pages…"
-msgstr ""
+msgstr "Leita að viðeigandi síðum…"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:15
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:24
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:37
 msgid "Cancel"
-msgstr ""
+msgstr "Hætta við"
 
 #: src/wagtail_ai/templates/wagtail_ai/panels/chooser_panel.html:24
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:21
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:34
 msgid "An error occurred while processing your request. Please try again."
-msgstr ""
+msgstr "Villa kom upp við vinnslu beiðni þinnar. Vinsamlegast reyndu aftur."
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:10
 msgid "AI Actions"
-msgstr ""
+msgstr "AI aðgerðir"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:18
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:31
 msgid "Please wait…"
-msgstr ""
+msgstr "Vinsamlegast bíddu…"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:29
 msgid "Suggestion"
-msgstr ""
+msgstr "Tillaga"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:35
 msgid "Use"
-msgstr ""
+msgstr "Nota"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:38
 msgid "Regenerate"
-msgstr ""
+msgstr "Endurframleiða"
 
 #: src/wagtail_ai/templates/wagtail_ai/shared/field_panel_dropdown.html:41
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:50
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:69
 msgid "Dismiss"
-msgstr ""
+msgstr "Hafna"
 
 #: src/wagtail_ai/templates/wagtail_ai/widgets/image_description.html:12
 msgid "Describe image using AI"
-msgstr ""
+msgstr "Lýsa mynd með AI"
 
 #: src/wagtail_ai/templates/wagtail_ai/widgets/image_description.html:20
 msgid "An error occurred while generating the description. Please try again."
-msgstr ""
+msgstr "Villa kom upp við að búa til lýsingu. Vinsamlegast reyndu aftur."
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:16
 msgid "Clear all"
-msgstr ""
+msgstr "Hreinsa allt"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:22
 msgid "Get content feedback"
-msgstr ""
+msgstr "Fá endurgjöf um efni"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:42
 msgid "Overall feedback"
-msgstr ""
+msgstr "Heildarendurgjöf"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:58
 msgid "Suggested improvements"
-msgstr ""
+msgstr "Tillögur að umbótum"
 
 #: src/wagtail_ai/templates/wagtailadmin/shared/side_panels/checks.html:66
 msgid "Show"
-msgstr ""
+msgstr "Sýna"
 
 #: src/wagtail_ai/views.py:107
 msgid "An unexpected error occurred."
-msgstr ""
+msgstr "Óvænt villa kom upp."
 
-#: src/wagtail_ai/views.py:159 src/wagtail_ai/views.py:162
+#: src/wagtail_ai/views.py:159
+#: src/wagtail_ai/views.py:162
 msgid "There was an issue describing the image."
-msgstr ""
+msgstr "Vandamál kom upp við að lýsa myndinni."

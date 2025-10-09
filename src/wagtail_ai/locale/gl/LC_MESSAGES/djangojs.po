@@ -17,14 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: src/wagtail_ai/static_src/content_feedback/main.ts:233
 msgid "Quality: needs major improvement"
-msgstr ""
+msgstr "Calidade: necesita melloras importantes"
 
 #: src/wagtail_ai/static_src/content_feedback/main.ts:236
 msgid "Quality: adequate"
-msgstr ""
+msgstr "Calidade: adecuada"
 
 #: src/wagtail_ai/static_src/content_feedback/main.ts:239
 msgid "Quality: excellent"
-msgstr ""
+msgstr "Calidade: excelente"

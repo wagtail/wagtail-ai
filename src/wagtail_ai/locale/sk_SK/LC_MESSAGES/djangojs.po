@@ -19,12 +19,12 @@ msgstr ""
 
 #: src/wagtail_ai/static_src/content_feedback/main.ts:233
 msgid "Quality: needs major improvement"
-msgstr ""
+msgstr "Kvalita: potrebuje výrazné zlepšenie"
 
 #: src/wagtail_ai/static_src/content_feedback/main.ts:236
 msgid "Quality: adequate"
-msgstr ""
+msgstr "Kvalita: primeraná"
 
 #: src/wagtail_ai/static_src/content_feedback/main.ts:239
 msgid "Quality: excellent"
-msgstr ""
+msgstr "Kvalita: vynikajúca"
