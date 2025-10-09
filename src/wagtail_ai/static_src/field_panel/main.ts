@@ -541,3 +541,7 @@ class FieldPanelController extends Controller<HTMLElement> {
 
 window.wagtail.app.register('wai-field-panel', FieldPanelController);
 window.wagtailAI.ContextProvider = ContextProvider;
+window.telepath.register(
+  'wagtail_ai.blocks.AIImageBlock',
+  window.wagtailStreamField.blocks.StructBlockDefinition,
+);

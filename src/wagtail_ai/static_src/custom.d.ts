@@ -90,11 +90,19 @@ declare global {
 
   interface Window {
     LanguageModel: any;
+    telepath: {
+      register: (name: string, constructor: any) => void;
+    };
     WAGTAIL_AI_PROCESS_URL: string;
     WAGTAIL_AI_PROMPTS: [Prompt];
     wagtail: {
       app: WagtailApplication;
       editHandler: WagtailPanel;
+    };
+    wagtailStreamField: {
+      blocks: {
+        StructBlockDefinition: any;
+      };
     };
     wagtailAI: {
       config: WagtailAiConfiguration;
