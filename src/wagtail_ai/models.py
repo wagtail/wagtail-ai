@@ -85,7 +85,7 @@ class AgentPromptDefaults:
     def page_title_prompt(cls):
         return (
             "Create an SEO-friendly page title, and respond ONLY with the title "
-            "in plain text, for the following "
+            "in plain text (without quotes), for the following "
             "web page content:\n\n"
             "{content_html}"
         )
@@ -94,7 +94,8 @@ class AgentPromptDefaults:
     def page_description_prompt(cls):
         return (
             "Create an SEO-friendly meta description, and respond ONLY with the "
-            "description in plain text for the following web page content:\n\n"
+            "description in plain text (without quotes) for the following web page "
+            "content:\n\n"
             "{content_html}"
         )
 
@@ -102,7 +103,7 @@ class AgentPromptDefaults:
     def image_title_prompt(cls):
         return (
             "Generate a title (in plain text, no longer than "
-            "{max_length} characters) for the following image: {image}"
+            "{max_length} characters, without quotes) for the following image: {image}"
         )
 
     @classmethod
