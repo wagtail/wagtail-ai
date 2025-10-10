@@ -77,3 +77,5 @@ The AI must return the result in this structure:
   ]
 }
 ```
+
+For more details on agents, refer to [django-ai-core's documentation](https://django-ai-core.readthedocs.io/en/latest/modules/agents/).
