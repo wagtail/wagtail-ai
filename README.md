@@ -24,13 +24,21 @@ Right now, it can:
 
 ## Demos
 
+### Page title and meta description suggestions
+
+https://github.com/user-attachments/assets/4fcd543f-50fd-4687-b6ba-0715338bb92a
+
+### Image title, description, and contextual alt text suggestions
+
+https://github.com/user-attachments/assets/7f9d86f4-f4b0-41c1-bc13-f9c37368570c
+
+### Content feedback
+
+https://github.com/user-attachments/assets/45d1de20-8143-4572-ba5e-1cf4b350e121
+
 ### Rich-text integration
 
 https://user-images.githubusercontent.com/27112/223072938-8cb5ccff-4835-489a-8be4-cca85001885e.mp4
-
-### Alt-text generation
-
-https://github.com/wagtail/wagtail-ai/assets/27617/5ffd5493-b39c-4d38-bed8-fdd243920eb5
 
 ## Requirements & Costs
 
