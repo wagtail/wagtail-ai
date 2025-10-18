@@ -7,7 +7,8 @@ from wagtail_ai.agents.base import get_llm_service, get_provider
 
 
 class TestGetProvider:
-    def test_returns_provider_by_alias(self, settings):
+    def test_returns_provider_by_alias(self, settings) -> None:
+        """Return provider by alias."""
         settings.WAGTAIL_AI = {
             "PROVIDERS": {
                 "default": {"provider": "openai", "model": "gpt-4o-mini"},
@@ -17,7 +18,7 @@ class TestGetProvider:
         provider = get_provider("premium")
         assert provider == {"provider": "anthropic", "model": "claude-3-5-sonnet"}
 
-    def test_returns_default_provider_when_alias_not_explicit(self, settings):
+    def test_returns_default_provider_when_alias_not_explicit(self, settings) -> None:
         settings.WAGTAIL_AI = {
             "PROVIDERS": {
                 "default": {"provider": "openai", "model": "gpt-4o-mini"},
@@ -26,7 +27,7 @@ class TestGetProvider:
         provider = get_provider()
         assert provider == {"provider": "openai", "model": "gpt-4o-mini"}
 
-    def test_raises_error_when_alias_not_found(self, settings):
+    def test_raises_error_when_alias_not_found(self, settings) -> None:
         settings.WAGTAIL_AI = {
             "PROVIDERS": {
                 "default": {"provider": "openai", "model": "gpt-4o-mini"},
@@ -36,7 +37,7 @@ class TestGetProvider:
             get_provider("premium")
         assert "Provider with alias 'premium' not found" in str(exc_info.value)
 
-    def test_legacy_fallback_for_default_provider(self, settings):
+    def test_legacy_fallback_for_default_provider(self, settings) -> None:
         """Test the deprecated fallback behavior when default provider not configured."""
         settings.WAGTAIL_AI = {
             "BACKENDS": {
@@ -57,7 +58,7 @@ class TestGetProvider:
 
             assert provider == {"provider": "openai", "model": "echo-model"}
 
-    def test_provider_with_extra_config(self, settings):
+    def test_provider_with_extra_config(self, settings) -> None:
         """Test that extra configuration keys are preserved."""
         settings.WAGTAIL_AI = {
             "PROVIDERS": {
@@ -77,7 +78,8 @@ class TestGetProvider:
 
 
 class TestGetLLMService:
-    def test_returns_llm_service_for_default_provider(self, settings):
+    def test_returns_llm_service_for_default_provider(self, settings) -> None:
+        """LLM service is created for default provider."""
         settings.WAGTAIL_AI = {
             "PROVIDERS": {
                 "default": {"provider": "openai", "model": "gpt-4o-mini"},
@@ -93,7 +95,7 @@ class TestGetLLMService:
             mock_create.assert_called_once_with(provider="openai", model="gpt-4o-mini")
             assert service == mock_service
 
-    def test_returns_llm_service_for_specific_alias(self, settings):
+    def test_returns_llm_service_for_specific_alias(self, settings) -> None:
         settings.WAGTAIL_AI = {
             "PROVIDERS": {
                 "default": {"provider": "openai", "model": "gpt-4o-mini"},
@@ -112,7 +114,7 @@ class TestGetLLMService:
             )
             assert service == mock_service
 
-    def test_caches_service_for_same_alias(self, settings):
+    def test_caches_service_for_same_alias(self, settings) -> None:
         settings.WAGTAIL_AI = {
             "PROVIDERS": {
                 "default": {"provider": "openai", "model": "gpt-4o-mini"},
@@ -131,7 +133,7 @@ class TestGetLLMService:
             mock_create.assert_called_once()
             assert service1 is service2
 
-    def test_creates_different_services_for_different_aliases(self, settings):
+    def test_creates_different_services_for_different_aliases(self, settings) -> None:
         settings.WAGTAIL_AI = {
             "PROVIDERS": {
                 "default": {"provider": "openai", "model": "gpt-4o-mini"},
@@ -150,7 +152,7 @@ class TestGetLLMService:
             assert mock_create.call_count == 2
             assert service1 is not service2
 
-    def test_raises_error_when_provider_not_found(self, settings):
+    def test_raises_error_when_provider_not_found(self, settings) -> None:
         settings.WAGTAIL_AI = {
             "PROVIDERS": {
                 "default": {"provider": "openai", "model": "gpt-4o-mini"},
@@ -160,7 +162,7 @@ class TestGetLLMService:
         with pytest.raises(ImproperlyConfigured):
             get_llm_service("nonexistent")
 
-    def test_passes_extra_config_to_llm_service(self, settings):
+    def test_passes_extra_config_to_llm_service(self, settings) -> None:
         settings.WAGTAIL_AI = {
             "PROVIDERS": {
                 "default": {

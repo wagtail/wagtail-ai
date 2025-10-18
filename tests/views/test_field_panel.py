@@ -9,7 +9,7 @@ from wagtail_ai.agents.basic_prompt import PageDescriptionPrompt
 pytestmark = pytest.mark.django_db
 
 
-def test_search_description_uses_ai_field_panel(admin_client, get_soup):
+def test_search_description_uses_ai_field_panel(admin_client, get_soup) -> None:
     url = reverse("wagtailadmin_pages:edit", args=[2])
     response = admin_client.get(url)
     assert response.status_code == 200
@@ -36,7 +36,7 @@ def test_search_description_uses_ai_field_panel(admin_client, get_soup):
     assert toggle is not None
 
 
-def test_title_uses_ai_field_panel(admin_client, get_soup):
+def test_title_uses_ai_field_panel(admin_client, get_soup) -> None:
     url = reverse("wagtailadmin_pages:edit", args=[2])
     response = admin_client.get(url)
     assert response.status_code == 200

@@ -10,14 +10,14 @@ from wagtail_ai.text_splitters.length import NaiveTextSplitterCalculator
 
 
 @custom_text_splitting({})
-def test_default_text_splitter():
+def test_default_text_splitter() -> None:
     ai_backend = get_ai_backend("default")
     text_splitter = ai_backend.get_text_splitter()
     assert isinstance(text_splitter, LangchainRecursiveCharacterTextSplitter)
 
 
 @custom_text_splitting({})
-def test_default_length_calculator():
+def test_default_length_calculator() -> None:
     ai_backend = get_ai_backend("default")
     length_calculator = ai_backend.get_splitter_length_calculator()
     assert isinstance(length_calculator, NaiveTextSplitterCalculator)
@@ -26,7 +26,7 @@ def test_default_length_calculator():
 @custom_text_splitting(
     {"SPLITTER_CLASS": "wagtail_ai.text_splitters.dummy.DummyTextSplitter"}
 )
-def test_custom_text_splitter():
+def test_custom_text_splitter() -> None:
     ai_backend = get_ai_backend("default")
     text_splitter = ai_backend.get_text_splitter()
     assert isinstance(text_splitter, DummyTextSplitter)
@@ -37,7 +37,7 @@ def test_custom_text_splitter():
         "SPLITTER_LENGTH_CALCULATOR_CLASS": "wagtail_ai.text_splitters.dummy.DummyLengthCalculator"
     }
 )
-def test_custom_length_calculator():
+def test_custom_length_calculator() -> None:
     ai_backend = get_ai_backend("default")
     length_calculator = ai_backend.get_splitter_length_calculator()
     assert isinstance(length_calculator, DummyLengthCalculator)
@@ -71,7 +71,7 @@ NAIVE_LENGTH_CALCULATOR_TESTS_TABLE = [
 
 
 @pytest.mark.parametrize("test_input,expected", NAIVE_LENGTH_CALCULATOR_TESTS_TABLE)
-def test_naive_text_splitter_length_calculator(test_input, expected):
+def test_naive_text_splitter_length_calculator(test_input, expected) -> None:
     length_calculator = NaiveTextSplitterCalculator()
     assert length_calculator.get_splitter_length(test_input) == expected
 
@@ -82,7 +82,7 @@ DUMMY_LENGTH_CALCULATOR_TESTS_TABLE = [
 
 
 @pytest.mark.parametrize("test_input,expected", DUMMY_LENGTH_CALCULATOR_TESTS_TABLE)
-def test_dummy_text_splitter_length_calculator(test_input, expected):
+def test_dummy_text_splitter_length_calculator(test_input, expected) -> None:
     """
     Dummy length calculator just returns the length of text.
     """

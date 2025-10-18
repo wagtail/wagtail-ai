@@ -28,7 +28,7 @@ def mock_vector_index():
 
 
 @pytest.mark.django_db
-def test_responds_with_data(admin_client, mock_vector_index):
+def test_responds_with_data(admin_client, mock_vector_index) -> None:
     pages = [MockPage(pk=0, title="Foo")]
     expected_data = [{"id": "0", "title": "Foo", "editUrl": "/admin/"}]
     mock_vector_index.search_sources.return_value = pages
@@ -54,7 +54,7 @@ def test_responds_with_data(admin_client, mock_vector_index):
 
 
 @pytest.mark.django_db
-def test_excludes_current_pk(admin_client, mock_vector_index):
+def test_excludes_current_pk(admin_client, mock_vector_index) -> None:
     pages = [MockPage(pk=0, title="Foo"), MockPage(pk=1, title="Bar")]
     expected_data = [{"id": "0", "title": "Foo", "editUrl": "/admin/"}]
     mock_vector_index.search_sources.return_value = pages
@@ -80,7 +80,7 @@ def test_excludes_current_pk(admin_client, mock_vector_index):
 
 
 @pytest.mark.django_db
-def test_applies_limit(admin_client, mock_vector_index):
+def test_applies_limit(admin_client, mock_vector_index) -> None:
     pages = [
         MockPage(pk=0, title="Foo"),
         MockPage(pk=1, title="Bar"),
@@ -110,7 +110,7 @@ def test_applies_limit(admin_client, mock_vector_index):
 
 
 @pytest.mark.django_db
-def test_applies_limit_excluding_current_pk(admin_client, mock_vector_index):
+def test_applies_limit_excluding_current_pk(admin_client, mock_vector_index) -> None:
     pages = [
         MockPage(pk=0, title="Foo"),
         MockPage(pk=1, title="Bar"),
@@ -142,7 +142,7 @@ def test_applies_limit_excluding_current_pk(admin_client, mock_vector_index):
 
 
 @pytest.mark.django_db
-def test_content_is_chunked(admin_client, mock_vector_index):
+def test_content_is_chunked(admin_client, mock_vector_index) -> None:
     content = "word " * 1000
 
     response: HttpResponse = admin_client.post(

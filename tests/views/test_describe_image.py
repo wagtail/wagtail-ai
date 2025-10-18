@@ -18,20 +18,20 @@ from wagtail_ai.forms import ImageDescriptionWidgetMixin
 pytestmark = pytest.mark.django_db
 
 
-def test_get_request(admin_client):
+def test_get_request(admin_client) -> None:
     response = admin_client.get(reverse("wagtail_ai:describe_image"))
     assert response.status_code == 400
     assert response.json() == {"error": "This field is required."}
 
 
-def test_image_not_found(admin_client):
+def test_image_not_found(admin_client) -> None:
     response = admin_client.post(
         reverse("wagtail_ai:describe_image"), data={"image_id": 1}
     )
     assert response.status_code == 404
 
 
-def test_access_denied(client):
+def test_access_denied(client) -> None:
     user = User.objects.create_user(username="test")
     user.user_permissions.add(Permission.objects.get(codename="access_admin"))
     client.force_login(user)
@@ -43,7 +43,7 @@ def test_access_denied(client):
     assert response.json() == {"error": "Access denied."}
 
 
-def test_backend_not_configured(settings, admin_client):
+def test_backend_not_configured(settings, admin_client) -> None:
     settings.WAGTAIL_AI = {
         "BACKENDS": {
             "echo": {
@@ -69,7 +69,7 @@ def test_backend_not_configured(settings, admin_client):
     }
 
 
-def test_success(admin_client, settings):
+def test_success(admin_client, settings) -> None:
     settings.WAGTAIL_AI = {
         "BACKENDS": {
             "echo": {
@@ -93,7 +93,7 @@ def test_success(admin_client, settings):
     }
 
 
-def test_custom_prompt(admin_client, settings, monkeypatch: pytest.MonkeyPatch):
+def test_custom_prompt(admin_client, settings, monkeypatch: pytest.MonkeyPatch) -> None:
     describe_image = Mock(return_value=echo.EchoResponse(iter([])))
     monkeypatch.setattr(echo.EchoBackend, "describe_image", describe_image)
 
@@ -117,7 +117,7 @@ def test_custom_prompt(admin_client, settings, monkeypatch: pytest.MonkeyPatch):
     assert describe_image.call_args == call(image_file=ANY, prompt=CUSTOM_PROMPT)
 
 
-def test_custom_rendition_filter(admin_client, settings):
+def test_custom_rendition_filter(admin_client, settings) -> None:
     settings.WAGTAIL_AI = {
         "BACKENDS": {
             "echo": {
@@ -160,7 +160,7 @@ def test_custom_rendition_filter(admin_client, settings):
 )
 def test_maxlength_validation(
     admin_client, settings, maxlength, expected_status, error_message
-):
+) -> None:
     settings.WAGTAIL_AI = {
         "BACKENDS": {
             "echo": {
@@ -184,7 +184,7 @@ def test_maxlength_validation(
         assert response.json() == {"error": error_message}
 
 
-def test_enabled_on_image_upload(admin_client, get_soup):
+def test_enabled_on_image_upload(admin_client, get_soup) -> None:
     url = reverse("wagtailimages:add")
     response = admin_client.get(url)
     assert response.status_code == 200
@@ -214,7 +214,7 @@ def test_enabled_on_image_upload(admin_client, get_soup):
     )
 
 
-def test_enabled_on_image_edit(admin_client, get_soup):
+def test_enabled_on_image_edit(admin_client, get_soup) -> None:
     image = cast(Image, ImageFactory())
     url = reverse("wagtailimages:edit", args=[image.pk])
     response = admin_client.get(url)
@@ -247,7 +247,7 @@ def test_enabled_on_image_edit(admin_client, get_soup):
     )
 
 
-def test_image_description_widget_with_textarea(get_soup):
+def test_image_description_widget_with_textarea(get_soup) -> None:
     class ImageDescriptionTextarea(ImageDescriptionWidgetMixin, Textarea):
         pass
 

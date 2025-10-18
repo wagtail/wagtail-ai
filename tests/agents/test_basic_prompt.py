@@ -10,7 +10,7 @@ from wagtail_ai.agents.basic_prompt import BasicPromptAgent
 from wagtail_ai.models import AgentSettings
 
 
-def test_agent_configuration():
+def test_agent_configuration() -> None:
     assert BasicPromptAgent.slug == "wai_basic_prompt"
     assert BasicPromptAgent.parameters is not None
     assert len(BasicPromptAgent.parameters) == 2
@@ -30,7 +30,7 @@ def test_agent_configuration():
     assert reverse("wagtail_ai:basic_prompt") == "/admin/ai/basic_prompt/"
 
 
-def test_settings_prompts():
+def test_settings_prompts() -> None:
     """Verify that the agent has the expected settings prompts."""
     assert len(BasicPromptAgent.settings_prompts) == 5
     prompt_names = [p.name for p in BasicPromptAgent.settings_prompts]
@@ -67,7 +67,7 @@ def mock_llm_service(monkeypatch):
 
 
 @pytest.mark.django_db
-def test_page_title_prompt(admin_client, mock_llm_service):
+def test_page_title_prompt(admin_client, mock_llm_service) -> None:
     """Test generating a page title with the default prompt."""
     settings = AgentSettings.load()
     settings.save()
@@ -106,7 +106,7 @@ def test_page_title_prompt(admin_client, mock_llm_service):
 
 
 @pytest.mark.django_db
-def test_page_description_prompt(admin_client, mock_llm_service):
+def test_page_description_prompt(admin_client, mock_llm_service) -> None:
     """Test generating a page description with the default prompt."""
     settings = AgentSettings.load()
     settings.save()
@@ -144,7 +144,7 @@ def test_page_description_prompt(admin_client, mock_llm_service):
 
 
 @pytest.mark.django_db
-def test_image_title_prompt(admin_client, mock_llm_service, settings, image_data_url):
+def test_image_title_prompt(admin_client, mock_llm_service, settings, image_data_url) -> None:
     """Test generating an image title with a data URL image."""
     agent_settings = AgentSettings.load()
 
@@ -189,7 +189,7 @@ def test_image_title_prompt(admin_client, mock_llm_service, settings, image_data
 @pytest.mark.django_db
 def test_image_description_prompt(
     admin_client, mock_llm_service, settings, image_data_url
-):
+) -> None:
     """Test generating an image description with a data URL image."""
     agent_settings = AgentSettings.load()
 
@@ -231,7 +231,7 @@ def test_image_description_prompt(
 @pytest.mark.django_db
 def test_contextual_alt_text_prompt(
     admin_client, mock_llm_service, settings, image_data_url
-):
+) -> None:
     """Test generating contextual alt text with image and context."""
     agent_settings = AgentSettings.load()
 
@@ -277,7 +277,7 @@ def test_contextual_alt_text_prompt(
 
 
 @pytest.mark.django_db
-def test_custom_prompt(admin_client, mock_llm_service):
+def test_custom_prompt(admin_client, mock_llm_service) -> None:
     """Test with a custom prompt that's not from settings."""
     response: HttpResponse = admin_client.post(
         reverse("wagtail_ai:basic_prompt"),
@@ -313,7 +313,7 @@ def test_custom_prompt(admin_client, mock_llm_service):
 @pytest.mark.django_db
 def test_provider_alias_for_image_description(
     admin_client, mock_llm_service, settings, image_data_url
-):
+) -> None:
     """Test that IMAGE_DESCRIPTION_PROVIDER is used when context contains an image."""
     settings.WAGTAIL_AI = {
         "IMAGE_DESCRIPTION_PROVIDER": "custom_provider",

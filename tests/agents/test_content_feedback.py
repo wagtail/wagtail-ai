@@ -10,7 +10,7 @@ from wagtail_ai.agents.content_feedback import ContentFeedbackAgent
 from wagtail_ai.models import AgentSettings
 
 
-def test_agent_configuration():
+def test_agent_configuration() -> None:
     assert ContentFeedbackAgent.slug == "wai_content_feedback"
     assert ContentFeedbackAgent.parameters is not None
     assert len(ContentFeedbackAgent.parameters) == 4
@@ -78,7 +78,7 @@ def mock_llm_service(monkeypatch, mock_result):
 @pytest.mark.django_db
 def test_prompt_with_plain_text_and_no_custom_prompt(
     admin_client, mock_llm_service, mock_result
-):
+) -> None:
     settings = AgentSettings.load()
     settings.content_feedback_content_type = settings.ContentFeedbackContentType.TEXT
     settings.save()
@@ -112,7 +112,7 @@ def test_prompt_with_plain_text_and_no_custom_prompt(
 @pytest.mark.django_db
 def test_prompt_with_html_and_custom_prompt(
     admin_client, mock_llm_service, mock_result
-):
+) -> None:
     settings = AgentSettings.load()
     settings.content_feedback_prompt = "Content must include the word 'bird'."
     settings.save()
