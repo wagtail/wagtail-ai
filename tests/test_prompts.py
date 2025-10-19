@@ -1,8 +1,10 @@
 import pytest
 from django.core.exceptions import ValidationError
+from django.test import TestCase
 
 from wagtail_ai.models import Prompt
-from wagtail_ai.prompts import DEFAULT_PROMPTS
+from wagtail_ai.prompts import DEFAULT_PROMPTS, AgentPromptDefaults
+from wagtail_ai.prompt_utils import get_feature_prompt
 from wagtail_ai.wagtail_hooks import get_prompts
 
 
@@ -96,3 +98,21 @@ def test_prompts_can_not_save_and_invalid_method(test_prompt_values):
             method="foo",
         )
         prompt.full_clean()
+
+
+class PromptFeatureTests(TestCase):
+    def setUp(self):
+        self.custom_prompt = Prompt.objects.create(
+            label="Custom Image Title",
+            feature="image_title",
+            method="replace",
+            prompt="Generate a custom title for: {image}",
+        )
+
+    def test_feature_prompt_retrieval(self):
+        prompt = get_feature_prompt("image_title")
+        self.assertEqual(prompt, self.custom_prompt.prompt_value)
+
+    def test_feature_prompt_fallback(self):
+        prompt = get_feature_prompt("page_title")
+        self.assertEqual(prompt, AgentPromptDefaults.page_title_prompt())

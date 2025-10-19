@@ -6,7 +6,7 @@ from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.settings.models import BaseGenericSetting
 from wagtail.search import index
 
-from wagtail_ai.prompts import DEFAULT_PROMPTS
+from wagtail_ai.prompts import AgentPromptDefaults, DEFAULT_PROMPTS
 
 
 class Prompt(models.Model, index.Indexed):
@@ -36,11 +36,25 @@ class Prompt(models.Model, index.Indexed):
         choices=Method.choices,
         help_text=_("The method used for processing the responses to the prompt."),
     )
+    feature = models.CharField(
+        max_length=50,
+        choices=[
+            ("page_title", _("Page title")),
+            ("page_description", _("Page description")),
+            ("image_title", _("Image title")),
+            ("image_description", _("Image description")),
+            ("contextual_alt_text", _("Contextual alt text")),
+        ],
+        help_text=_("Feature this prompt applies to."),
+        null=True,
+        blank=True,
+    )
 
     search_fields = [
         index.AutocompleteField("label"),
         index.SearchField("description"),
         index.SearchField("prompt"),
+        index.FilterField("feature"),
     ]
 
     def __str__(self):
@@ -80,55 +94,7 @@ class Prompt(models.Model, index.Indexed):
         return self.prompt
 
 
-class AgentPromptDefaults:
-    @classmethod
-    def page_title_prompt(cls):
-        return (
-            "Create an SEO-friendly page title, and respond ONLY with the title "
-            "in plain text (without quotes), for the following "
-            "web page content:\n\n"
-            "{content_html}"
-        )
 
-    @classmethod
-    def page_description_prompt(cls):
-        return (
-            "Create an SEO-friendly meta description, and respond ONLY with the "
-            "description in plain text (without quotes) for the following web page "
-            "content:\n\n"
-            "{content_html}"
-        )
-
-    @classmethod
-    def image_title_prompt(cls):
-        return (
-            "Generate a title (in plain text, no longer than "
-            "{max_length} characters, without quotes) for the following image: {image}"
-        )
-
-    @classmethod
-    def image_description_prompt(cls):
-        return (
-            "Generate a description (in plain text, no longer than "
-            "{max_length} characters) for the following image: {image}"
-        )
-
-    @classmethod
-    def contextual_alt_text_prompt(cls):
-        return """Generate an alt text (and only the text) for the following image:
-{image}
-
-Make the alt text relevant to the following content shown before the image:
-
----
-{form_context_before}
----
-
-and also relevant to the following content shown after the image:
-
----
-{form_context_after}
----"""
 
 
 class AgentSettingsMixin(models.Model):
