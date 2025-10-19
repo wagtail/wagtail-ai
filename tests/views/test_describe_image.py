@@ -31,9 +31,11 @@ def test_image_not_found(admin_client) -> None:
     assert response.status_code == 404
 
 
-def test_access_denied(client) -> None:
-    user = User.objects.create_user(username="test")
+def test_access_denied(django_user_model) -> None:
+    from django.test import Client
+    user = django_user_model.objects.create_user(username="test")
     user.user_permissions.add(Permission.objects.get(codename="access_admin"))
+    client = Client()
     client.force_login(user)
     image = cast(Image, ImageFactory())
     response = client.post(

@@ -1,18 +1,35 @@
-from django_ai_core.contrib.agents import (
-    Agent,
-    AgentParameter,
-)
-from django_ai_core.contrib.agents import (
-    registry as agent_registry,
-)
-from django_ai_core.contrib.index import registry as index_registry
-from django_ai_core.contrib.index.chunking import SimpleChunkTransformer
+"""Suggested content agent module.
+
+This module provides an agent that suggests similar content based on a vector
+index search. Imports are done lazily to avoid import-time side effects from
+third-party packages when the module is imported during pytest collection.
+"""
+
 from wagtail.admin.admin_url_finder import AdminURLFinder
+
+
+def _lazy_imports():
+    """Perform imports lazily to avoid import-time side effects from
+    third-party packages (django_ai_core, queryish, etc.) when the package
+    is imported by pytest during collection.
+    """
+    from django_ai_core.contrib.agents import (
+        Agent,
+        AgentParameter,
+    )
+    from django_ai_core.contrib.agents import registry as agent_registry
+    from django_ai_core.contrib.index import registry as index_registry
+    from django_ai_core.contrib.index.chunking import SimpleChunkTransformer
+
+    return Agent, AgentParameter, agent_registry, index_registry, SimpleChunkTransformer
+
 
 MAX_LIMIT = 100
 
 
-@agent_registry.register()
+Agent, AgentParameter, agent_registry, index_registry, SimpleChunkTransformer = _lazy_imports()
+
+
 class SuggestedContentAgent(Agent):
     slug = "wai_suggested_content"
     description = "Suggests similar content to the provided context using the provided VectorIndex"
@@ -79,3 +96,7 @@ class SuggestedContentAgent(Agent):
             for page in index.search_sources(chunks[0])[:extended_limit]
             if str(page.pk) not in exclude_pks
         ][:limit]
+
+
+# Register the agent with django-ai-core
+agent_registry.register()(SuggestedContentAgent)
