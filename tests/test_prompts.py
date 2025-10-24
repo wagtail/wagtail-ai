@@ -7,7 +7,7 @@ from wagtail_ai.wagtail_hooks import get_prompts
 
 
 @pytest.mark.django_db
-def test_prompt_model(setup_prompt_object, test_prompt_values):
+def test_prompt_model(setup_prompt_object, test_prompt_values) -> None:
     assert setup_prompt_object.is_default is False
     assert str(setup_prompt_object) == test_prompt_values["label"]
     assert setup_prompt_object.label == test_prompt_values["label"]
@@ -17,7 +17,7 @@ def test_prompt_model(setup_prompt_object, test_prompt_values):
 
 
 @pytest.mark.django_db
-def test_get_prompts_returns_default_prompts():
+def test_get_prompts_returns_default_prompts() -> None:
     prompts = get_prompts()
 
     assert {(p["label"], p["prompt"]) for p in prompts} == {
@@ -30,7 +30,7 @@ def find_prompt_by_label(prompts, label):
 
 
 @pytest.mark.django_db
-def test_editing_default_prompts():
+def test_editing_default_prompts() -> None:
     # Get a default prompt and check it's returned by get_prompts
     prompts = get_prompts()
     default_prompt = Prompt.objects.get(
@@ -62,7 +62,7 @@ def test_editing_default_prompts():
 
 
 @pytest.mark.django_db
-def test_get_prompts_returns_new_prompts_and_default_prompts(setup_prompt_object):
+def test_get_prompts_returns_new_prompts_and_default_prompts(setup_prompt_object) -> None:
     prompt_object = setup_prompt_object
     prompts = get_prompts()
     assert {p["label"] for p in prompts} == set(
@@ -80,14 +80,14 @@ def test_get_prompts_returns_new_prompts_and_default_prompts(setup_prompt_object
 
 
 @pytest.mark.django_db
-def test_prompts_return_uuids_and_not_ids():
+def test_prompts_return_uuids_and_not_ids() -> None:
     prompts = get_prompts()
     assert prompts[0]["uuid"] is not None
     assert "id" not in prompts[0]
 
 
 @pytest.mark.django_db
-def test_prompts_can_not_save_and_invalid_method(test_prompt_values):
+def test_prompts_can_not_save_and_invalid_method(test_prompt_values) -> None:
     with pytest.raises(ValidationError, match="Value 'foo' is not a valid choice."):
         prompt = Prompt(
             label=test_prompt_values["label"],

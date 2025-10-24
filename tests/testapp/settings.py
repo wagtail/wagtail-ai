@@ -260,3 +260,19 @@ LOGGING = {
 FORMS_URLFIELD_ASSUME_HTTPS = True
 
 WAGTAILADMIN_BASE_URL = "http://testserver"
+
+# django-ai-core settings
+DJANGO_AI_CORE = {
+    'INDEXES': {
+        'default': {
+            'BACKEND': 'django_ai_core.contrib.index.backends.dummy.DummyIndex',
+            'CONFIG': {},
+        },
+    },
+    'PROVIDERS': {
+        'default': {
+            'BACKEND': 'django_ai_core.contrib.llm.backends.dummy.DummyLLMBackend',
+            'CONFIG': {},
+        },
+    },
+}

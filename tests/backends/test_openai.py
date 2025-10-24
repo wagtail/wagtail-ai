@@ -27,7 +27,7 @@ def mock_post(monkeypatch: pytest.MonkeyPatch):
     return mock
 
 
-def test_get_as_image_backend(settings):
+def test_get_as_image_backend(settings) -> None:
     settings.WAGTAIL_AI = {
         "BACKENDS": {
             "openai": {
@@ -49,7 +49,7 @@ def test_get_as_image_backend(settings):
     assert backend.config.timeout_seconds == 321
 
 
-def test_describe_image(settings, mock_post):
+def test_describe_image(settings, mock_post) -> None:
     settings.WAGTAIL_AI = {
         "BACKENDS": {
             "openai": {
@@ -88,7 +88,7 @@ def test_describe_image(settings, mock_post):
     assert url.startswith("data:image/jpeg;base64,")
 
 
-def test_text_completion(settings, mock_post):
+def test_text_completion(settings, mock_post) -> None:
     settings.WAGTAIL_AI = {
         "BACKENDS": {
             "openai": {
@@ -125,7 +125,7 @@ def test_text_completion(settings, mock_post):
     ]
 
 
-def test_text_completion_without_post_prompt(settings, mock_post):
+def test_text_completion_without_post_prompt(settings, mock_post) -> None:
     settings.WAGTAIL_AI = {
         "BACKENDS": {
             "openai": {
@@ -154,7 +154,7 @@ def test_text_completion_without_post_prompt(settings, mock_post):
     ]
 
 
-def test_default_token_limit(settings):
+def test_default_token_limit(settings) -> None:
     settings.WAGTAIL_AI = {
         "BACKENDS": {
             "openai": {
@@ -170,7 +170,7 @@ def test_default_token_limit(settings):
     assert backend.config.token_limit == 8192
 
 
-def test_api_key_in_environ(settings, monkeypatch: pytest.MonkeyPatch):
+def test_api_key_in_environ(settings, monkeypatch: pytest.MonkeyPatch) -> None:
     test_key = "test-key-value"
     settings.WAGTAIL_AI = {
         "BACKENDS": {
@@ -188,7 +188,7 @@ def test_api_key_in_environ(settings, monkeypatch: pytest.MonkeyPatch):
     assert backend.get_openai_api_key() == test_key
 
 
-def test_api_key_in_settings(settings):
+def test_api_key_in_settings(settings) -> None:
     test_key = "test-key-value"
     settings.WAGTAIL_AI = {
         "BACKENDS": {

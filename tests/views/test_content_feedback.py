@@ -6,7 +6,7 @@ from django.urls import reverse
 pytestmark = pytest.mark.django_db
 
 
-def test_content_feedback_section_rendered_in_checks_panel(admin_client, get_soup):
+def test_content_feedback_section_rendered_in_checks_panel(admin_client, get_soup) -> None:
     url = reverse("wagtailadmin_pages:edit", args=[2])
     response = admin_client.get(url)
     assert response.status_code == 200

@@ -10,7 +10,7 @@ from wagtail_factories import ImageFactory
 from wagtail_ai.context import PromptContext
 
 
-def test_missing_key():
+def test_missing_key() -> None:
     context = PromptContext(name="Gordon", role="Scientist")
     prompt = "My name is {name} and I am a {role}. I work at {company}."
     context.clean(prompt)
@@ -21,7 +21,7 @@ def test_missing_key():
 
 
 @pytest.mark.django_db
-def test_image_validator(django_assert_num_queries: DjangoAssertNumQueries):
+def test_image_validator(django_assert_num_queries: DjangoAssertNumQueries) -> None:
     image = cast(Image, ImageFactory())
     context = PromptContext(image=image.pk)
     prompt = "Prompt does not use the image placeholder."
@@ -43,7 +43,7 @@ def test_image_validator(django_assert_num_queries: DjangoAssertNumQueries):
 def test_image_validator_data_url(
     image_data_url,
     django_assert_num_queries: DjangoAssertNumQueries,
-):
+) -> None:
     context = PromptContext(image=image_data_url)
     with django_assert_num_queries(0):
         context.clean("Describe the following image: {image}")
@@ -54,7 +54,7 @@ def test_image_validator_data_url(
 @pytest.mark.django_db
 def test_image_validator_invalid_data_url(
     django_assert_num_queries: DjangoAssertNumQueries,
-):
+) -> None:
     data_url = "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=="
     context = PromptContext(image=data_url)
     with django_assert_num_queries(0), pytest.raises(ValidationError) as exc_info:
@@ -62,7 +62,7 @@ def test_image_validator_invalid_data_url(
     assert str(exc_info.value.message) == "The provided data URL is not an image."
 
 
-def test_image_validator_missing():
+def test_image_validator_missing() -> None:
     context = PromptContext()
     with pytest.raises(ValidationError) as exc_info:
         context.clean("Describe the image with ID {image}.")
@@ -73,7 +73,7 @@ def test_image_validator_missing():
 
 
 @pytest.mark.django_db
-def test_image_validator_not_found():
+def test_image_validator_not_found() -> None:
     context = PromptContext(image=9999999)
     with pytest.raises(ValidationError) as exc_info:
         context.clean("Describe the image with ID {image}.")

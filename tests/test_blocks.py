@@ -14,7 +14,7 @@ from wagtail_ai.blocks import (
 
 
 class TestGetImageBlockFormAttrs:
-    def test_default_parameters(self):
+    def test_default_parameters(self) -> None:
         attrs = get_image_block_form_attrs()
 
         assert attrs["data-controller"] == "wai-field-panel"
@@ -30,7 +30,7 @@ class TestGetImageBlockFormAttrs:
             [ContextualAltTextPrompt.name]
         )
 
-    def test_custom_field_names(self):
+    def test_custom_field_names(self) -> None:
         attrs = get_image_block_form_attrs(
             alt_text_field_name="custom_alt",
             image_field_name="custom_image",
@@ -51,12 +51,12 @@ class TestGetImageBlockFormAttrs:
 
 
 class TestAIImageBlock:
-    def test_inherits_from_image_block(self):
+    def test_inherits_from_image_block(self) -> None:
         block = AIImageBlock()
         assert isinstance(block, AIImageBlock)
         assert isinstance(block, ImageBlock)
 
-    def test_form_attrs_configuration(self):
+    def test_form_attrs_configuration(self) -> None:
         block = AIImageBlock()
         form_attrs = block.meta.form_attrs
 
@@ -73,7 +73,7 @@ class TestAIImageBlock:
             [ContextualAltTextPrompt.name]
         )
 
-    def test_uses_default_form_attrs(self):
+    def test_uses_default_form_attrs(self) -> None:
         expected_attrs = get_image_block_form_attrs()
         block = AIImageBlock()
         actual_attrs = block.meta.form_attrs
@@ -82,7 +82,7 @@ class TestAIImageBlock:
 
 
 class TestAIImageBlockDecorator:
-    def test_custom_struct_block_with_decorator(self):
+    def test_custom_struct_block_with_decorator(self) -> None:
         with patch("wagtail_ai.blocks.register") as mock_register:
 
             @ai_image_block(
