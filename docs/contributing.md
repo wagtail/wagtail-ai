@@ -5,7 +5,7 @@
 To make changes to this project, first clone this repository:
 
 ```shell
-git clone https://github.com/wagtail-ai/wagtail-ai.git
+git clone https://github.com/wagtail/wagtail-ai.git
 cd wagtail-ai
 ```
 
