@@ -13,8 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Image title and description generation during upload
 - Contextual image alt text generation with `AIImageBlock` and `@ai_image_block`
 - Qualitative content feedback
-- Related pages suggestions support with `django-ai-core` vector index
-- Unified interface for different LLM providers via `any-llm` library
+- Related pages suggestions support with [django-ai-core](https://github.com/wagtail/django-ai-core) vector index
+- Unified interface for different LLM providers via the [`any-llm`](https://mozilla-ai.github.io/any-llm/) library
 
 ### Changed
 
