@@ -196,3 +196,25 @@ WAGTAIL_AI = {
     },
 }
 ```
+
+### Using an OpenAI-compatible provider
+
+The OpenAI backend can be used with any provider that implements the OpenAI API. Set `API_BASE` to the provider's base URL:
+
+```python
+WAGTAIL_AI = {
+    "BACKENDS": {
+        "default": {
+            "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
+            "CONFIG": {
+                "MODEL_ID": "mistral-large-latest",
+                "TOKEN_LIMIT": 32000,
+                "API_BASE": "https://api.mistral.ai/v1",
+                "OPENAI_API_KEY": "your-provider-api-key",
+            },
+        },
+    },
+}
+```
+
+When `API_BASE` is not set, it defaults to `https://api.openai.com/v1`.

@@ -47,6 +47,7 @@ def test_get_as_image_backend(settings):
     assert backend.config.model_id == "mock model"
     assert backend.config.token_limit == 123123
     assert backend.config.timeout_seconds == 321
+    assert backend.config.api_base == "https://api.openai.com/v1"
 
 
 def test_describe_image(settings, mock_post):
@@ -168,6 +169,48 @@ def test_default_token_limit(settings):
 
     backend = get_ai_backend("openai")
     assert backend.config.token_limit == 8192
+
+
+def test_default_api_base(settings):
+    settings.WAGTAIL_AI = {
+        "BACKENDS": {
+            "openai": {
+                "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
+                "CONFIG": {
+                    "MODEL_ID": "gpt-4",
+                },
+            },
+        },
+    }
+
+    backend = cast(OpenAIBackend, get_ai_backend("openai"))
+
+    assert backend.config.api_base == "https://api.openai.com/v1"
+
+
+def test_custom_api_base(settings, mock_post):
+    settings.WAGTAIL_AI = {
+        "BACKENDS": {
+            "openai": {
+                "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
+                "CONFIG": {
+                    "MODEL_ID": "gpt-4",
+                    "API_BASE": "https://custom.example.com/v1",
+                },
+            },
+        },
+    }
+
+    mock_post.return_value.json.return_value = {
+        "choices": [{"message": {"content": MOCK_OUTPUT}}],
+    }
+    backend = get_ai_backend("openai")
+    assert backend.config.api_base == "https://custom.example.com/v1"
+
+    backend.prompt_with_context(pre_prompt="test", context="test")
+
+    url = mock_post.call_args.args[0]
+    assert url == "https://custom.example.com/v1/chat/completions"
 
 
 def test_api_key_in_environ(settings, monkeypatch: pytest.MonkeyPatch):

@@ -11,16 +11,20 @@ from wagtail_ai.types import AIResponse
 
 from .base import AIBackend, BaseAIBackendConfig, BaseAIBackendConfigSettings
 
+DEFAULT_API_BASE = "https://api.openai.com/v1"
+
 
 class OpenAIBackendConfigSettingsDict(BaseAIBackendConfigSettings):
     TIMEOUT_SECONDS: NotRequired[int | None]
     OPENAI_API_KEY: NotRequired[str | None]
+    API_BASE: NotRequired[str | None]
 
 
 @dataclass(kw_only=True)
 class OpenAIBackendConfig(BaseAIBackendConfig[OpenAIBackendConfigSettingsDict]):
     timeout_seconds: int
     openai_api_key: str | None
+    api_base: str
 
     @classmethod
     def from_settings(
@@ -32,6 +36,7 @@ class OpenAIBackendConfig(BaseAIBackendConfig[OpenAIBackendConfigSettingsDict]):
         kwargs.setdefault("timeout_seconds", timeout_seconds)
 
         kwargs.setdefault("openai_api_key", config.get("OPENAI_API_KEY"))
+        kwargs.setdefault("api_base", config.get("API_BASE", DEFAULT_API_BASE))
 
         return super().from_settings(config, **kwargs)
 
@@ -106,7 +111,7 @@ class OpenAIBackend(AIBackend[OpenAIBackendConfig]):
             "max_tokens": self.config.token_limit,
         }
         response = requests.post(
-            "https://api.openai.com/v1/chat/completions",
+            f"{self.config.api_base}/chat/completions",
             headers=headers,
             json=payload,
             timeout=self.config.timeout_seconds,
