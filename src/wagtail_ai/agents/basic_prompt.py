@@ -1,4 +1,5 @@
 import base64
+import mimetypes
 from abc import ABC
 from urllib.parse import SplitResult
 
@@ -124,10 +125,12 @@ class BasicPromptAgent(Agent):
         for key, value in self.context.items():
             if isinstance(value, (File, SplitResult)):
                 if isinstance(value, File):
-                    # TODO: check the file type and handle accordingly
+                    mime_type, _ = mimetypes.guess_type(value.name)
+                    if not mime_type:
+                        mime_type = "image/jpeg"
                     with value.open() as f:
                         base64_image = base64.b64encode(f.read()).decode()
-                    url = f"data:image/jpeg;base64,{base64_image}"
+                    url = f"data:{mime_type};base64,{base64_image}"
                 else:
                     # Assume it's a data URL for an image
                     url = value.geturl()
