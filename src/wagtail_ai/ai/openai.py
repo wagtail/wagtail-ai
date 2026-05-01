@@ -1,4 +1,5 @@
 import base64
+import mimetypes
 import os
 from collections.abc import Iterator
 from dataclasses import dataclass
@@ -77,6 +78,9 @@ class OpenAIBackend(AIBackend[OpenAIBackendConfig]):
     def describe_image(self, *, image_file: File, prompt: str) -> OpenAIResponse:
         if not prompt:
             raise ValueError("Prompt must not be empty.")
+        mime_type, _ = mimetypes.guess_type(image_file.name)
+        if not mime_type:
+            mime_type = "image/jpeg"
         with image_file.open() as f:
             base64_image = base64.b64encode(f.read()).decode("utf-8")
 
@@ -92,7 +96,7 @@ class OpenAIBackend(AIBackend[OpenAIBackendConfig]):
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url": f"data:image/jpeg;base64,{base64_image}"
+                                "url": f"data:{mime_type};base64,{base64_image}"
                             },
                         },
                     ],
