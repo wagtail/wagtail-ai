@@ -1,7 +1,10 @@
+import base64
+from io import BytesIO
 from typing import cast
 from unittest.mock import ANY, Mock
 
 import pytest
+from django.core.files import File
 from wagtail.images.models import Image
 from wagtail_factories import ImageFactory
 
@@ -87,6 +90,58 @@ def test_describe_image(settings, mock_post):
     ]
     url = messages[0]["content"][1]["image_url"]["url"]
     assert url.startswith("data:image/jpeg;base64,")
+
+
+def test_describe_image_uses_guessed_mime_type(settings, mock_post):
+    settings.WAGTAIL_AI = {
+        "BACKENDS": {
+            "openai": {
+                "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
+                "CONFIG": {
+                    "MODEL_ID": "gpt-4",
+                },
+            },
+        },
+    }
+
+    mock_post.return_value.json.return_value = {
+        "choices": [{"message": {"content": MOCK_OUTPUT}}],
+    }
+    backend = get_ai_backend("openai")
+    image_file = File(BytesIO(b"fake-png-data"), name="image.png")
+
+    backend.describe_image(image_file=image_file, prompt="what do you see?")
+
+    messages = mock_post.call_args.kwargs["json"]["messages"]
+    url = messages[0]["content"][1]["image_url"]["url"]
+    assert url == f"data:image/png;base64,{base64.b64encode(b'fake-png-data').decode()}"
+
+
+def test_describe_image_defaults_to_jpeg_for_unknown_extension(settings, mock_post):
+    settings.WAGTAIL_AI = {
+        "BACKENDS": {
+            "openai": {
+                "CLASS": "wagtail_ai.ai.openai.OpenAIBackend",
+                "CONFIG": {
+                    "MODEL_ID": "gpt-4",
+                },
+            },
+        },
+    }
+
+    mock_post.return_value.json.return_value = {
+        "choices": [{"message": {"content": MOCK_OUTPUT}}],
+    }
+    backend = get_ai_backend("openai")
+    image_file = File(BytesIO(b"fake-image-data"), name="image")
+
+    backend.describe_image(image_file=image_file, prompt="what do you see?")
+
+    messages = mock_post.call_args.kwargs["json"]["messages"]
+    url = messages[0]["content"][1]["image_url"]["url"]
+    assert url == (
+        f"data:image/jpeg;base64,{base64.b64encode(b'fake-image-data').decode()}"
+    )
 
 
 def test_text_completion(settings, mock_post):

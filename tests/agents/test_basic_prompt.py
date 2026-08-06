@@ -1,7 +1,10 @@
+import base64
 import json
+from io import BytesIO
 from unittest.mock import MagicMock
 
 import pytest
+from django.core.files import File
 from django.http import HttpResponse
 from django.urls import reverse
 from django_ai_core.contrib.agents import registry
@@ -41,6 +44,34 @@ def test_settings_prompts():
         "image_description_prompt",
         "contextual_alt_text_prompt",
     ]
+
+
+def test_split_context_files_guesses_mime_type():
+    agent = BasicPromptAgent()
+    agent.context = {"image": File(BytesIO(b"fake-png-data"), name="image.png")}
+
+    files = agent.split_context_files()
+
+    assert len(files) == 1
+    assert files[0]["type"] == "image_url"
+    assert files[0]["image_url"]["url"] == (
+        f"data:image/png;base64,{base64.b64encode(b'fake-png-data').decode()}"
+    )
+    assert agent.context["image"] == "[file 1]"
+
+
+def test_split_context_files_defaults_to_jpeg_for_unknown_extension():
+    agent = BasicPromptAgent()
+    agent.context = {"image": File(BytesIO(b"fake-image-data"), name="image")}
+
+    files = agent.split_context_files()
+
+    assert len(files) == 1
+    assert files[0]["type"] == "image_url"
+    assert files[0]["image_url"]["url"] == (
+        f"data:image/jpeg;base64,{base64.b64encode(b'fake-image-data').decode()}"
+    )
+    assert agent.context["image"] == "[file 1]"
 
 
 @pytest.fixture
