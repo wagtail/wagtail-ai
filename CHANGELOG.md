@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Use the correct import path for Wagtail’s `get_image_model`
+- Guess appropriate mime type when uploading an image. (Joshua Marantz)
 
 ## [3.1.0] - 2026-03-04
 
