@@ -3,7 +3,7 @@
 ## Requirements
 
 - Python 3.11+
-- Django 4.2+
+- Django 5.2+
 - Wagtail 7.1+
 
 ## Quick start
