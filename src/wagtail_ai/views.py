@@ -9,8 +9,8 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from wagtail.admin.ui.tables import UpdatedAtColumn
 from wagtail.admin.viewsets.model import ModelViewSet
+from wagtail.images import get_image_model
 from wagtail.images.models import AbstractImage
-from wagtail.images.permissions import get_image_model
 
 from . import ai, types
 from .ai.base import BackendFeature
