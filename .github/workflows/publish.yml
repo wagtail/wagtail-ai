@@ -34,30 +34,22 @@ jobs:
       - name: Build static files
         run: ./node_modules/.bin/webpack --mode production
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.14'
-
-      - name: Install dependencies
-        run: |
-          python -Im pip install --upgrade pip
-          python -Im pip install flit
-          python -Im flit install --symlink
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v3
 
       - name: Build
-        run: python -Im flit build
+        run: uv build
 
       # Smoke tests with ready-to-publish package.
       - name: Smoke test wheel
         run: |
-          python -m venv /tmp/smoketest-whl
-          /tmp/smoketest-whl/bin/pip install dist/*.whl
+          uv venv /tmp/smoketest-whl
+          uv pip install --python /tmp/smoketest-whl dist/*.whl
           /tmp/smoketest-whl/bin/python -c "import wagtail_ai; print(wagtail_ai.__version__)"
       - name: Smoke test sdist
         run: |
-          python -m venv /tmp/smoketest-sdist
-          /tmp/smoketest-sdist/bin/pip install dist/*.tar.gz
+          uv venv /tmp/smoketest-sdist
+          uv pip install --python /tmp/smoketest-sdist dist/*.tar.gz
           /tmp/smoketest-sdist/bin/python -c "import wagtail_ai; print(wagtail_ai.__version__)"
 
       - uses: actions/upload-artifact@v4

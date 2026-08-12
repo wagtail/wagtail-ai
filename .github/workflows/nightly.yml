@@ -29,22 +29,19 @@ jobs:
       - name: Build static files
         run: ./node_modules/.bin/webpack --mode production
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.14'
+      - uses: astral-sh/setup-uv@v3
 
       - run: git clone https://github.com/wagtail/wagtail.git ../wagtail
 
-      - run: python -Im pip install flit
-      - run: flit install --deps production --extras testing
-      - run: python -Im pip install ../wagtail
+      - run: uv sync --extra testing
+      - run: uv pip install ../wagtail
 
-      - run: pytest
+      - run: uv run pytest
 
       - name: Report failure
         run: |
-          python -Im pip install requests
-          python ./.github/scripts/report_nightly_build_failure.py
+          uv pip install requests
+          uv run python ./.github/scripts/report_nightly_build_failure.py
         if: ${{ failure() && env.WEBHOOK_EXISTS == 'true' }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
