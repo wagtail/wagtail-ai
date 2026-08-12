@@ -21,7 +21,7 @@ env:
   TOX_TESTENV_PASSENV: FORCE_COLOR
   PIP_DISABLE_PIP_VERSION_CHECK: '1'
   PIP_NO_PYTHON_VERSION_WARNING: '1'
-  PYTHON_LATEST: '3.11'
+  PYTHON_LATEST: '3.14'
 
 jobs:
   lint:
@@ -51,7 +51,7 @@ jobs:
     needs: lint
     strategy:
       matrix:
-        python: ['3.11', '3.12', '3.13']
+        python: ['3.11', '3.12', '3.13', '3.14']
 
     steps:
       - uses: actions/checkout@v5
@@ -91,7 +91,7 @@ jobs:
     needs: lint
     strategy:
       matrix:
-        python: ['3.11', '3.12', '3.13']
+        python: ['3.11', '3.12', '3.13', '3.14']
 
     services:
       postgres:

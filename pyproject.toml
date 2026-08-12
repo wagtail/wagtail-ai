@@ -18,15 +18,17 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Framework :: Django",
     "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
     "Framework :: Wagtail",
     "Framework :: Wagtail :: 7",
 ]
 dynamic = ["version"]
 dependencies = [
     "Django>=5.2",
-    "Wagtail>=7.1",
+    "Wagtail>=7.4",
     "django-ai-core",
     "llm>=0.12",
 ]
