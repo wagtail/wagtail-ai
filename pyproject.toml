@@ -59,6 +59,7 @@ dev = [
     "django-types>=0.18.0",
     "pre-commit>=3.6.0",
     "pytest>=8.1.1",
+    "pytest-cov>=7.1.0",
     "pytest-django>=4.12.0",
     "pytest-mock>=3.12.0",
     "wagtail-factories>=4.1.0",

@@ -59,7 +59,7 @@ test-highest-deps:
 
 # Run tests with coverage.
 coverage:
-    uv run coverage run -m pytest
+    uv run pytest --cov src/wagtail_ai
     uv run coverage report -m
     uv run coverage html
 

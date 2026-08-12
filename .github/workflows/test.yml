@@ -137,6 +137,28 @@ jobs:
           include-hidden-files: true
           retention-days: 1
 
+  test-lowest-deps:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v3
+      - uses: extractions/setup-just@v4
+      - run: just test-lowest-deps
+
+  test-highest-deps:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v3
+      - uses: extractions/setup-just@v4
+      - run: just test-highest-deps
+
   coverage:
     runs-on: ubuntu-latest
     needs:
