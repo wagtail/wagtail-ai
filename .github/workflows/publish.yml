@@ -6,15 +6,22 @@ on:
   release:
     types: [published]
 
+permissions: {}
+
 jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+    permissions: {}
   build:
+    needs: test
     runs-on: ubuntu-latest
     permissions:
-      contents: read # to fetch code (actions/checkout)
+      contents: read
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Node
         uses: actions/setup-node@v5
@@ -40,6 +47,18 @@ jobs:
 
       - name: Build
         run: python -Im flit build
+
+      # Smoke tests with ready-to-publish package.
+      - name: Smoke test wheel
+        run: |
+          python -m venv /tmp/smoketest-whl
+          /tmp/smoketest-whl/bin/pip install dist/*.whl
+          /tmp/smoketest-whl/bin/python -c "import wagtail_ai; print(wagtail_ai.__version__)"
+      - name: Smoke test sdist
+        run: |
+          python -m venv /tmp/smoketest-sdist
+          /tmp/smoketest-sdist/bin/pip install dist/*.tar.gz
+          /tmp/smoketest-sdist/bin/python -c "import wagtail_ai; print(wagtail_ai.__version__)"
 
       - uses: actions/upload-artifact@v4
         with:

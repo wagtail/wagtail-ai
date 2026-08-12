@@ -1,0 +1,21 @@
+name: zizmor
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['**']
+
+permissions: {}
+
+jobs:
+  zizmor:
+    runs-on: ubuntu-latest
+    permissions:
+      # Required for upload-sarif (used by zizmor-action) to upload SARIF files.
+      security-events: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: zizmorcore/zizmor-action@v0
