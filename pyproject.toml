@@ -7,7 +7,7 @@ name = "wagtail-ai"
 authors = [{name = "Tom Usher", email = "tom@tomusher.com"}]
 description = "Get a hand writing your content with AI super powers!"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "MIT"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -52,7 +52,11 @@ docs = [
 ]
 
 [project.urls]
-Home = "https://github.com/wagtail/wagtail-ai"
+Homepage = "https://github.com/wagtail/wagtail-ai"
+Repository = "https://github.com/wagtail/wagtail-ai"
+Changelog = "https://github.com/wagtail/wagtail-ai/blob/main/CHANGELOG.md"
+Documentation = "https://wagtail-ai.readthedocs.io/"
+Issues = "https://github.com/wagtail/wagtail-ai/issues"
 
 [tool.flit.module]
 name = "wagtail_ai"
