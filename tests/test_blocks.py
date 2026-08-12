@@ -1,4 +1,5 @@
 import json
+
 from unittest.mock import patch
 
 from wagtail.blocks import CharBlock, StructBlock

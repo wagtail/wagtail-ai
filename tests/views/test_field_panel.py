@@ -1,10 +1,12 @@
 import json
 
 import pytest
+
 from bs4 import BeautifulSoup, Tag
 from django.urls import reverse
 
 from wagtail_ai.agents.basic_prompt import PageDescriptionPrompt
+
 
 pytestmark = pytest.mark.django_db
 

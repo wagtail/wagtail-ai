@@ -76,6 +76,6 @@ Here is an estimated cost breakdown for the `correction` prompt on a 1000-word p
 
 ## Supported Versions
 
-* Wagtail 7.1+
+* Wagtail 7.4+
 * Django 5.2+
 * Python 3.11+

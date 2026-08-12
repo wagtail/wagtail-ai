@@ -1,4 +1,5 @@
 import json
+
 from typing import TYPE_CHECKING
 
 from django import forms
@@ -12,6 +13,7 @@ from wagtail.admin.panels import (
 from wagtail.admin.staticfiles import versioned_static
 
 from wagtail_ai.agents.basic_prompt import PageDescriptionPrompt, PageTitlePrompt
+
 
 if TYPE_CHECKING:
     from django_ai_core.contrib.index import VectorIndex

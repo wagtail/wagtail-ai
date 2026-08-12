@@ -2,6 +2,7 @@ import pytest
 
 from wagtail_ai.models import Prompt
 
+
 TEST_PROMPT_LABEL = "Prompt Label"
 TEST_PROMPT_VALUE = "Prompt Text"
 TEST_PROMPT_DESCRIPTION = "Prompt Text"
@@ -46,6 +47,5 @@ def get_soup():
 @pytest.fixture
 def image_data_url():
     return (
-        "data:image/gif;base64,"
-        "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+        "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
     )

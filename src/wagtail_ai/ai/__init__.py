@@ -1,4 +1,5 @@
 import warnings
+
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import NotRequired, Required, TypedDict, cast

@@ -7,6 +7,7 @@ from django.test import override_settings
 
 from wagtail_ai.ai import AIBackendSettingsDict, TextSplittingSettingsDict
 
+
 DEFAULT_ALIAS = "default"
 
 

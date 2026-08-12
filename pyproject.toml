@@ -1,13 +1,14 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
+requires = ["uv_build>=0.11.19,<0.12"]
+build-backend = "uv_build"
 
 [project]
 name = "wagtail-ai"
+version = "4.0.0"
 authors = [{name = "Tom Usher", email = "tom@tomusher.com"}]
 description = "Get a hand writing your content with AI super powers!"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "MIT"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -18,15 +19,16 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Framework :: Django",
     "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
     "Framework :: Wagtail",
     "Framework :: Wagtail :: 7",
 ]
-dynamic = ["version"]
 dependencies = [
     "Django>=5.2",
-    "Wagtail>=7.1",
+    "Wagtail>=7.4",
     "django-ai-core",
     "llm>=0.12",
 ]
@@ -35,11 +37,10 @@ requires-python = ">=3.11"
 [project.optional-dependencies]
 testing = [
     "beautifulsoup4>=4.11",
-    "dj-database-url==2.1.0",
-    "pre-commit>=3.6.0",
+    "dj-database-url>=3.1.2",
     "django-types>=0.18.0",
-    "pytest>=7.4.2",
-    "pytest-django>=4.5.2",
+    "pytest>=8.1.1",
+    "pytest-django>=4.12.0",
     "pytest-mock>=3.12.0",
     "wagtail-factories>=4.1.0",
     "factory-boy>=3.3.0",
@@ -51,49 +52,46 @@ docs = [
     "mkdocs-awesome-pages-plugin>=2.9.2"
 ]
 
+[dependency-groups]
+dev = [
+    "beautifulsoup4>=4.11",
+    "dj-database-url>=3.1.2",
+    "django-types>=0.18.0",
+    "pre-commit>=3.6.0",
+    "pytest>=8.1.1",
+    "pytest-cov>=7.1.0",
+    "pytest-django>=4.12.0",
+    "pytest-mock>=3.12.0",
+    "wagtail-factories>=4.1.0",
+    "factory-boy>=3.3.0",
+    "coverage>=7.4.0",
+    "ruff>=0.15.9",
+]
+
 [project.urls]
-Home = "https://github.com/wagtail/wagtail-ai"
+Homepage = "https://github.com/wagtail/wagtail-ai"
+Repository = "https://github.com/wagtail/wagtail-ai"
+Changelog = "https://github.com/wagtail/wagtail-ai/blob/main/CHANGELOG.md"
+Documentation = "https://wagtail-ai.readthedocs.io/"
+Issues = "https://github.com/wagtail/wagtail-ai/issues"
 
-[tool.ruff.lint]
-select = [
-    "B",   # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "C90", # mccabe
-    "DJ",  # flake8-django
-    "E",   # pycodestyle errors
-    "F",   # pyflakes
-    "I",   # isort
-    "RUF", # ruff-specific rules
-    "TRY", # tryceratops
-]
-ignore = ["TRY003", "E501", "RUF012"]
-
-[tool.flit.module]
-name = "wagtail_ai"
-
-[tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "testapp.settings"
-pythonpath = ["./", "./tests"]
-
-[tool.flit.sdist]
-include = [
-    "src/wagtail_ai/static/wagtail_ai"
-]
-exclude = [
-    "docs",
-    "src/wagtail_ai/static_src",
-    "src/wagtail_ai/static/wagtail_ai/js/.gitignore",
-    "tests",
+[tool.uv.build-backend]
+module-name = "wagtail_ai"
+source-exclude = [
+    "wagtail_ai/static_src",
+    "wagtail_ai/static/wagtail_ai/js/.gitignore",
     "testmanage.py",
-    "CHANGELOG.md",
-    "CONTRIBUTING.md",
-    "TODOs",
     ".*",
     "*.js",
     "*.json",
     "*.ini",
-    "*.yml"
+    "*.yml",
 ]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "testapp.settings"
+pythonpath = ["./", "./tests"]
+testpaths = ["tests"]
 
 [tool.pyright]
 include = ["src/**"]

@@ -8,6 +8,7 @@ import os
 
 import requests
 
+
 if "SLACK_WEBHOOK_URL" in os.environ:
     print("Reporting to #nightly-build-failures slack channel")
     response = requests.post(
@@ -16,6 +17,7 @@ if "SLACK_WEBHOOK_URL" in os.environ:
             "text": "A Nightly build failed. See https://github.com/wagtail/wagtail-ai/actions/runs/"
             + os.environ["GITHUB_RUN_ID"],
         },
+        timeout=30,
     )
 
     print("Slack responded with:", response)

@@ -1,7 +1,9 @@
 import pytest
+
 from bs4 import BeautifulSoup, Tag
 from django.templatetags.static import static
 from django.urls import reverse
+
 
 pytestmark = pytest.mark.django_db
 
@@ -16,11 +18,11 @@ def test_content_feedback_section_rendered_in_checks_panel(admin_client, get_sou
 
     # Ensure static files are included
     styles = panel.select_one(
-        f"""link[href="{static('wagtail_ai/content_feedback.css')}"]"""
+        f"""link[href="{static("wagtail_ai/content_feedback.css")}"]"""
     )
     assert isinstance(styles, Tag)
     script = panel.select_one(
-        f"""script[src="{static('wagtail_ai/content_feedback.js')}"]"""
+        f"""script[src="{static("wagtail_ai/content_feedback.js")}"]"""
     )
     assert isinstance(script, Tag)
 

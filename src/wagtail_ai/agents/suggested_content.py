@@ -9,6 +9,7 @@ from django_ai_core.contrib.index import registry as index_registry
 from django_ai_core.contrib.index.chunking import SimpleChunkTransformer
 from wagtail.admin.admin_url_finder import AdminURLFinder
 
+
 MAX_LIMIT = 100
 
 

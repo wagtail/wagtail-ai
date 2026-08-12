@@ -6,6 +6,9 @@ on:
     # At 01:00, daily
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   nightly-wagtail-test:
     runs-on: ubuntu-latest
@@ -13,10 +16,12 @@ jobs:
       WEBHOOK_EXISTS: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
-          node-version-file: '.nvmrc'
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: '.node-version'
 
       - name: Install Node dependencies
         run: npm ci
@@ -24,22 +29,19 @@ jobs:
       - name: Build static files
         run: ./node_modules/.bin/webpack --mode production
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
+      - uses: astral-sh/setup-uv@caf0cab7a618c569241d31dcd442f54681755d39 # v3.2.4
 
       - run: git clone https://github.com/wagtail/wagtail.git ../wagtail
 
-      - run: python -Im pip install flit
-      - run: flit install --deps production --extras testing
-      - run: python -Im pip install ../wagtail
+      - run: uv sync --extra testing
+      - run: uv pip install ../wagtail
 
-      - run: pytest
+      - run: uv run pytest
 
       - name: Report failure
         run: |
-          python -Im pip install requests
-          python ./.github/scripts/report_nightly_build_failure.py
+          uv pip install requests
+          uv run python ./.github/scripts/report_nightly_build_failure.py
         if: ${{ failure() && env.WEBHOOK_EXISTS == 'true' }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

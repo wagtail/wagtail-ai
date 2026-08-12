@@ -2,6 +2,7 @@ from typing import cast
 from urllib.parse import SplitResult
 
 import pytest
+
 from django.core.exceptions import ValidationError
 from pytest_django import DjangoAssertNumQueries
 from wagtail.images.models import Image

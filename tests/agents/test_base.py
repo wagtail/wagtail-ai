@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from django.core.exceptions import ImproperlyConfigured
 
 from wagtail_ai.agents.base import get_llm_service, get_provider

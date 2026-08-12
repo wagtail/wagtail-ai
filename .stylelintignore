@@ -1,2 +1,12 @@
 node_modules
-venv
+*.min.css
+**/lib/
+public/
+coverage/
+**/vendor/
+_build
+.mypy_cache
+/coverage_html_report
+/htmlcov
+/local
+/src/wagtail_ai/static

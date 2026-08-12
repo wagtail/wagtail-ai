@@ -3,6 +3,7 @@
 import uuid
 
 import wagtail.search.index
+
 from django.db import migrations, models
 
 

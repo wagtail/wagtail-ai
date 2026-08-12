@@ -1,5 +1,5 @@
 from string import Formatter
-from typing import Any, Type, cast
+from typing import Any, cast
 from urllib.parse import SplitResult, urlsplit
 
 from django.conf import settings
@@ -47,7 +47,7 @@ class PromptContext(dict[str, Any]):
                 # access other keys if needed
                 self[key] = self.validators[key](self)
             elif key not in self:
-                self[key] = "{%s}" % key
+                self[key] = f"{{{key}}}"
 
 
 def image_validator(context) -> File | SplitResult | None:
@@ -74,7 +74,7 @@ def image_validator(context) -> File | SplitResult | None:
 
     from wagtail.images import get_image_model
 
-    Image = cast(Type[AbstractImage], get_image_model())
+    Image = cast(type[AbstractImage], get_image_model())
     try:
         image = Image._default_manager.get(id=image)
     except Image.DoesNotExist as error:

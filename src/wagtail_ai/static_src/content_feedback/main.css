@@ -69,12 +69,15 @@
   [data-wai-feedback-score-value='0'] & {
     display: none;
   }
+
   [data-wai-feedback-score-value='1'] & {
     color: var(--w-color-critical-200);
   }
+
   [data-wai-feedback-score-value='2'] & {
     color: var(--w-color-warning-100);
   }
+
   [data-wai-feedback-score-value='3'] & {
     color: var(--w-color-positive-100);
   }
@@ -139,7 +142,7 @@
   border: none;
   color: inherit;
   font-size: inherit;
-  padding: 0px;
+  padding: 0;
   overflow: clip;
 }
 

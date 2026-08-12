@@ -1,7 +1,9 @@
 import json
+
 from unittest.mock import MagicMock
 
 import pytest
+
 from django.http import HttpResponse
 from django.urls import reverse
 from django_ai_core.contrib.agents import registry

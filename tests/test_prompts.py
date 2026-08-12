@@ -1,4 +1,5 @@
 import pytest
+
 from django.core.exceptions import ValidationError
 
 from wagtail_ai.models import Prompt

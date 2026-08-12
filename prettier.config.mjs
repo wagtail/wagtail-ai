@@ -1,7 +1,8 @@
 /**
- * See https://prettier.io/docs/en/options.html.
+ * @see https://prettier.io/docs/configuration
+ * @type {import("prettier").Config}
  */
-module.exports = {
+const config = {
   arrowParens: 'always',
   bracketSameLine: false,
   bracketSpacing: true,
@@ -14,5 +15,6 @@ module.exports = {
   quoteProps: 'consistent',
   semi: true,
   singleQuote: true,
-  trailingComma: 'all',
 };
+
+export default config;

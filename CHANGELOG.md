@@ -133,6 +133,11 @@ Any custom prompts should be migrated to this new model, the `WAGTAIL_AI_PROMPTS
 
 ## [Unreleased]
 
+### Changed
+
+- Updated tooling: replaced black/flake8/isort with ruff, updated stylelint/Prettier configs
+- Updated support targets: Wagtail 7.4+, added Python 3.14 and Django 6.0 support
+
 <!-- TEMPLATE - keep below to copy for new releases -->
 <!--
 

@@ -1,9 +1,11 @@
 import base64
 import json
+
 from io import BytesIO
 from unittest.mock import MagicMock
 
 import pytest
+
 from django.core.files import File
 from django.http import HttpResponse
 from django.urls import reverse

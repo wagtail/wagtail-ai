@@ -1,0 +1,45 @@
+extend-exclude = ["LC_MESSAGES", "locale", "local"]
+line-length = 88
+
+
+[lint]
+select = [
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "DJ",     # flake8-django
+    "E",      # pycodestyle errors
+    "F",      # pyflakes
+    "I",      # isort
+    "RUF100", # unused noqa
+    "S",      # flake8-bandit
+    "UP",     # pyupgrade
+    "W",      # warning
+]
+fixable = ["C4", "E", "F", "I", "UP"]
+
+ignore = [
+    # E501: Line too long
+    "E501",
+    # DJ008: Model does not define `__str__` method
+    "DJ008",
+]
+
+
+[lint.isort]
+known-first-party = ["wagtail_ai"]
+lines-after-imports = 2
+lines-between-types = 1
+
+
+[lint.per-file-ignores]
+"tests/**/*.py" = [
+    "S101",    # asserts allowed in tests
+    "ARG",     # unused function args (pytest fixtures)
+    "FBT",     # booleans as positional arguments (@pytest.mark.parametrize)
+    "PLR2004", # magic value used in comparison
+    "S311",    # standard pseudo-random generators are not suitable for cryptographic purposes
+]
+
+
+[format]
+docstring-code-format = true

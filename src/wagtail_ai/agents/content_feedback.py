@@ -1,4 +1,5 @@
 import json
+
 from enum import IntEnum
 
 from django_ai_core.contrib.agents import Agent, AgentParameter, registry
