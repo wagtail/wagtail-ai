@@ -16,10 +16,10 @@ jobs:
       WEBHOOK_EXISTS: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version-file: '.node-version'
 
@@ -29,7 +29,7 @@ jobs:
       - name: Build static files
         run: ./node_modules/.bin/webpack --mode production
 
-      - uses: astral-sh/setup-uv@v3
+      - uses: astral-sh/setup-uv@caf0cab7a618c569241d31dcd442f54681755d39 # v3.2.4
 
       - run: git clone https://github.com/wagtail/wagtail.git ../wagtail
 
