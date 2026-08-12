@@ -70,3 +70,19 @@ build-static:
 # Build the package for distribution.
 build: build-static
     uv build
+
+# Make migrations and migrate the database.
+migrate:
+    uv run testmanage.py makemigrations
+    uv run testmanage.py migrate
+
+# Run the development server.
+runserver:
+    uv run testmanage.py runserver
+
+# Open a Django shell.
+shell:
+    uv run testmanage.py shell
+
+# Run the demo application.
+demo: migrate runserver

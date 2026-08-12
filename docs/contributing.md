@@ -11,67 +11,36 @@ cd wagtail-ai
 
 ## Setting up your development environment
 
-The easiest way to bootstrap your development environment is using `tox`. We recommending installing this in an isolated environment using `pipx`:
+We use [just](https://github.com/casey/just) as a task runner, [uv](https://docs.astral.sh/uv/) to manage Python dependencies, and npm for Node.js dependencies. Make sure you have both installed.
+
+Then you can install the dependencies:
 
 ```shell
-python -m pip install pipx-in-pipx --user
-pipx install tox
+just install
 ```
 
-Alternative installation methods can be found in the [tox documentation](https://tox.wiki/en/latest/installation.html).
-
-Once installed, create a development virtual environment with:
-
-```shell
-tox devenv -e interactive
-. ./venv/bin/activate
-```
+This runs `uv sync --dev` and `npm ci` under the hood.
 
 ### Using devcontainers
 
-Alernatively, a [devcontainer](https://containers.dev/) configuration is available in this repository with `tox` configured.
-
-Using this devcontainer in VSCode will automatically enable the virtual environment, in other devcontainer environments you will need to activate it with `. ./venv/bin/activate`.
+A [devcontainer](https://containers.dev/) configuration is available in this repository, with uv and Node.js pre-installed.
 
 ## Working with the test application
 
 A Wagtail example for testing/development is bundled in this repo (find it at `tests/testapp`).
 
-You can interact with this application inside your virtual environment using the `testmanage.py` script as you would a normal Django/Wagtail app.
-
-For example, to bring up a development server on port `8000`, run:
+You can interact with this application using the `testmanage.py` script as you would a normal Django/Wagtail app. For example, to bring up a development server:
 
 ```shell
-python testmanage.py runserver 0:8000
-```
-
-If you have bootstrapped your environment with `tox`, there will be a default admin user (username: `admin`, password: `changeme`) available.
-
-## Working with your own application
-
-If you already have an application you'd like to use when developing Wagtail AI, you can install the package directly from source alongside it using `flit`:
-
-```
-# Install flit
-python -m pip install flit
-# Change directory to where you have cloned the wagtail-ai repo
-cd wagtail-ai
-# Install the package using 'symlink' mode so you can change the code without having to reinstall it
-flit install -s
+uv run testmanage.py migrate
+uv run testmanage.py runserver 0:8000
 ```
 
 ## Building frontend assets
 
-Frontend assets (React components, admin scripts, custom CSS) are bundled using Webpack. A Node.js environment is required to install and run the dependencies required to build these assets. We recommend [`nvm`](https://github.com/nvm-sh/nvm#install--update-script) for installing and using Node.js locally:
+Frontend assets (React components, admin scripts, custom CSS) are bundled using Webpack. A Node.js environment is required to install and run the dependencies required to build these assets.
 
-```shell
-nvm install 20
-npm ci
-```
-
-If you are using the devcontainer, `node` and all relevant packages are already available.
-
-Assets can then be built with:
+Assets can be built with:
 
 ```shell
 npm run build
@@ -87,36 +56,70 @@ npm run start
 
 This project uses [pre-commit](https://github.com/pre-commit/pre-commit) to help keep to coding standards by automatically checking your commits.
 
-If you are using the devcontainer, this is automatically configured. In other environments run:
-
 ```shell
-# go to the project directory
-cd wagtail-ai
 # initialize pre-commit
-pre-commit install
+uv run pre-commit install
 
 # Optional, run all checks once for this, then the checks will run only on the changed files
-git ls-files --others --cached --exclude-standard | xargs pre-commit run --files
+uv run pre-commit run --all-files
 ```
 
 ## Running tests
 
-You can run tests using `tox`:
+You can run tests with:
+
+```shell
+just test
+```
+
+To run tests with coverage:
+
+```shell
+just coverage
+```
+
+To test with the lowest supported dependency versions:
+
+```shell
+just test-lowest-deps
+```
+
+To test with the highest supported dependency versions:
+
+```shell
+just test-highest-deps
+```
+
+For the full test matrix across Python, Django, and Wagtail versions, use tox:
 
 ```shell
 tox
 ```
 
-or, you can run them for a specific environment `tox -e python3.11-django5.2-wagtail7.1` or specific test
-`tox -e python3.11-django5.2-wagtail7.1-sqlite wagtail-ai.tests.test_file.TestClass.test_method`
+or for a specific environment: `tox -e python3.11-django5.2-wagtail7.4-sqlite`
+
+## Linting and formatting
+
+```shell
+just lint    # Run all linters (Ruff, pre-commit, Prettier, Stylelint)
+just format  # Run all formatters (Ruff, Prettier)
+```
+
+## Building the package
+
+To build the package for distribution:
+
+```shell
+just build
+```
+
+This builds the frontend assets with Webpack, then builds the Python wheel and sdist with `uv build`.
 
 ## Building the documentation
 
-Documentation for this package is built using `mkdocs`. These are automatically built by ReadTheDocs when pushed to Github, but you can build them yourself locally by:
+Documentation for this package is built using `mkdocs`. These are automatically built by ReadTheDocs when pushed to GitHub, but you can build them locally:
 
-```
-# Installing the package with docs depdendencies
-pip install -e .[docs] -U
-# Build the docs
-mkdocs build
+```shell
+uv sync --extra docs
+uv run mkdocs build
 ```
