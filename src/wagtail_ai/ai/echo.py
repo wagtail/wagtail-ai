@@ -1,5 +1,6 @@
 import random
 import time
+
 from collections.abc import Generator, Iterator
 from dataclasses import dataclass
 from typing import Any, NotRequired, Self
@@ -80,8 +81,8 @@ class EchoBackend(AIBackend[EchoBackendConfig]):
                     and self.config.max_word_sleep_seconds > 0
                 ):
                     time.sleep(
-                        random.random()
-                        * random.randint(0, self.config.max_word_sleep_seconds)
+                        random.random()  # noqa: S311
+                        * random.randint(0, self.config.max_word_sleep_seconds)  # noqa: S311
                     )
                 yield word
 

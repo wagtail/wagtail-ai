@@ -5,6 +5,7 @@ import re
 
 from ..types import TextSplitterLengthCalculatorProtocol
 
+
 logger = logging.getLogger(__name__)
 
 

@@ -30,9 +30,11 @@ SOFTWARE.
 
 import logging
 import re
+
 from collections.abc import Callable, Iterable, MutableSequence, Sequence
 
 from ..types import TextSplitterProtocol
+
 
 logger = logging.getLogger(__name__)
 

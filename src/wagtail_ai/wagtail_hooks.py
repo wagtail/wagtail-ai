@@ -1,4 +1,5 @@
 import uuid
+
 from typing import NotRequired, Required, TypedDict, cast
 
 from django.forms.utils import flatatt

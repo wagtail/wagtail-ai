@@ -4,6 +4,7 @@ from wagtail.models import Page
 
 from wagtail_ai.panels import AIDescriptionFieldPanel, AITitleFieldPanel
 
+
 # Replace the default TitleFieldPanel with an AITitleFieldPanel.
 Page.content_panels[0] = AITitleFieldPanel("title", classname="title")  # type: ignore
 # Replace the default `search_description` FieldPanel with an AIFieldPanel.

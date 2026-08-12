@@ -1,5 +1,6 @@
 import base64
 import mimetypes
+
 from abc import ABC
 from urllib.parse import SplitResult
 
@@ -11,6 +12,7 @@ from django_ai_core.contrib.agents import Agent, AgentParameter, registry
 from wagtail_ai.context import PromptContext
 
 from .base import get_llm_service
+
 
 # Temporary drop-in for the Prompt model using prompts from AgentSettings
 
@@ -123,7 +125,7 @@ class BasicPromptAgent(Agent):
     def split_context_files(self) -> list[File]:
         files = []
         for key, value in self.context.items():
-            if isinstance(value, (File, SplitResult)):
+            if isinstance(value, File | SplitResult):
                 if isinstance(value, File):
                     mime_type, _ = mimetypes.guess_type(value.name)
                     if not mime_type:

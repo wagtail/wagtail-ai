@@ -1,4 +1,5 @@
 import os
+
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, NotRequired, Self

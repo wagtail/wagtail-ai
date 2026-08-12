@@ -27,6 +27,7 @@
 /* Initial State
    Show "Suggest" label, hide "clear" button
 */
+
 [data-wai-chooser-panel-state-value]:not(
     [data-wai-chooser-panel-state-value='initial']
   )
@@ -51,6 +52,7 @@
 /* Loading State
    Show loading indicator, hide suggestions and buttons
 */
+
 [data-wai-chooser-panel-state-value='loading'] .wai-chooser-panel__loading {
   display: flex;
 }
@@ -66,6 +68,7 @@
 /* Error state
    Show error
 */
+
 [data-wai-chooser-panel-state-value='error'] .wai-chooser-panel__error {
   display: flex;
 }
@@ -73,6 +76,7 @@
 /* No more suggestions state
    Show no suggestions label
 */
+
 [data-wai-chooser-panel-state-value][data-wai-chooser-panel-state-value='no_more']
   .wai-chooser-panel__suggest-more-label {
   display: none;

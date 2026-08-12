@@ -1,8 +1,10 @@
 import json
+
 from dataclasses import dataclass
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from django.http import HttpResponse
 from django.urls import reverse
 from django_ai_core.contrib.index import registry as index_registry

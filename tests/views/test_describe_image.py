@@ -1,9 +1,11 @@
 import json
+
 from http import HTTPStatus
 from typing import cast
 from unittest.mock import ANY, Mock, call
 
 import pytest
+
 from bs4 import BeautifulSoup
 from django.contrib.auth.models import Permission, User
 from django.forms import Textarea
@@ -14,6 +16,7 @@ from wagtail_factories import ImageFactory
 from wagtail_ai.agents.basic_prompt import ImageDescriptionPrompt, ImageTitlePrompt
 from wagtail_ai.ai import echo
 from wagtail_ai.forms import ImageDescriptionWidgetMixin
+
 
 pytestmark = pytest.mark.django_db
 

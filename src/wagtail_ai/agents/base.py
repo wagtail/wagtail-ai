@@ -1,4 +1,5 @@
 import warnings
+
 from functools import cache
 from typing import TYPE_CHECKING, cast
 
@@ -13,6 +14,7 @@ from wagtail.models import Site
 
 from wagtail_ai import ai
 from wagtail_ai.utils.deprecation import WagtailAISettingsDeprecationWarning
+
 
 if TYPE_CHECKING:
     from wagtail_ai.models import AgentSettingsMixin

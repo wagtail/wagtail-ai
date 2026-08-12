@@ -1,16 +1,19 @@
 import base64
 import mimetypes
 import os
+
 from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import Any, NotRequired, Self
 
 import requests
+
 from django.core.files import File
 
 from wagtail_ai.types import AIResponse
 
 from .base import AIBackend, BaseAIBackendConfig, BaseAIBackendConfigSettings
+
 
 DEFAULT_API_BASE = "https://api.openai.com/v1"
 

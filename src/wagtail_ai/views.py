@@ -1,6 +1,7 @@
 import logging
 import os
-from typing import Type, cast
+
+from typing import cast
 
 from django import forms
 from django.conf import settings
@@ -16,6 +17,7 @@ from . import ai, types
 from .ai.base import BackendFeature
 from .forms import DescribeImageApiForm, PromptForm
 from .models import Prompt
+
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +122,7 @@ def describe_image(request) -> JsonResponse:
     if not form.is_valid():
         return ErrorJsonResponse(form.errors_for_json_response(), status=400)
 
-    model = cast(Type[AbstractImage], get_image_model())
+    model = cast(type[AbstractImage], get_image_model())
     image = get_object_or_404(model, pk=form.cleaned_data["image_id"])
 
     if not user_has_permission_for_image(request.user, image):
@@ -183,9 +185,9 @@ class PromptEditForm(forms.ModelForm):
             # Make the prompt field not required if it's a default prompt
             self.fields["prompt"].required = False
             # Populate the placeholder with the value from DEFAULT_PROMPTS
-            self.fields["prompt"].widget.attrs[
-                "placeholder"
-            ] = self.instance.get_default_prompt_value()
+            self.fields["prompt"].widget.attrs["placeholder"] = (
+                self.instance.get_default_prompt_value()
+            )
 
 
 class PromptViewSet(ModelViewSet):

@@ -1,4 +1,5 @@
 import pytest
+
 from test_utils.settings import custom_text_splitting
 
 from wagtail_ai.ai import (

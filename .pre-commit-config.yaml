@@ -1,5 +1,3 @@
-exclude: ^.devcontainer
-
 ci:
   autofix_prs: false
 
@@ -12,43 +10,35 @@ repos:
     hooks:
       - id: check-added-large-files
       - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-illegal-windows-names
       - id: check-json
       - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
       - id: check-symlinks
       - id: check-toml
       - id: check-yaml
         args: ['--unsafe']
       - id: end-of-file-fixer
       - id: trailing-whitespace
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 25.1.0
-    hooks:
-      - id: black
-  - repo: https://github.com/adamchainz/blacken-docs
-    rev: 1.19.1
-    hooks:
-      - id: blacken-docs
-        additional_dependencies: [black==25.1.0]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    # Ruff version.
+    # ruff config is in ruff.toml
     rev: v0.12.11
     hooks:
       - id: ruff-check
         args: [--fix, --exit-non-zero-on-fix]
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    # prettier config is in prettier.config.js
-    rev: 'v3.1.0'
+      - id: ruff-format
+  - repo: local
     hooks:
-      - id: prettier
-        types_or: [css, scss, javascript, ts, tsx, json, yaml]
-        additional_dependencies:
-          - prettier@3.6.2
-  - repo: https://github.com/thibaudcolas/pre-commit-stylelint
-    # stylelint config is in .stylelintrc.js
-    rev: v16.23.1
-    hooks:
-      - id: stylelint
-        files: \.(scss)$
-        additional_dependencies:
-          - 'stylelint@16.23.1'
-          - '@wagtail/stylelint-config-wagtail@0.8.0'
+      - id: lint:format
+        language: node
+        language_version: system
+        name: npm run lint:format
+        entry: npm run lint:format
+        types: [css, scss, javascript, ts, tsx, json, yaml]
+      - id: lint:css
+        language: node
+        language_version: system
+        name: npm run lint:css
+        entry: npm run lint:css
+        types: [css, scss]

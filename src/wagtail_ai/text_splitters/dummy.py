@@ -1,7 +1,9 @@
 import logging
+
 from collections.abc import Callable
 
 from ..types import TextSplitterLengthCalculatorProtocol, TextSplitterProtocol
+
 
 logger = logging.getLogger(__name__)
 
