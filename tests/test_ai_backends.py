@@ -1,6 +1,7 @@
 import re
 
 import pytest
+from django.core.exceptions import ImproperlyConfigured
 from test_utils.settings import (
     custom_ai_backend_class,
     custom_ai_backend_settings,
@@ -130,3 +131,28 @@ def test_get_backend_not_found(settings):
     with pytest.raises(BackendNotFound) as exception:
         get_backend(BackendFeature.IMAGE_DESCRIPTION)
     assert exception.match(r"No backend found for IMAGE_DESCRIPTION")
+
+
+def test_get_backend_settings_missing_config(settings):
+    settings.WAGTAIL_AI = {
+        "BACKENDS": {
+            "default": {
+                "CLASS": "wagtail_ai.ai.echo.EchoBackend",
+            },
+        },
+    }
+    with pytest.raises(ImproperlyConfigured, match='Missing "CONFIG"'):
+        get_ai_backend("default")
+
+
+def test_get_backend_settings_missing_model_id(settings):
+    settings.WAGTAIL_AI = {
+        "BACKENDS": {
+            "default": {
+                "CLASS": "wagtail_ai.ai.echo.EchoBackend",
+                "CONFIG": {"TOKEN_LIMIT": 123123},
+            },
+        },
+    }
+    with pytest.raises(ImproperlyConfigured, match='"MODEL_ID" is missing'):
+        get_ai_backend("default")
